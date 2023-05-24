@@ -1,0 +1,74 @@
+
+body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas: 
+  "header header header header header header"
+  ". main main main main ."
+  ". main main main main ."
+  ". main main main main ."
+  ". main main main main ."
+  "footer footer footer footer footer footer"
+}
+header.base--item {
+  grid-area: header;
+  background-color: #DEECA1;
+  border-radius: 0 100px 0 100px;
+  padding: 1rem 0;
+}
+main.base--item {
+  grid-area: main;
+  min-height: 70vh;
+  margin: 3rem 0;
+}
+footer.base--item {
+  grid-area: footer;
+}
+.header--container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas: ". header--wrap header--wrap header--wrap header--wrap .";
+}
+.header--wrap {
+  grid-area: header--wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas: "header--item1 . . header--item2";
+}
+.header--item1 {
+  grid-area: header--item1;
+}
+.header--item2 {
+  grid-area: header--item2;
+}
+.nav--hidden {
+  display: none;
+}
+.nav--container {
+}
+.nav--wrap {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #efefef;
+  margin-top: 1rem;
+}
+.nav--list--wrap {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas: ". nav nav nav nav .";
+}
+.nav--list {
+  grid-area: nav;
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem 0;
+}
+.footer--container {
+  background-color: #efefef;
+  padding: 3rem 0;
+  text-align: center;
+}

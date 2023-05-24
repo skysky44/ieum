@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="">
+  
+  <form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+      {{ form.media }}
+    <div class="">
+      {{ form.category }}
+    </div>
+    <div class="">
+      {{ form.title }}
+    </div>
+    {% comment %} <div class="">
+      {{ image_form }}
+    </div> {% endcomment %}
+    <div class="">
+      {{ form.address }}
+    </div>
+    <div class="">
+      {{ form.tags }}
+    </div>
+    <div class=""> 
+      {{ form.content }}
+    </div>
+{% comment %} 소담님❤️ {% endcomment %}
+    <div class="">
+      <a href="{% url 'posts:index' %}" class="">취소</a>
+      <button class="" type="submit">등록</button>
+    </div>
+  </form>
+
+
+  </div>
+
+
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+<script>
+  ClassicEditor.create( document.querySelector( '#editor' ), {
+    language: "ko"
+  } );
+</script>
+{% endblock content %}

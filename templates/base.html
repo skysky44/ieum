@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'base/css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
+    <title>{% block title %}{% endblock title %}</title>
+    {% load static %}
+    {% block head %}{% endblock head %}
+    <style>
+      @font-face {
+        font-family: 'GangwonEdu_OTFBoldA';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
+    {% block style %}{% endblock style %}
+    </style>
+  </head>
+  <body>
+    <header class="base--item">
+      <div class="header--container">
+        <div class="header--wrap">
+          <div class="header--item1">
+            <a href="#">
+              <h1 class="font--gangwon">오늘, 이음</h1>
+            </a>
+          </div>
+          <div class="header--item2">
+            <button id="navToggleButton">메뉴</button>
+          </div>
+        </div>
+        <div id="navToggle" class="nav--hidden nav--container">
+          <nav class="nav--wrap">
+            <ul class="nav--list--wrap">
+              <div class="nav--list">
+                <li>공감 이음</li>
+                <li>현실 이음</li>
+                <li>익명 고민</li>
+              </div>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <main class="base--item">
+    {% block content %}
+    {% endblock content %}
+    </main>
+    <footer class="base--item footer--container">
+      <div>
+        <div class="footer--copyright--wrap">
+          <i class="footer--copyright">copyrightⓒ 2023 All rights reserved by 오늘, 이음</i>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      document.getElementById('navToggleButton').addEventListener('click', function () {
+      const nav = document.getElementById('navToggle');
+      nav.classList.toggle('nav--hidden');
+      });
+    {% block script %}
+    {% endblock script %}
+    </script>
+  </body>
+</html>

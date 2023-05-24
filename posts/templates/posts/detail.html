@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+  <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
+    {% csrf_token %}
+        {% if request.user in post.like_users.all %}
+            <button class="border-0 bg-transparent" type="submit" value="좋아요">
+              <i class="bi bi-hand-thumbs-up text-primary"></i>
+            </button>
+        {% else %}
+            <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
+              <i class="bi bi-hand-thumbs-up text-secondary"></i>
+            </button>
+        {% endif %}
+  </form>
+
+{{ post.content|safe }}
+
+  <span>{{post.like_users.count}}</span>
+  <div>tag</div>
+  {% for tag in tags %}
+    <span>#{{tag}}</span>
+  {% endfor %}
+  <h1>디테일</h1>
+  <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
+    {% csrf_token %}
+    {{comment_form.content}}
+    <input type="submit" value='댓글 작성'>
+  </form>
+  {% for comment in comments %}
+    <p>{{comment.content}}</p>
+    <form action="{% url 'posts:comment_delete' post.pk comment.pk %}">
+      <input type="submit" value='댓글 삭제'>
+    </form>
+
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  댓글 수정
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        {{comment_form.as_p}}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">수정하기</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+  {% endfor %}
+{% endblock content %}
