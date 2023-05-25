@@ -1,0 +1,10 @@
+.detail--container {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 1px 4px 2px 2px rgba(0, 0, 0, 0.25);
+    padding: 1rem;
+    margin: 1rem;
+  
+  
+}

@@ -13,6 +13,7 @@ class Question(models.Model):
     
     title = models.CharField(max_length=30)
     category = models.IntegerField(default='###')
+    content1_users = models.ManyToManyField(settings.AUTH_USER_MODEL,)
     content1 = models.TextField()
     content2 = models.TextField()
     image1 =  ProcessedImageField(

@@ -1,14 +1,73 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
+{% endblock head %}
+
 {% block content %}
-<h2>index</h2>
+<article>
+  <div class="title--wrap">
+    <h2>{{ user }} 님 로그인 했구먼유 </h2>
+    <a href="{% url 'posts:create' %}">글쓰기</a>
+  </div>
+  <section>
+    <ul>
+      {% for post in posts  %}
+        <li class="posts--wrap">
+          <div class="">
+            <div class="d-flex">
+              <!-- 게시물 내용 -->
+              <div class="post--content--wrap me-4">
+                {{ post.content|safe }}
+              </div>
+              <div class="d-flex flex-column">
+                <!-- 카테고리 태그 -->
+                <div class="posts--category--tag mb-3">
+                  카테고리 태그 자리
+                </div>
+                <!-- 게시물 제목 -->
+                <a href="{% url 'posts:detail' post.pk %}">{{ post.title }}</a>
+                <!-- 게시물 작성한 시간? -->
+                <p style="color:#656565;">10분 전</p>
+                <div class="d-flex">
+                  <!-- 좋아요 버튼 -->
+                  <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
+                  <!-- 좋아요 수 -->
+                  <p id="like-cnt">0</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 
-{% for post in posts  %}
-<a href="{% url 'posts:detail' post.pk %}">{{ post.title }}
-</a>
-  {{ post.content|safe }}
-{% endfor %}
-
-
-<a href="{% url 'posts:create' %}">글쓰기</a>
+  <!-- 페이지네이션 -->
+  <nav class="d-flex justify-content-center">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="event.preventDefault()">
+          <span aria-hidden="true"><i class="bi bi-caret-left"></i></span>
+        </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">1</a></li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">2</a></li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="event.preventDefault()">
+          <span aria-hidden="true"><i class="bi bi-caret-right"></i></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
+  
+</article>
 
 {% endblock content %}
+
+{% block script %}
+  <script type="text/javascript" src="/static/posts/js/index.js"></script>
+{% endblock script %}
