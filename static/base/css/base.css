@@ -13,6 +13,8 @@ body {
 }
 header.base--item {
   grid-area: header;
+  position: fixed;
+  width: 100%;
   background-color: #DEECA1;
   border-radius: 0 100px 0 100px;
   padding: 1rem 0;
@@ -20,7 +22,7 @@ header.base--item {
 main.base--item {
   grid-area: main;
   min-height: 70vh;
-  margin: 3rem 0;
+  margin: 10rem 0 3rem;
 }
 footer.base--item {
   grid-area: footer;
@@ -42,6 +44,7 @@ footer.base--item {
 }
 .header--item2 {
   grid-area: header--item2;
+  text-align: right;
 }
 .nav--hidden {
   display: none;
@@ -53,7 +56,6 @@ footer.base--item {
   top: 100%;
   left: 0;
   width: 100%;
-  background-color: #efefef;
   margin-top: 1rem;
 }
 .nav--list--wrap {
@@ -65,10 +67,24 @@ footer.base--item {
   grid-area: nav;
   display: flex;
   justify-content: space-around;
+  border-radius: 0 100px 0 100px;
+  background-color: rgba(239,239,239, .7);
   padding: 1rem 0;
 }
+
 .footer--container {
   background-color: #efefef;
   padding: 3rem 0;
   text-align: center;
+}
+
+
+.nori {
+  position: fixed;
+  bottom: 6rem;
+  right: 1rem;
+  border-radius: 15px;
+  background-color: #FFF7D3;
+  box-shadow: 3px 3px 5px 5px rgba(225, 225, 225, 0.5);
+  padding: 2rem;
 }

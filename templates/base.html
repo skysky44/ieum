@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'base/css/reset.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
-    <title>{% block title %}{% endblock title %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_03.png' %}">
+    <title>오늘, 이음{% block title %}{% endblock title %}</title>
     {% load static %}
     {% block head %}{% endblock head %}
     <style>
@@ -24,31 +25,68 @@
     </style>
   </head>
   <body>
+    <!-- navbar -->
     <header class="base--item">
       <div class="header--container">
         <div class="header--wrap">
           <div class="header--item1">
-            <a href="#">
+            <a href="{% url 'posts:index' %}">
               <h1 class="font--gangwon">오늘, 이음</h1>
             </a>
           </div>
           <div class="header--item2">
-            <button id="navToggleButton">메뉴</button>
+            <button id="navToggleButton">
+              <i class="bi bi-list"></i>
+            </button>
           </div>
         </div>
         <div id="navToggle" class="nav--hidden nav--container">
           <nav class="nav--wrap">
-            <ul class="nav--list--wrap">
-              <div class="nav--list">
-                <li>공감 이음</li>
-                <li>현실 이음</li>
-                <li>익명 고민</li>
-              </div>
-            </ul>
+            <div class="nav--list--wrap">
+              <ul class="nav--list">
+                <li>
+                  <a href="#">
+                    공감 이음
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    현실 이음
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    익명 고민
+                  </a>
+                </li>
+                <li>
+                  <!-- 로그인 -->
+                  <div>
+                    <a href="{% url 'accounts:login' %}">로그인</a>
+                  </div>
+                </li>
+                <li>
+                  <!-- 회원가입 -->
+                  <div>
+                    <a href="{% url 'accounts:signup' %}">회원가입</a>
+                  </div>
+                </li>
+                <li>
+                  <!-- 회원가입 -->
+                  <div>
+                    <a href="{% url 'accounts:profile' user.pk %}">마이페이지</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </nav>
         </div>
       </div>
     </header>
+    <aside class="nori">
+      <h1>떠든사람: 안정환</h1>
+      <p>지우지마시오</p>
+    </aside>
     <main class="base--item">
     {% block content %}
     {% endblock content %}
@@ -67,8 +105,7 @@
       const nav = document.getElementById('navToggle');
       nav.classList.toggle('nav--hidden');
       });
-    {% block script %}
-    {% endblock script %}
     </script>
+    {% block script %}{% endblock script %}
   </body>
 </html>
