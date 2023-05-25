@@ -5,7 +5,7 @@
 {% for post in posts  %}
 <a href="{% url 'posts:detail' post.pk %}">{{ post.title }}
 </a>
-  {{ post.content }}
+  {{ post.content|safe }}
 {% endfor %}
 
 

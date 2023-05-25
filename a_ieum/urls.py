@@ -21,6 +21,8 @@ from posts import views
 from django.contrib.auth.decorators import login_required
 from ckeditor_uploader import views as views_ckeditor
 from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 
 urlpatterns = [
@@ -30,6 +32,6 @@ urlpatterns = [
     path('balances/', include('balances.urls')),
     path('accounts/', include('accounts.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
-    path(r'^upload/', login_required(views_ckeditor.upload), name='ckeditor_upload'),
-    path(r'^browse/', never_cache(login_required(views_ckeditor.browse)), name='ckeditor_browse'),
+    path('upload/', login_required(views_ckeditor.upload), name='ckeditor_upload'),
+    path('browse/', never_cache(login_required(views_ckeditor.browse)), name='ckeditor_browse'),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
