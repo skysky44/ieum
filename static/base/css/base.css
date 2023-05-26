@@ -18,6 +18,7 @@ header.base--item {
   background-color: #DEECA1;
   border-radius: 0 100px 0 100px;
   padding: 1rem 0;
+  z-index: 9999;
 }
 main.base--item {
   grid-area: main;
