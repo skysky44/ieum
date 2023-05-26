@@ -10,6 +10,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="아이디",
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -19,6 +20,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="이름",
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
 
             }
 
@@ -29,6 +31,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="생일",
         widget=forms.DateInput(
             attrs={
+                'class': 'form-control',
                 'type': 'date',
 
             }
@@ -38,6 +41,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="이메일",
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
 
 
             }
@@ -48,6 +52,7 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         widget=forms.ClearableFileInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -56,6 +61,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="비밀번호",
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -64,6 +70,7 @@ class CustomUserCreationForm(UserCreationForm):
         label="비밀번호 확인",
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -74,6 +81,7 @@ class CustomUserCreationForm(UserCreationForm):
         label='지역',
         widget=forms.Select(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -126,6 +134,7 @@ class CustomUserChangeForm(UserChangeForm):
         label=False,
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -134,6 +143,7 @@ class CustomUserChangeForm(UserChangeForm):
         label=False,
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -151,6 +161,7 @@ class CustomUserChangeForm(UserChangeForm):
         label=False,
         widget=forms.Select(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -161,6 +172,7 @@ class CustomUserChangeForm(UserChangeForm):
         label=False,
         widget=forms.DateInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -171,6 +183,7 @@ class CustomUserChangeForm(UserChangeForm):
         required=False,
         widget=forms.ClearableFileInput(
             attrs={
+                'class': 'form-control',
 
             }
         ),
@@ -187,6 +200,7 @@ class CustomAuthenticationForm(AuthenticationForm):
         label=False,
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': '아이디',
 
             }
@@ -196,6 +210,7 @@ class CustomAuthenticationForm(AuthenticationForm):
         label=False,
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': '비밀번호',
             }
         ),
@@ -207,6 +222,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         label=False,
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': '기존 비밀번호',
 
             }
@@ -216,6 +232,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         label=False,
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': '새 비밀번호',
             }
         ),
@@ -225,6 +242,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         label=False,
         widget=forms.PasswordInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': '새 비밀번호(확인)',
             }
         ),

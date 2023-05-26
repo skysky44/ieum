@@ -12,6 +12,8 @@ class Question(models.Model):
         return f'balances/{instance.title}/{filename}'
     
     title = models.CharField(max_length=1000)
+
+
     content1 = models.TextField()
     content2 = models.TextField()
     

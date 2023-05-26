@@ -1,14 +1,123 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
+{% endblock head %}
+
 {% block content %}
-<h2>index</h2>
+<article>
+  <div class="title--wrap">
+    <h2>{{ user }} 님 로그인 했구먼유 </h2>
+    <a href="{% url 'posts:create' %}">글쓰기</a>
+  </div>
+  <section>
+    <ul>
+      {% for post in posts  %}
+        <li class="posts--wrap">
+          <div class="">
+            <div class="d-flex">
+              <!-- 게시물 내용 -->
+              <div class="posts--img-wrap">
+                  {{ post.content|safe }}
+              </div>
+              <div class="posts--content-wrap">
+                <!-- 카테고리 태그 -->
+                <div class="posts--category--tag mb-3">
+                  카테고리 태그 자리
+                </div>
+                <!-- 게시물 제목 -->
+                <a href="{% url 'posts:detail' post.pk %}">{{ post.title }}</a>
+                <!-- 게시물 작성한 시간? -->
+                <p style="color:#656565;">10분 전</p>
+                <div class="d-flex">
+                  {% comment %} <!-- 좋아요 버튼 -->
+                  <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
+                  <!-- 좋아요 수 -->
+                  <p id="like-cnt">0</p> {% endcomment %}
 
-{% for post in posts  %}
-<a href="{% url 'posts:detail' post.pk %}">{{ post.title }}
-</a>
-  {{ post.content|safe }}
-{% endfor %}
+                  <!-- 좋아요 버튼 -->
+                  {% comment %} <form class="like-forms" data-post-id="{{ post.pk }}">
+                    {% csrf_token %}
+                    {% if user in post.like_users.all %}
+                      <span class="me-2">
+                        <button class="like-btn" type="submit">
+                          <i class="bi bi-heart"></i>
+                        </button>
+                      </span>
+                    {% else %}
+                      <span class="me-2">
+                        <button class="like-btn" type="submit">
+                          <i class="bi bi-heart-fill"></i>
+                        </button>
+                      </span>
+                    {% endif %}
+                  </form>
+                  <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
 
+                  <form action="{% url 'posts:likes' post.pk %}" method="POST">
+                    {% csrf_token %}
+                    {% if user in post.like_users.all  %}
+                    <button class="border-0 bg-transparent" type="submit">
+                      <i class="bi bi-heart-fill"></i>
+                    </button>
+                    {% else %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        <i class="bi bi-heart"></i>
+                      </button>
+                    {% endif %}
+                  </form>
+                  <span>{{post.like_users.count}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 
-<a href="{% url 'posts:create' %}">글쓰기</a>
+  <!-- 페이지네이션 -->
+  <nav class="d-flex justify-content-center">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="event.preventDefault()">
+          <span aria-hidden="true"><i class="bi bi-caret-left"></i></span>
+        </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">1</a></li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">2</a></li>
+      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="event.preventDefault()">
+          <span aria-hidden="true"><i class="bi bi-caret-right"></i></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
+  
+</article>
 
 {% endblock content %}
+
+{% block script %}
+<!-- <script>
+  const children = document.querySelectorAll('.post--content--wrap > p > img');
+  let leftValue = 0;
+
+  
+  children.forEach((image, index) => {
+  let rotateValue;
+  if (index % 2 === 0) {
+    // 짝수 번째 이미지의 경우
+    rotateValue = -(Math.abs((index + 1) * 0.01));
+  } else {
+    // 홀수 번째 이미지의 경우
+    rotateValue = (index + 1) * 0.01;
+  }
+  image.style.transform = `rotate(${rotateValue}turn)`;
+  });
+</script> -->
+  <script type="text/javascript" src="/static/posts/js/index.js"></script>
+{% endblock script %}
