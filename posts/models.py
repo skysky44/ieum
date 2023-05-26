@@ -8,7 +8,6 @@ from taggit.managers import TaggableManager
 # from ckeditor_uploader.fields import RichTextUploadingField
 from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
-# 정환님 터미널 켜주세요 
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
