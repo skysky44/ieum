@@ -15,7 +15,7 @@
     <ul>
       {% for post in posts  %}
         <li class="posts--wrap">
-          <div class="">
+          <a href="{% url 'posts:detail' post.pk %}">
             <div class="d-flex">
               <!-- 게시물 내용 -->
               <div class="posts--img-wrap">
@@ -27,7 +27,7 @@
                   카테고리 태그 자리
                 </div>
                 <!-- 게시물 제목 -->
-                <a href="{% url 'posts:detail' post.pk %}">{{ post.title }}</a>
+                <p>{{ post.title }}</p>
                 <!-- 게시물 작성한 시간? -->
                 <p style="color:#656565;">10분 전</p>
                 <div class="d-flex">
@@ -59,42 +59,58 @@
                     {% csrf_token %}
                     {% if user in post.like_users.all  %}
                     <button class="border-0 bg-transparent" type="submit">
-                      <i class="bi bi-heart-fill"></i>
+                      ❤️
                     </button>
                     {% else %}
                       <button class="border-0 bg-transparent" type="submit">
-                        <i class="bi bi-heart"></i>
+                        🤍
                       </button>
                     {% endif %}
                   </form>
-                  <span>{{post.like_users.count}}</span>
+                  <span class="ms-1">{{post.like_users.count}}</span>
                 </div>
               </div>
             </div>
-          </div>
+          </a>
         </li>
       {% endfor %}
     </ul>
   </section>
 
   <!-- 페이지네이션 -->
-  <nav class="d-flex justify-content-center">
-    <ul class="pagination">
+  <ul class="pagination justify-content-center">
+    {% if posts.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="#" onclick="event.preventDefault()">
-          <span aria-hidden="true"><i class="bi bi-caret-left"></i></span>
-        </a>
+        <a class="page-link" href="?page={{ posts.previous_page_number }}"><i class="bi bi-caret-left"></i></a>
       </li>
-      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">1</a></li>
-      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">2</a></li>
-      <li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault()">3</a></li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left"></i></a>
+      </li>
+    {% endif %}
+    {% for page_number in posts.paginator.page_range %}
+      {% if page_number >= posts.number|add:-5 and page_number <= posts.number|add:5 %}
+        {% if page_number == posts.number %}
+          <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if posts.has_next %}
       <li class="page-item">
-        <a class="page-link" href="#" onclick="event.preventDefault()">
-          <span aria-hidden="true"><i class="bi bi-caret-right"></i></span>
-        </a>
+        <a class="page-link" href="?page={{ posts.next_page_number }}"><i class="bi bi-caret-right"></i></a>
       </li>
-    </ul>
-  </nav>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right"></i></a>
+      </li>
+    {% endif %}
+  </ul>
   
   
 </article>
