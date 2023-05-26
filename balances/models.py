@@ -11,11 +11,12 @@ class Question(models.Model):
     def question_image_path(instance, filename):
         return f'balances/{instance.title}/{filename}'
     
-    title = models.CharField(max_length=30)
-    category = models.IntegerField(default='###')
-    content1_users = models.ManyToManyField(settings.AUTH_USER_MODEL,)
+    title = models.CharField(max_length=1000)
+
+
     content1 = models.TextField()
     content2 = models.TextField()
+    
     image1 =  ProcessedImageField(
         upload_to= question_image_path,
         processors=[ResizeToFill(500,500)],
@@ -32,5 +33,7 @@ class Question(models.Model):
 
 class Result(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    category = models.ForeignKey(Question, on_delete=models.CASCADE )
-    chosen_result = models.CharField(max_length=100)
+    # category = models.ForeignKey(Question, on_delete=models.CASCADE )
+    # chosen_result = models.CharField(max_length=100)
+    chosen_result = models.JSONField(default=list)
+    
