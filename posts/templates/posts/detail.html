@@ -2,84 +2,139 @@
 {% load static %}
 
 {% block head %}
+  <!-- <link rel="stylesheet" href="{% static 'base/css/reset.css' %}"> -->
   <link rel="stylesheet" href="{% static 'posts/css/detail.css' %}">
 {% endblock head %}
 
 {% block content %}
   <article class="detail--container">   
-    <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
-      {% csrf_token %}
-      {% if request.user in post.like_users.all %}
-          <button class="border-0 bg-transparent" type="submit" value="좋아요">
-            <i class="bi bi-hand-thumbs-up text-primary"></i>
-          </button>
-      {% else %}
-          <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
-            <i class="bi bi-hand-thumbs-up text-secondary"></i>
-          </button>
-      {% endif %}
-    </form>
-
-
-
-
-    <span>{{post.like_users.count}}</span>
-    <div>tag</div>
-    {% for tag in tags %}
-      <span>#{{tag}}</span>
-    {% endfor %}
-    <h1>디테일</h1>
-    <div>
-      제목:  {{ post.title }}
-    </div>
-    
-    <div>
-      내용: {{ post.content|safe }}
-    </div>
-    <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
-      {% csrf_token %}
-      {{comment_form.content}}
-      <input type="submit" value='댓글 작성'>
-    </form>
-    {% for comment in comments %}
-      <p>{{comment.content}}</p>
-      <form action="{% url 'posts:comment_delete' post.pk comment.pk %}">
-        <input type="submit" value='댓글 삭제'>
-      </form>
-  
-      <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    댓글 수정
-  </button>
-
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <section class="detail--wrap">
+      <div>
+        <div class="d-flex justify-content-between mb-1">
+          <h1>{{ post.title }}</h1>
+          <div class="d-flex align-items-center">
+            <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
+              {% csrf_token %}
+              {% if request.user in post.like_users.all %}
+                <button class="border-0 bg-transparent" type="submit" value="좋아요">
+                  <i class="bi bi-hand-thumbs-up text-primary" style="font-size:1.5rem;"></i>
+                </button>
+              {% else %}
+                  <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
+                    <i class="bi bi-hand-thumbs-up text-secondary" style="font-size:1.5rem;"></i>
+                  </button>
+              {% endif %}
+            </form>
+            <span class="ms-1" style="font-size:1.5rem;">{{post.like_users.count}}</span>
+          </div>
         </div>
-        <div class="modal-body">
-        <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
-          {% csrf_token %}
-          {{comment_form.as_p}}
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">수정하기</button>
-        </div>
-        </form>
+        <ul>
+          <li class="mb-3">
+            <i style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
+          </li>
+          <li class="mb-3">
+            <div class="detail--content">{{ post.content|safe }}</div>
+          </li>
+          <li class="detail__map--wrap mb-3">
+            <div id="map" style="width:350px;height:200px;" class="detail__map"></div>
+          </li>
+          <li class="mb-3">
+            <div>
+              {% for tag in tags %}
+              <span class="detail--tag">#{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </li>
+          <li>
+            <div class="detail__btn--list">
+              <div class="me-2" style="display:flex; align-self:center;">
+                <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                </div>
+              </div>
+              <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
+                <input type="submit" value='삭제' class="ieum--button--nobgc1">
+              </form>
+              <!-- Button trigger modal -->
+            </div>
+          </li>
+        </ul>
       </div>
-    </div>
-  </div>
+    </section>
+    <hr>
+    <section class="comments--wrap">
+      <ul>
+        <li>
+          {% for comment in comments %}
+          <div class="comments__content--wrap">
+            <div>
+              <div class="comments__user--wrap">
+                <p class="fw-bold">{{ comment.user }}</p>
+                <i class="comment--date">{{ comment.created_at }}</i>
+              </div>
+              <p>{{ comment.content }}</p>
+            </div>
+            <div class="comments__btn--list">
+              <div class="me-2" style="display:flex; align-self:center;">
+                <div class="ieum--button1">
+                  <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">수정</button>
+                </div>
+              </div>
+              <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                <input type="submit" value='삭제' class="ieum--button2">
+              </form>
+              <!-- Button trigger modal -->
+            </div>
+      
+              <!-- Modal -->
+              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{comment_form.as_p}}
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">수정하기</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+        </li>
+        <li>
+          <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
+            {% csrf_token %}
+            <div class="comment__create--list">
+              <div class="create--list__item1 comment__create--textarea--wrap">{{ comment_form.content }}</div>
+              <div class="create--list__item2">
+                <input type="submit" class="ieum--button1" value='등록'>
+              </div>
+            </div>
+          </form>
+        </li>
+      </ul>
+  </section>
 
 
-    {% endfor %}
+
+
+    
+    
+    
+    
+   
 
 
 
 
-<div id="map" style="width:350px;height:350px;"></div>
+
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
 <script>
