@@ -18,10 +18,10 @@
           <div class="">
             <div class="d-flex">
               <!-- 게시물 내용 -->
-              <div class="post--content--wrap me-4">
-                {{ post.content|safe }}
+              <div class="posts--img-wrap">
+                  {{ post.content|safe }}
               </div>
-              <div class="d-flex flex-column">
+              <div class="posts--content-wrap">
                 <!-- 카테고리 태그 -->
                 <div class="posts--category--tag mb-3">
                   카테고리 태그 자리
@@ -31,10 +31,43 @@
                 <!-- 게시물 작성한 시간? -->
                 <p style="color:#656565;">10분 전</p>
                 <div class="d-flex">
-                  <!-- 좋아요 버튼 -->
+                  {% comment %} <!-- 좋아요 버튼 -->
                   <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
                   <!-- 좋아요 수 -->
-                  <p id="like-cnt">0</p>
+                  <p id="like-cnt">0</p> {% endcomment %}
+
+                  <!-- 좋아요 버튼 -->
+                  {% comment %} <form class="like-forms" data-post-id="{{ post.pk }}">
+                    {% csrf_token %}
+                    {% if user in post.like_users.all %}
+                      <span class="me-2">
+                        <button class="like-btn" type="submit">
+                          <i class="bi bi-heart"></i>
+                        </button>
+                      </span>
+                    {% else %}
+                      <span class="me-2">
+                        <button class="like-btn" type="submit">
+                          <i class="bi bi-heart-fill"></i>
+                        </button>
+                      </span>
+                    {% endif %}
+                  </form>
+                  <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
+
+                  <form action="{% url 'posts:likes' post.pk %}" method="POST">
+                    {% csrf_token %}
+                    {% if user in post.like_users.all  %}
+                    <button class="border-0 bg-transparent" type="submit">
+                      <i class="bi bi-heart-fill"></i>
+                    </button>
+                    {% else %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        <i class="bi bi-heart"></i>
+                      </button>
+                    {% endif %}
+                  </form>
+                  <span>{{post.like_users.count}}</span>
                 </div>
               </div>
             </div>
@@ -69,5 +102,22 @@
 {% endblock content %}
 
 {% block script %}
+<!-- <script>
+  const children = document.querySelectorAll('.post--content--wrap > p > img');
+  let leftValue = 0;
+
+  
+  children.forEach((image, index) => {
+  let rotateValue;
+  if (index % 2 === 0) {
+    // 짝수 번째 이미지의 경우
+    rotateValue = -(Math.abs((index + 1) * 0.01));
+  } else {
+    // 홀수 번째 이미지의 경우
+    rotateValue = (index + 1) * 0.01;
+  }
+  image.style.transform = `rotate(${rotateValue}turn)`;
+  });
+</script> -->
   <script type="text/javascript" src="/static/posts/js/index.js"></script>
 {% endblock script %}
