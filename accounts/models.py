@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.conf import settings
 # Create your models here.
 class User(AbstractUser):
     SEOUL = '서울특별시청'
@@ -78,3 +78,17 @@ class User(AbstractUser):
 
     # reported = models.BooleanField(default=False)
     
+
+
+class Track(models.Model):
+    # id = models.CharField(max_length=100, primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100)
+    album = models.CharField(max_length=100)
+    image_url = models.URLField()
+    preview_url = models.URLField()
+    is_selected = models.BooleanField(default=False)  # 선택 여부를 나타내는 필드
+
+    def __str__(self):
+        return self.title
