@@ -16,6 +16,7 @@ def index(request):
     }
 
 
+
     return render(request, 'balances/index.html', context)
 
 def create(request):

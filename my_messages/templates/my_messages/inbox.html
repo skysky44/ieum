@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Inbox</h2>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li><a href="{% url 'my_messages:view_message' message.id %}">{{ message.sender }} - {{ message.timestamp }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No messages in your inbox.</p>
+  {% endif %}
+{% endblock %}

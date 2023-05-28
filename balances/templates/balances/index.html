@@ -2,6 +2,7 @@
 {% block content %}
 <h2>balances index</h2>
 <a href=""></a>
+
 {% for question in questions %}
   <div>
     <a href="{% url 'balances:detail' question.pk %}">
@@ -10,4 +11,5 @@
   </div>
   
 {% endfor %}
+
 {% endblock content %}
