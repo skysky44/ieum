@@ -20,4 +20,18 @@ def inbox(request):
 
 def view_message(request, message_id):
     message = get_object_or_404(Message, id=message_id, receiver=request.user)
-    return render(request, 'my_messages/view.html', {'message': message})
+    if request.method == 'POST':
+        form = ComposeMessageForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.sender = request.user
+            reply.receiver = message.sender
+            reply.save()
+            return redirect('my_messages:inbox')
+    else:
+        initial_data = {
+            'content': f"Re: {message.content}",
+            'receiver': message.sender,
+        }
+        form = ComposeMessageForm(initial=initial_data)
+    return render(request, 'my_messages/view.html', {'message': message, 'form': form})
