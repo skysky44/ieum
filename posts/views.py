@@ -1,18 +1,31 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm
 from .models import Post, Comment
 
 def home(request):
     return render(request, 'home.html')
 
-def index(request):
-    posts = Post.objects.all()
+# def index(request):
+#     posts = Post.objects.all()
     
-    context = {
-        'posts': posts
-    }
+#     context = {
+#         'posts': posts
+#     }
 
+#     return render(request, 'posts/index.html', context)
+
+
+def index(request):
+    posts = Post.objects.order_by('-pk')
+    page = request.GET.get('page', '1')
+    per_page = 5
+    paginator = Paginator(posts, per_page)
+    page_obj = paginator.get_page(page)
+    context = {
+        'posts': page_obj,
+    }
     return render(request, 'posts/index.html', context)
 
 
@@ -118,13 +131,28 @@ def delete(request,post_pk):
 
 
 # @login_required
+# def likes(request, post_pk):
+#     post = Post.objects.get(pk=post_pk)
+#     if post.like_users.filter(pk=request.user.pk).exists():
+#         post.like_users.remove(request.user)
+#     else:
+#         post.like_users.add(request.user)
+#     return redirect('posts:detail', post.pk)
+
+
 def likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
         post.like_users.remove(request.user)
     else:
         post.like_users.add(request.user)
-    return redirect('posts:detail', post.pk)
+
+    # 이전 페이지로 리디렉션
+    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    if referer:
+        return redirect(referer)
+    
+    return redirect('posts:index')
 
 
 

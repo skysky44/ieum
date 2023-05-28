@@ -5,6 +5,106 @@
     box-shadow: 1px 4px 2px 2px rgba(0, 0, 0, 0.25);
     padding: 1rem;
     margin: 1rem;
-  
-  
 }
+
+.detail--content p img {
+  display: block;
+  top: 100px;
+  left: 30px;
+  width: auto;
+  height: auto;
+  margin: 15px 0;
+  max-width: 60%;
+  max-height: 300px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+}
+
+.detail--tag {
+  box-sizing: border-box;
+  /* border: 1px solid black; */
+  background: #DEECA1;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.detail__map {
+  border-radius: 10px;
+}
+
+.comments__content--wrap {
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+.comments__user--wrap {
+  display: flex;
+}
+.comment--date {
+  font-size: 11px;
+  color: #555;
+  margin: 5px 0 0 5px;
+}
+.comments__btn--list {
+  display: flex;
+  flex-direction: ;
+}
+.comment__create--list {
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  width: 100%;
+  height: 50px;
+
+}
+.create--list__item1 {
+  height: 100%;
+}
+.create--list__item2 {
+  height: 50px;
+} 
+.comment__create--textarea--wrap textarea {
+  max-height: 50px;
+  width: 100%;
+}
+.create--list__item2 input {
+  height: 100%;
+  margin-left: 2px;
+}
+/* 버튼 디자인, 나중에 한 폴더에 모을 예정 */
+
+
+.ieum--button1 {
+    font-size: 12px;
+    border-radius: 5px;
+    border: none;
+    background-color: #FFF7D3;
+    padding: 0.1rem 0.5rem;
+    transition: background-color .30s ease-in-out;
+  }
+.ieum--button1:hover {
+  background-color: #ffe570;
+}
+.ieum--button2 {
+    font-size: 12px;
+    border:none;
+    border-radius: 5px;
+    background-color: #CE996A;
+    padding: 0.1rem 0.5rem;
+    transition: background-color .30s ease-in-out;
+}
+.ieum--button2:hover {
+  background-color: #cc7f3b;
+}
+
+.ieum--button--nobgc1 {
+  /* border-bottom: 1px solid #000; */
+
+}
+.ieum--button--nobgc1:hover {
+    
+}
+.ieum--button--nobgc2 {}
+

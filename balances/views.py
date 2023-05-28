@@ -1,50 +1,106 @@
-from django.shortcuts import render
+
 # from .models import 
 # Create your views here.
+from django.shortcuts import render, redirect
+from .models import Question, Result
+from .forms import QuestionForm
+from django.http import JsonResponse
+
 
 
 def index(request):
-
-    return render(request, 'balances/index.html')
-
-
-# def create(request):
-#     if request.method =='POST':
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             post = form.save(commit= False)
-#             post.user = request.user
-#             post.save()
-            
-#             for tag in tags:
-#                 post.tags.add(tag.strip())
-#             return redirect('posts:detail', post.pk)
+    questions = Question.objects.all()
         
-#     else:
-#         form = PostForm()
-#     context = {
-#         'form' : form,
-#         # 'image_form': image_form,
-#     }
-#     return render(request, 'posts/create.html', context)
+    context ={
+        'questions' : questions,
+    }
 
 
-# def detail(request, post_pk):
-#     post = Post.objects.get(pk=post_pk)
-#     comment_form = CommentForm()
-#     comments = post.comments.all()
-#     tags = post.tags.all()
-#     posts = Post.objects.all().order_by('like_users')
+
+    return render(request, 'balances/index.html', context)
+
+def create(request):
+    if request.method =='POST':
+        form = QuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            question = form.save(commit= False)
+            question.user = request.user
+            question.save()
+        return redirect('balances:index')
+    else:
+        form = QuestionForm()
+    context = {
+        'form' : form,
+    }
+    return render(request, 'balances/create.html', context)
+
+
+def detail(request, question_pk):
+    question = Question.objects.get(pk=question_pk)
     
-#     context ={
-#         'post' : post,
-#         'comment_form':comment_form,
-#         'comments' : comments,
-#         'tags' : tags,
-#         'posts' : posts,
-#     }
+    context ={
+        'question' : question,
+    }
 
-#     return render(request, 'posts/detail.html', context)
+    return render(request, 'balances/detail.html', context)
+
+
+# def answer(request, question_pk, select_answer):
+#     question = Question.objects.get(pk=question_pk)
+  
+    
+#     if request.method == 'POST':
+#         if select_answer == 1:
+#             pass
+#         elif select_answer == 2:
+#             pass
+#     return redirect('question:detail', question_pk )
+
+# def answer(request, question_pk, select_answer):
+#     question = Question.objects.get(pk=question_pk)
+#     user = request.user
+
+#     if request.method == 'POST':
+#         result, created = Result.objects.get_or_create(user=user)
+
+#         # Get the user's chosen results list
+#         chosen_results = result.chosen_result
+
+#         if isinstance(chosen_results, tuple):
+#             chosen_results = list(chosen_results)
+
+#         # Append the selected answer to the list
+            
+#             chosen_results.append(select_answer)
+
+#             # Update the chosen results list in the Result model
+#             result.chosen_result = chosen_results
+#             result.save()
+
+#     return redirect('balances:detail', question_pk)
+
+def answer(request, question_pk, select_answer):
+    question = Question.objects.get(pk=question_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        result, created = Result.objects.get_or_create(user=user)
+
+        # Get the user's chosen results dictionary
+        chosen_results = result.chosen_result
+
+        # Check if chosen_results is empty and initialize it as an empty dictionary if so
+        if not chosen_results:
+            chosen_results = {}
+
+        # Append the selected answer to the dictionary
+        chosen_results[str(question_pk)] = select_answer
+
+        # Update the chosen results dictionary in the Result model
+        result.chosen_result = chosen_results
+        result.save()
+
+    return redirect('balances:detail', question_pk)
 
 
 # # @login_required

@@ -74,7 +74,7 @@
                 <li>
                   <!-- 회원가입 -->
                   <div>
-                    <a href="{% url 'accounts:profile' user.pk %}">마이페이지</a>
+                    <a href="{% url 'accounts:profile' user.username %}">마이페이지</a>
                   </div>
                 </li>
               </ul>
@@ -85,6 +85,7 @@
     </header>
     <aside class="nori">
       <h1>떠든사람: 장민지</h1>
+
       <p>지우지마시오</p>
     </aside>
     <main class="base--item">

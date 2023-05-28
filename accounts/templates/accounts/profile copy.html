@@ -12,6 +12,7 @@
   <button type="submit">검색</button>
 </form>
 
+
 {% if tracks %}
   <ul>
     <form method="POST" action="{% url 'accounts:save_track' %}">
@@ -32,19 +33,7 @@
   </audio>
 {% endif %}
 
-{% for track in music %}
-  <li id="track-{{ forloop.counter }}">
-    <img style="width:50px;" src="{{ track.album.images.0.url }}" alt="{{ track.album.name }}">
-    <span>{{ track.name }}</span>
-    <a href="#" class="play-track" data-src="{{ track.preview_url }}">재생</a>
-    <input type="checkbox" name="selected_tracks[]" value="{{ track.id }}">
-    <button type="submit">저장</button>
-  </li>
-  </ul>
-    <audio id="audio-player" controls>
-    <source src="" type="audio/mp3">
-  </audio>
-{% endfor %}
+
 
 <script>
 

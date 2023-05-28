@@ -93,6 +93,7 @@ class CommentForm(forms.ModelForm):
         label='내용',
         widget=forms.Textarea(
             attrs={
+                'class': 'form-control',
                 'placeholder': '내용을 입력해주세요.',
             }
         )

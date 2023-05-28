@@ -18,6 +18,7 @@ header.base--item {
   background-color: #DEECA1;
   border-radius: 0 100px 0 100px;
   padding: 1rem 0;
+  z-index: 9999;
 }
 main.base--item {
   grid-area: main;
@@ -81,7 +82,7 @@ footer.base--item {
 
 .nori {
   position: fixed;
-  bottom: 6rem;
+  bottom: 1rem;
   right: 1rem;
   border-radius: 15px;
   background-color: #FFF7D3;
