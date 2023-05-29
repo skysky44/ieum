@@ -4,5 +4,13 @@
   <h2>Message Details</h2>
   <p><strong>From:</strong> {{ message.sender }}</p>
   <p><strong>Sent at:</strong> {{ message.timestamp }}</p>
+  <p><strong>Content:</strong> {{ message.content }}</p>
+  <hr>
+  <h3>Reply</h3>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send Reply</button>
+  </form>
   <p><a href="{% url 'my_messages:inbox' %}">Back to Inbox</a></p>
 {% endblock %}
