@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Compose Message</h2>
+  <h2>쪽지 작성하기</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Send</button>
+    <button type="submit">보내기</button>
   </form>
 {% endblock %}
