@@ -45,14 +45,16 @@
               {% endfor %}
             </div>
           </li>
-          <li>
+          <li class="d-flex">
             <div class="detail__btn--list">
               <div class="me-2" style="display:flex; align-self:center;">
-                <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                <button class="">
+                  <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                </button>
                 </div>
               </div>
               <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
-                <input type="submit" value='삭제' class="ieum--button--nobgc1">
+                <input type="submit" value='삭제' class="ieum--button--nobgc2">
               </form>
               <!-- Button trigger modal -->
             </div>
@@ -69,7 +71,7 @@
             <div>
               <div class="comments__user--wrap">
                 <p class="fw-bold">{{ comment.user }}</p>
-                <i class="comment--date">{{ comment.created_at }}</i>
+                <i class="comment--date">{{ comment.created_time }}</i>
               </div>
               <p>{{ comment.content }}</p>
             </div>

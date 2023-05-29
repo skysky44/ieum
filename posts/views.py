@@ -20,10 +20,12 @@ def home(request):
 def index(request):
     posts = Post.objects.order_by('-pk')
     page = request.GET.get('page', '1')
+    tags = Post.tags.all()
     per_page = 5
     paginator = Paginator(posts, per_page)
     page_obj = paginator.get_page(page)
     context = {
+        'tags': tags,
         'posts': page_obj,
     }
     return render(request, 'posts/index.html', context)

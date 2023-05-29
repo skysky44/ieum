@@ -50,7 +50,7 @@
 }
 .comments__btn--list {
   display: flex;
-  flex-direction: ;
+  /* flex-direction: ; */
 }
 .comment__create--list {
   display: grid;
@@ -101,10 +101,19 @@
 
 .ieum--button--nobgc1 {
   /* border-bottom: 1px solid #000; */
-
+  /* border: 1px solid; */
+  padding: 1px 6px;
+  background: #FFF7D3;
+  border-radius: 5px;
 }
 .ieum--button--nobgc1:hover {
-    
+  background-color: #ffe570;
 }
-.ieum--button--nobgc2 {}
-
+.ieum--button--nobgc2 {
+  border: none;
+  background: #CE996A;
+  border-radius: 5px;
+}
+.ieum--button--nobgc2:hover {
+  background-color: #cc7f3b;
+}
