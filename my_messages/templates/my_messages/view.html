@@ -1,16 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Message Details</h2>
-  <p><strong>From:</strong> {{ message.sender }}</p>
-  <p><strong>Sent at:</strong> {{ message.timestamp }}</p>
-  <p><strong>Content:</strong> {{ message.content }}</p>
+  <h2>메시지 상세</h2>
+  <p><strong>보낸 사람:</strong> {{ message.sender }}</p>
+  <p><strong>보낸 시간:</strong> {{ message.timestamp }}</p>
+  <p><strong>내용:</strong> {{ message.content }}</p>
   <hr>
-  <h3>Reply</h3>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send Reply</button>
-  </form>
-  <p><a href="{% url 'my_messages:inbox' %}">Back to Inbox</a></p>
+  {% if message.sender != request.user %}
+    <h3>답장</h3>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">답장 보내기</button>
+    </form>
+    <hr>
+  {% endif %}
+  <h3>작업</h3>
+  {% if message.sender == request.user %}
+    <form method="POST" action="{% url 'my_messages:delete_message' message.id %}">
+      {% csrf_token %}
+      <button type="submit" onclick="return confirm('이 메시지를 삭제하시겠습니까?')">메시지 삭제</button>
+    </form>
+  {% endif %}
+  {% if message.receiver == request.user and not message.is_read %}
+    <form method="POST" action="{% url 'my_messages:mark_as_read' message.id %}">
+      {% csrf_token %}
+      <button type="submit">읽음 표시</button>
+    </form>
+  {% endif %}
+  <p><a href="{% url 'my_messages:inbox' %}">수신함으로 돌아가기</a></p>
 {% endblock %}
