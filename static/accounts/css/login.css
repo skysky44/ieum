@@ -1,0 +1,16 @@
+.login--title {
+    display: flex;
+    justify-content: center;
+}
+
+.login--btn {
+    width: 350px;
+    height: 40px;
+    background: #DEECA1;
+    border: none;
+    border-radius: 5px;
+}
+
+.login--btn:hover {
+    background: #d6e492;
+}

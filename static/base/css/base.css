@@ -72,6 +72,12 @@ footer.base--item {
   background-color: rgba(239,239,239, .7);
   padding: 1rem 0;
 }
+.nav--list--text:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-color: #CE996A;
+  text-decoration-thickness: 2px;
+}
 
 .footer--container {
   background-color: #efefef;
