@@ -9,8 +9,10 @@ import requests
 from django.contrib import messages
 from .models import Track
 from pprint import pprint
+import os
+from django.conf import settings
 from django.http import HttpResponseBadRequest
-# from . import search_spotify
+from django.http import JsonResponse
 
 # Create your views here.
 def login(request):
@@ -88,44 +90,71 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', context)
 
 
-
 def profile(request, username):
     User = get_user_model()
     person = get_object_or_404(User, username=username)
-    music = Track.objects.all()
+    user_id = person.id
+
+    music = Track.objects.filter(user_id=user_id)
+
     if request.method == 'GET':
-        query = request.GET.get('q')  # GET 파라미터에서 'q' 값을 가져옵니다.
+        query = request.GET.get('q')
 
         if query:
-            tracks = search_spotify(query)  # 검색 기능 사용
+            tracks = search_spotify(query)
             context = {
                 'person': person,
                 'tracks': tracks,
-                'music' : music,
+                'music': music,
             }
             return render(request, 'accounts/profile.html', context)
 
     context = {
         'person': person,
-        'music' : music,
+        'music': music,
+        'username': username,
     }
     return render(request, 'accounts/profile.html', context)
 
 
 # def profile(request, username):
 #     User = get_user_model()
-#     person = User.objects.get(username=username)
+#     person = get_object_or_404(User, username=username)
+#     music = Track.objects.all()
+#     if request.method == 'GET':
+#         query = request.GET.get('q')  # GET 파라미터에서 'q' 값을 가져옵니다.
+
+#         if query:
+#             tracks = search_spotify(query)  # 검색 기능 사용
+#             context = {
+#                 'person': person,
+#                 'tracks': tracks,
+#                 'music' : music,
+#             }
+#             return render(request, 'accounts/profile.html', context)
+
 #     context = {
 #         'person': person,
+#         'music' : music,
 #     }
-#     return render(request, 'accounts/profile.html', context)    
-
-
-from pprint import pprint
-# music = []
+#     return render(request, 'accounts/profile.html', context)
 
 
 tracks = {}
+# def search_spotify(request):
+#     global tracks
+#     if request.method == 'GET':
+#         query = request.GET.get('q')
+
+#         if query:
+#             tracks = search(query)  # 검색 기능 사용
+#             context = {
+#                 'tracks': tracks,
+#             }
+#             return render(request, 'accounts/profile.html', context)
+#         return render(request, 'accounts/profile.html')
+from django.template.loader import render_to_string
+
 def search_spotify(request):
     global tracks
     if request.method == 'GET':
@@ -133,130 +162,86 @@ def search_spotify(request):
 
         if query:
             tracks = search(query)  # 검색 기능 사용
-            
-            # pprint(tracks)
-            # print("================================")
-            # music = tracks
-            # pprint(tracks)
-            # for m in tracks:
-            #     print("------------")
-            #     pprint(m)
-                # if "3q2987XcSbQpQIiLmD6z4T" == m['id']:
-                #         print("------------")
-                #         pprint(m)
-                # elif "4Htjh6MSRQoPhdz41Pb9PS" == m['album']['id']:
 
-            # for track in tracks:
-            #     Track.objects.create(
-            #         title=track['name'],
-            #         artist=track['artists'][0]['name'],
-            #         album=track['album']['name'],
-            #         image_url=track['album']['images'][0]['url'],
-            #         preview_url=track['preview_url']
-            #     )
             context = {
                 'tracks': tracks,
             }
-            return render(request, 'accounts/profile.html', context)
-        return render(request, 'accounts/profile.html')
+            return render(request, 'accounts/search_results.html', context)
 
+    return render(request, 'accounts/search_results.html')
 
-# 복붙
+from django.core.files.base import ContentFile
+import urllib.request
+import tempfile
 
 def save_track(request):
     global tracks
     if request.method == 'POST':
         selected_tracks = request.POST.getlist('selected_tracks[]')
-        # print(tracks)
-        # print(selected_tracks)
+
     music = Track.objects.filter(user_id=request.user.id)
-    if music is not None:
-        # if request.user == music.user_id:
+    if music.exists():
         music.delete()
-    
+
     for track_id in selected_tracks:
         for track in tracks:
             if track_id == track['id']:
-                Track.objects.create(
-                    title=track['name'],
-                    artist=track['artists'][0]['name'],
-                    album=track['album']['name'],
-                    image_url=track['album']['images'][0]['url'],
-                    preview_url=track['preview_url'],
-                    user = request.user
-                )
+                # 이미지 URL 가져오기
+                image_url = track['album']['images'][0]['url']
+
+                # 이미지 다운로드 및 저장
+                img_temp = tempfile.TemporaryFile()
+                img_temp.write(urllib.request.urlopen(image_url).read())
+                img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                # Track 객체 생성 및 저장
+                new_track = Track()
+                new_track.title = track['name']
+                new_track.artist = track['artists'][0]['name']
+                new_track.album = track['album']['name']
+                new_track.preview_url = track['preview_url']
+                new_track.user = request.user
+                new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
         return redirect('accounts:profile', username=request.user.username)
     else:
         return HttpResponseBadRequest("Invalid request method.")
-        # try:
-        #     track_id = int(track_id)
-        #     Track.objects.create(
-        #         title=track['name'],
-        #         artist=track['artists'][0]['name'],
-        #         album=track['album']['name'],
-        #         image_url=track['album']['images'][0]['url'],
-        #         preview_url=track['preview_url']
-        #     )
-        #     track = Track.objects.get(pk=track_id)
-        #     # print(track_id)
-        #     user_profile = request.user.profile
-        #     user_profile.saved_tracks.add(track)
-        # except (ValueError, Track.DoesNotExist):
-        #     # print('1')
-        #     pass
+
+def delete_track(request, track_pk):
+    music = Track.objects.get(pk=track_pk)
+    if request.user == music.user:
+        music.delete()
+    return redirect('accounts:profile',username=request.user.username)
 
 
 
+#     global tracks
+#     if request.method == 'POST':
+#         selected_tracks = request.POST.getlist('selected_tracks[]')
+#         # print(tracks)
+#         # print(selected_tracks)
+#     music = Track.objects.filter(user_id=request.user.id)
+#     if music is not None:
+#         # if request.user == music.user_id:
+#         music.delete()
+    
+#     for track_id in selected_tracks:
+#         for track in tracks:
+#             if track_id == track['id']:
+#                 Track.objects.create(
+#                     title=track['name'],
+#                     artist=track['artists'][0]['name'],
+#                     album=track['album']['name'],
+#                     image_url=track['album']['images'][0]['url'],
+#                     preview_url=track['preview_url'],
+#                     user = request.user
+#                 )
+#         return redirect('accounts:profile', username=request.user.username)
+#     else:
+#         return HttpResponseBadRequest("Invalid request method.")
 
-        # for track_id in selected_tracks:
-            # try:
-            # track = Track.objects.get(id=track_id)
-            # Track 모델에 저장
-            # saved_track = Track(
-            #     title=track.title,
-            #     artist=track.artist,
-            #     album=track.album,
-            #     image_url=track.image_url,
-            #     preview_url=track.preview_url
-            # )
-            # saved_track.save()
-            # except Track.DoesNotExist:
-            #     print('1')
-            #     pass
 
-# def search_spotify(request):
-#     if request.method == 'GET':
-#         query = request.GET.get('q')
 
-#         if query:
-#             tracks = search(query)  # 검색 기능 사용
-            # pprint(tracks)
-            # print("================================")
-            # music = tracks
-            # pprint(tracks)
-            # for m in tracks:
-            #     print("------------")
-            #     pprint(m)
-                # if "3q2987XcSbQpQIiLmD6z4T" == m['id']:
-                #         print("------------")
-                #         pprint(m)
-                # elif "4Htjh6MSRQoPhdz41Pb9PS" == m['album']['id']:
-        #     for track in tracks:
-        #         Track.objects.create(
-        #             title=track['name'],
-        #             artist=track['artists'][0]['name'],
-        #             album=track['album']['name'],
-        #             image_url=track['album']['images'][0]['url'],
-        #             preview_url=track['preview_url']
-        #         )
-        #     context = {
-        #         'tracks': tracks,
-        #     }
-        #     return render(request, 'accounts/profile.html', context)
-        # return render(request, 'accounts/profile.html')
-
-import os
-from django.conf import settings
 
 def search(query):
     CLIENT_ID = settings.CLIENT_ID
@@ -292,123 +277,14 @@ def search(query):
     tracks = search(query)
     return tracks
 
-# def search2(track_id):
-
-#     def get_access_token():
-#         token_url = 'https://accounts.spotify.com/api/token'
-#         auth = (client_id, client_secret)
-#         payload = {'grant_type': 'client_credentials'}
-#         response = requests.post(token_url, data=payload, auth=auth)
-
-#         if response.status_code == 200:
-#             token_data = response.json()
-#             access_token = token_data['access_token']
-#             return access_token
-#         else:
-#             raise Exception('Failed to retrieve access token from Spotify.')
-
-#     def search2(track_id):
-#         search_url = 'https://api.spotify.com/v1/search'
-#         headers = {'Authorization': f'Bearer {get_access_token()}'}
-#         params = {'q': f'track:{track_id}', 'type': 'track'}
-
-#         response = requests.get(search_url, headers=headers, params=params)
-
-#         if response.status_code == 200:
-#             search_results = response.json()
-#             tracks = search_results['tracks']['items']
-#             return tracks
-#         else:
-#             raise Exception('Failed to search tracks on Spotify.')
-
-#     tracks = search2(track_id)
-#     return tracks
-
 
 User = get_user_model()
 def set_profile_music(request, track_id):
-    # Get the currently logged-in user
     user = request.user
-
-    # Retrieve the user instance
     user_instance = get_object_or_404(User, username=user.username)
-
-    # Set the selected track as the profile music
     user_instance.profile_music = track_id
     user_instance.save()
 
-    # Display a success message
     messages.success(request, '프로필 뮤직이 설정되었습니다.')
 
-    # Redirect to the profile page
     return redirect('accounts:profile', username=user.username)
-
-
-# def save_track(request):
-#     # track_id를 사용하여 Track 모델에서 해당 음원을 가져옵니다.
-#     if request.method == 'POST':
-#         track_id = request.POST.get('track_id')
-#         track = Track.objects.get(pk=track_id)  # track_id를 사용하여 음원 객체를 가져옴
-
-
-#     # 현재 로그인된 사용자의 프로필에 음원을 저장합니다.
-#     user_profile = request.user.profile  # 사용자의 프로필 가져오기
-#     user_profile.saved_tracks.add(track)  # 음원을 저장하는 관계 필드에 추가
-
-#     # 프로필 페이지로 리디렉션합니다.
-#     return redirect('accounts:profile', username=request.user.username)
-
-
-
-# def save_track(request):
-#     if request.method == 'POST':
-#         selected_tracks = request.POST.getlist('selected_tracks[]')
-#         print(selected_tracks)
-        # for track_id in selected_tracks:
-            # try:
-            # track = Track.objects.get(id=track_id)
-            # Track 모델에 저장
-            # saved_track = Track(
-            #     title=track.title,
-            #     artist=track.artist,
-            #     album=track.album,
-            #     image_url=track.image_url,
-            #     preview_url=track.preview_url
-            # )
-            # saved_track.save()
-            # except Track.DoesNotExist:
-            #     print('1')
-            #     pass
-
-    #     return redirect('accounts:profile', username=request.user.username)
-    # else:
-    #     return HttpResponseBadRequest("Invalid request method.")
-    
-
-            # track_id = int(selected_tracks)
-        # # track_id = selected_tracks
-        # track = Track.objects.get(pk=track_id)
-        # print(track_id)
-        # user_profile = request.user.profile
-        # user_profile.saved_tracks.add(track)
-        
-        # print(music)
-        # print(selected_tracks)
-        # for track_id in selected_tracks:
-        #     try:
-        #         track_id = int(track_id)
-        #         # track = search2(track_id) 
-        #         # Track.objects.create(
-        #         #     title=track['name'],
-        #         #     artist=track['artists'][0]['name'],
-        #         #     album=track['album']['name'],
-        #         #     image_url=track['album']['images'][0]['url'],
-        #         #     preview_url=track['preview_url']
-        #         # )
-        #         track = Track.objects.get(pk=track_id)
-        #         # print(track_id)
-        #         user_profile = request.user.profile
-        #         user_profile.saved_tracks.add(track)
-        #     except (ValueError, Track.DoesNotExist):
-        #         # print('1')
-        #         pass

@@ -7,111 +7,64 @@
 {% block content %}
 <h2>{{ person.username }}님 안녕하세요</h2>
 
-<form method="GET" action="{% url 'accounts:search_spotify' %}">
-  <input type="text" name="q" placeholder="검색어를 입력하세요">
-  <button type="submit">검색</button>
-</form>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  프로필 음악 설정
+</button>
 
-{% if tracks %}
-  <ul>
-    <form method="POST" action="{% url 'accounts:save_track' %}">
-      {% csrf_token %}
-      {% for track in tracks %}
-        <li id="track-{{ forloop.counter }}">
-          <img style="width:50px;" src="{{ track.album.images.0.url }}" alt="{{ track.album.name }}">
-          <span>{{ track.name }}</span>
-          <a href="#" class="play-track" data-src="{{ track.preview_url }}">재생</a>
-          <input type="checkbox" name="selected_tracks[]" value="{{ track.id }}">
-          <button type="submit">저장</button>
-        </li>
-        {% endfor %}
-    </form>
-  </ul>
-  <audio id="audio-player" controls>
-    <source src="" type="audio/mp3">
-  </audio>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div><br><br><br><br></div>
+        <form id="search-form">
+          <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">
+          <button id="search-button" type="submit">검색</button>
+        </form>
+        <div id="search-results">
+        </div>
+        <audio id="audio-player" controls>
+          <source src="" type="audio/mp3">
+        </audio>
+        
+      </div>
+      <div class="modal-footer">
+        <div id="error-message" style="color: red;"></div>
+        <div>하나 이상의 음원을 선택해야 합니다.</div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% if not music %}
+  <div>프로필 음악을 설정해 주세요.</div>
+{% else %}
+  {% for track in music %}
+    <div id="track-{{ forloop.counter }}">
+      <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+      <span>{{ track.album }}</span>
+      <a href="#" class="play-track-profile" data-src="{{ track.preview_url }}">재생</a>
+      <a href="{% url 'accounts:delete_track' track.pk %}">삭제</a>
+    </div>
+  {% endfor %}
 {% endif %}
+<audio class="main-audio" controls>
+  <source src="" type="audio/mp3">
+</audio>
 
-{% for track in music %}
-  <li id="track-{{ forloop.counter }}">
-    <img style="width:50px;" src="{{ track.album.images.0.url }}" alt="{{ track.album.name }}">
-    <span>{{ track.name }}</span>
-    <a href="#" class="play-track" data-src="{{ track.preview_url }}">재생</a>
-    <input type="checkbox" name="selected_tracks[]" value="{{ track.id }}">
-    <button type="submit">저장</button>
-  </li>
-  </ul>
-    <audio id="audio-player" controls>
-    <source src="" type="audio/mp3">
-  </audio>
-{% endfor %}
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'accounts/js/profile_music_ajax.js' %}"></script>
+<script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
+<script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
 <script>
 
-  document.addEventListener('DOMContentLoaded', function() {
-    var audioPlayer = document.getElementById('audio-player');
-    var playLinks = document.querySelectorAll('.play-track');
-
-    playLinks.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        var audioSrc = this.getAttribute('data-src');
-        audioPlayer.setAttribute('src', audioSrc);
-        audioPlayer.play();
-
-        // 선택한 노래를 제외한 나머지 리스트 숨김
-        var selectedTrackId = this.parentNode.id;
-        var trackList = document.getElementsByTagName('li');
-        for (var i = 0; i < trackList.length; i++) {
-          if (trackList[i].id !== selectedTrackId) {
-            trackList[i].style.display = 'none';
-          }
-        }
-      });
-    });
-  });
-
-
-  document.addEventListener('DOMContentLoaded', function() {
-    // 오디오 플레이어 요소를 가져옵니다.
-    var audioPlayer = document.getElementById('audio-player');
-  
-    // "재생" 링크를 모두 가져옵니다.
-    var playLinks = document.querySelectorAll('.play-track');
-  
-    // 각 "재생" 링크에 클릭 이벤트 리스너를 추가합니다.
-    playLinks.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-  
-        // 오디오 소스 URL을 가져와서 오디오 플레이어에 설정합니다.
-        var audioSrc = this.getAttribute('data-src');
-        audioPlayer.setAttribute('src', audioSrc);
-  
-        // 볼륨을 반으로 설정합니다.
-        audioPlayer.volume = 0.5;
-  
-        // 오디오를 재생합니다.
-        audioPlayer.play();
-      });
-    });
-  });
-
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var saveButtons = document.querySelectorAll('.save-button');
-
-    saveButtons.forEach(function(button) {
-      button.addEventListener('click', function() {
-        var trackId = this.parentElement.getAttribute('data-track-id');
-        var form = document.querySelector('form[action="{% url 'accounts:save_track' %}"]');
-
-        form.setAttribute('action', form.getAttribute('action') + trackId);
-        form.submit();
-      });
-    });
-  });
 </script>
 {% endblock content %}
 {% block script %}

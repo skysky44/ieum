@@ -1,0 +1,21 @@
+{% load static %}
+<div id="search-results">
+  {% if tracks %}
+  <ul>
+    <form method="POST" action="{% url 'accounts:save_track' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for track in tracks %}
+        <li id="track-{{ forloop.counter }}" class="track-item">
+          <img style="width:50px;" src="{{ track.album.images.0.url }}" alt="{{ track.album.name }}">
+          <span>{{ track.name }}</span>
+          <a href="#" class="play-track" data-src="{{ track.preview_url }}">재생</a>
+          <input type="checkbox" name="selected_tracks[]" value="{{ track.id }}" onchange="checkSelectedCheckboxes(this)">
+        </li>
+      {% endfor %}
+      <button type="submit" class="save-button" disabled>저장</button>
+    </form>
+  </ul>
+  {% endif %}
+</div>
+
+<script src="{% static 'accounts/js/search_results.js' %}"></script>
