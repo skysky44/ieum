@@ -13,6 +13,7 @@ import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
+from posts.models import Post
 
 # Create your views here.
 def login(request):
@@ -94,7 +95,7 @@ def profile(request, username):
     User = get_user_model()
     person = get_object_or_404(User, username=username)
     user_id = person.id
-
+    post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
 
     if request.method == 'GET':
@@ -113,8 +114,22 @@ def profile(request, username):
         'person': person,
         'music': music,
         'username': username,
+        'post_count': post_count,
     }
     return render(request, 'accounts/profile.html', context)
+
+
+@login_required
+def follow(request, user_pk):
+    User = get_user_model()
+    person = User.objects.get(pk=user_pk)
+    if person != request.user:
+        if person.followers.filter(pk=request.user.pk).exists():
+            person.followers.remove(request.user)
+        else:
+            person.followers.add(request.user)
+            
+    return redirect('accounts:profile', person.username)
 
 
 # def profile(request, username):

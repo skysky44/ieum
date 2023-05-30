@@ -9,6 +9,7 @@ urlpatterns = [
     path("update/", views.update, name="update"),
     path("password/", views.change_password, name="change_password"),
     path("profile/<username>/", views.profile, name="profile"),
+    path('follow/<int:user_pk>/', views.follow, name='follow'),
     path('search/', views.search_spotify, name='search_spotify'),
     path('set_profile_music/<str:track_id>/', views.set_profile_music, name='set_profile_music'),
     path('save_track/', views.save_track, name='save_track'),
