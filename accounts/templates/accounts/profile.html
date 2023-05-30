@@ -7,6 +7,13 @@
 {% block content %}
 <h2>{{ person.username }}님 안녕하세요</h2>
 
+{% comment %} 유저 간 거리 {% endcomment %}
+
+
+<p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
+
+
+
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
   프로필 음악 설정
