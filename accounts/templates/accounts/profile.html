@@ -1,39 +1,190 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} {{ person.username }}님의 프로필 {% endblock title %}
-{% block style %}
-{% endblock style %}
+{% block title %} : {{ person.username }}님의 프로필 {% endblock title %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+{% endblock head %}
 {% block content %}
-<h2>{{ person.username }}님 안녕하세요</h2>
+<div class="d-flex justify-content-between mt-5 mx-5">
+  <div class="d-flex flex-column">
+    <!-- 프로필 사진 -->
+    <div class="profile--img--box">
+      <img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필사진">
+    </div>
+    <h3 class="d-flex justify-content-center mt-3"><strong>{{ person.username }}</strong></h3>
+
+    <div class="d-flex justify-content-center mt-3">
+      <!-- 팔로잉 & 팔로우 & 피드 -->
+      <div class="d-flex flex-column">
+        <strong class="me-4">팔로잉</strong>
+        <strong class="d-flex justify-content-center me-4"><a href="#" data-bs-toggle="modal" data-bs-target="#followingModal" style="text-decoration:none; color:black;">
+          {{ person.followings.all|length }}
+        </a></strong>
+      </div>
+      <div class="d-flex flex-column">
+        <strong class="me-4">팔로워</strong>
+        <strong class="d-flex justify-content-center me-4"><a href="#" data-bs-toggle="modal" data-bs-target="#followerModal" style="text-decoration:none; color:black;">
+          {{ person.followers.all|length }}
+        </a></strong>
+      </div>
+      <div class="d-flex flex-column">
+        <strong>피드</strong>
+        <strong class="d-flex justify-content-center">{{ post_count }}</strong>
+      </div>
+    </div>
+
+    <!-- 팔로잉 & 팔로우 버튼 -->
+    <div class="mt-3">
+      {% if not user.is_authenticated %}
+        <div><input type="submit" value="Follow" disabled="disabled"></div>
+      {% elif request.user != person %}
+        <div>
+          <form action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
+            {% csrf_token %}
+            {% if request.user in person.followers.all %}
+              <input type="submit" value="Unfollow" class="profile--follow--btn">
+            {% else %}
+              <input type="submit" value="Follow" class="profile--follow--btn">
+            {% endif %}
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  
+  <div class="d-flex flex-column">
+    <div class="d-flex justify-content-end mb-3">
+      <!-- 쪽지 -->
+      <a href="{% url 'my_messages:inbox' %}" class="me-4">
+        <i class="bi bi-envelope" style="font-size:1.8rem;"></i>
+      </a>
+      <!-- 프로필 설정 -->
+      <a href="{% url 'accounts:update' %}">
+        <i class="bi bi-gear" style="font-size:1.8rem;"></i>
+      </a>
+    </div>
+    <div class="text-end mb-3">
+      <!-- 취향 문장 -->
+      <p class="mb-1">내 취향을 나타내는 문장 1</p>
+      <p class="mb-1">내 취향을 나타내는 문장 2</p>
+      <p>내 취향을 나타내는 문장 3</p>
+    </div>
+    <!-- 워드 -->
+    <div class="d-flex justify-content-between">
+      <p class="profile--word"># 내 관심사</p>
+      <p class="profile--word"># 내 관심사</p>
+      <p class="profile--word"># 내 관심사</p>
+    </div>
+    <div class="profile--music--box mt-3">
+      <!-- Button trigger modal -->
+      <div class="d-flex justify-content-center mt-3">
+        <button type="button" class="profile--music--setting mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          프로필 음악 설정
+        </button>
+      </div>
+      {% if not music %}
+        <div class="text-center mb-3">프로필 음악을 설정해 주세요.</div>
+      {% else %}
+        {% for track in music %}
+          <div id="track-{{ forloop.counter }}" class="d-flex justify-content-between align-items-center mb-3">
+            <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+            <span>{{ track.album }}</span>
+            <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
+            <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2">삭제</a>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <audio class="main-audio" controls>
+        <source src="" type="audio/mp3">
+      </audio>
+    </div>
+  </div>
+</div>
+
 
 {% comment %} 유저 간 거리 {% endcomment %}
-
-
 <p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
-
 
 
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
   프로필 음악 설정
 </button>
+=======
+<!-- 팔로워 모달 -->
+<div class="modal fade" id="followerModal" tabindex="-1" aria-labelledby="followerModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="width:350px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 fw-bold" id="followerModalLabel" style="">팔로워</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color:whitesmoke;">
+        <ul class="mt-2 modal_list">
+          {% for follower in person.followers.all %}
+            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item">
+              <div class="profile--follow--img--box">
+                {% if follower.image %}
+                    <img src="{{ follower.image.url }}" class="profile--follow--img" alt="프로필 사진">
+                  {% else %}
+                    <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img" alt="기본 프로필 사진">
+                {% endif %}
+              </div>
+              <li><span>{{ follower }}</span></li>
+            </a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- Modal -->
+<!-- 팔로잉 모달 -->
+<div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="width:350px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 fw-bold" id="followingModalLabel" style="">팔로잉</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color:whitesmoke;">
+        <ul class="modal_list d-flex mt-2" style="display: flex;">
+          {% for following in person.followings.all %}
+          <a href="{% url 'accounts:profile' following %}" class="modal_list_item">
+            <div class="profile--follow--img--box">
+              {% if following.image %}
+                  <img src="{{ following.image.url }}" class="profile--follow--img" alt="프로필 사진">
+                {% else %}
+                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img" alt="기본 프로필 사진">
+              {% endif %}
+            </div>
+            <li><span>{{ following }}</span></li>
+          </a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 프로필 음악 모달 -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">프로필 음악</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <div><br><br><br><br></div>
-        <form id="search-form">
-          <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">
-          <button id="search-button" type="submit">검색</button>
+      <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-x: hidden; overflow-y: auto;">
+        {% comment %} <div><br><br><br><br></div> {% endcomment %}
+        <form id="search-form" class="d-flex mb-3">
+          <input id="search-input" class="form-control me-3" type="text" name="q" placeholder="검색어를 입력하세요" style="width:300px;">
+          <button id="search-button" class="profile--music--search--btn" type="submit">검색</button>
         </form>
-        <div id="search-results">
+        <div id="search-results" class="mb-3">
         </div>
         <audio id="audio-player" controls>
           <source src="" type="audio/mp3">
@@ -42,29 +193,14 @@
       </div>
       <div class="modal-footer">
         <div id="error-message" style="color: red;"></div>
-        <div>하나 이상의 음원을 선택해야 합니다.</div>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <div style="margin-right:120px;">하나 이상의 음원을 선택해야 합니다.</div>
+        <button type="button" class="profile--music--close--btn" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
 
-{% if not music %}
-  <div>프로필 음악을 설정해 주세요.</div>
-{% else %}
-  {% for track in music %}
-    <div id="track-{{ forloop.counter }}">
-      <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
-      <span>{{ track.album }}</span>
-      <a href="#" class="play-track-profile" data-src="{{ track.preview_url }}">재생</a>
-      <a href="{% url 'accounts:delete_track' track.pk %}">삭제</a>
-    </div>
-  {% endfor %}
-{% endif %}
-<audio class="main-audio" controls>
-  <source src="" type="audio/mp3">
-</audio>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'accounts/js/profile_music_ajax.js' %}"></script>
