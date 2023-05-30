@@ -39,6 +39,21 @@
             <input type="submit" value="삭제">
         </form>
         </li>
+        <li>
+            <form action="{% url 'paints:likes' paint.pk %}" method ='POST'>
+              {% csrf_token %}
+              {% if request.user in paint.like_users.all %}
+                <button type="submit" value="좋아요">
+                  <i class="" style=""></i>
+                </button>
+              {% else %}
+                  <button type="submit" value="좋아요 취소">
+                    <i class="" style=""></i>
+                  </button>
+              {% endif %}
+            </form>
+            <span>{{paint.like_users.count}}</span>
+        </li>
     </ul>
   {% endif %}
   <hr>

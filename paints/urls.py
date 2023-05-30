@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:paint_pk>/',views.detail, name='detail'),
     # path('<int:paints_pk>/update/', views.update , name='update'),
     path('<int:paint_pk>/delete/',views.delete, name='delete'),
+    path('<int:paint_pk>/likes/', views.likes, name='likes'),
 ]
