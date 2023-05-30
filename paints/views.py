@@ -39,3 +39,12 @@ def delete(request, paint_pk):
     if request.user == paint.user:
         paint.delete()
     return redirect('paints:index')
+
+def likes(request, paint_pk):
+    paint = paint.objects.get(pk=paint_pk)
+    if paint.like_users.filter(pk=request.user.pk).exists():
+        paint.like_users.remove(request.user)
+    else:
+        paint.like_users.add(request.user)
+
+    return redirect('paints:index')
