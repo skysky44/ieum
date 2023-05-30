@@ -3,24 +3,24 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 # Create your models here.
 class User(AbstractUser):
-    SEOUL = '서울특별시청'
-    INCHEON = '인천광역시청'
-    BUSAN = '부산광역시청'
-    ULSAN = '울산광역시청'
-    DAEGU = '대구광역시청'
-    GWANGJU = '광주광역시청'
-    DAEJEON = '대전광역시청'
-    JEJU = '제주특별자치도청'
-    GYEONGGI = '경기도청'
-    GANGWON = '강원도청'
-    CHUNGBUK = '충청북도청'
-    CHUNGNAM = '충청남도청'
-    JEONBUK = '전라북도청'
-    JEONNAM = '전라남도청'
-    GYEONGBUK = '경상북도청'
-    GYEONGNAM = '경상남도청'    
+    SEOUL = '서울특별시'
+    INCHEON = '인천광역시'
+    BUSAN = '부산광역시'
+    ULSAN = '울산광역시'
+    DAEGU = '대구광역시'
+    GWANGJU = '광주광역시'
+    DAEJEON = '대전광역시'
+    JEJU = '제주특별자치도'
+    GYEONGGI = '경기도'
+    GANGWON = '강원도'
+    CHUNGBUK = '충청북도'
+    CHUNGNAM = '충청남도'
+    JEONBUK = '전라북도'
+    JEONNAM = '전라남도'
+    GYEONGBUK = '경상북도'
+    GYEONGNAM = '경상남도'    
     REGION_CHOICES = [
-        (SEOUL, '서울특별시청'), (INCHEON, '인천광역시청'), (BUSAN, '부산광역시청'), (ULSAN, '울산광역시청'), (DAEGU, '대구광역시청'), (GWANGJU, '광주광역시청'), (DAEJEON, '대전광역시청'), (JEJU, '제주특별자치도청'), (GYEONGGI, '경기도청'), (GANGWON, '강원도청'), (CHUNGBUK, '충청북도청'), (CHUNGNAM, '충청남도청'), (JEONBUK, '전라북도청'), (JEONNAM, '전라남도청'), (GYEONGBUK, '경상북도청'),(GYEONGNAM, '경상남도청'),
+        (SEOUL, '서울특별시'), (INCHEON, '인천광역시'), (BUSAN, '부산광역시'), (ULSAN, '울산광역시'), (DAEGU, '대구광역시'), (GWANGJU, '광주광역시'), (DAEJEON, '대전광역시'), (JEJU, '제주특별자치도'), (GYEONGGI, '경기도'), (GANGWON, '강원도'), (CHUNGBUK, '충청북도'), (CHUNGNAM, '충청남도'), (JEONBUK, '전라북도'), (JEONNAM, '전라남도'), (GYEONGBUK, '경상북도'),(GYEONGNAM, '경상남도'),
     ]
     followings = models.ManyToManyField('self', related_name='followers', symmetrical=False)
     birthday = models.DateField(null=True, blank=True)

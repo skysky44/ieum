@@ -103,6 +103,16 @@
   </div>
 </div>
 
+
+{% comment %} 유저 간 거리 {% endcomment %}
+<p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  프로필 음악 설정
+</button>
+=======
 <!-- 팔로워 모달 -->
 <div class="modal fade" id="followerModal" tabindex="-1" aria-labelledby="followerModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="width:350px;">
@@ -158,6 +168,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- 프로필 음악 모달 -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
