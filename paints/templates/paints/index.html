@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}그림게시판{% endblock title %}
+
+{% block style %}
+.paints--container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.paints--list {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  border-radius: 10px;
+  background-color: #eee;
+  padding: 1rem;
+  margin: 1rem;
+}
+.paint--image {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 0.2rem;
+  margin: 0 0.5rem;
+}
+{% endblock style %}  
+
+{% block content %}
+<article>
+  <h1>그림 게시판</h1>
+  <a href="{% url 'paints:create' %}">그림 그리기</a>
+  <hr>
+  <section class="paints--container">
+    {% for paint in paints %}
+      {% if paint.image %}
+      <a href="{% url 'paints:detail' paint.pk %}">
+        <ul class="paints--list">
+          <li>{{ paint.user }}</li>
+          <li><img class="paint--image" src="{{ paint.image.url }}" alt="{{ paint.user }}의 그림"></li>
+          <li>
+            <form action="{% url 'paints:delete' paint.pk %}">
+              <input type="submit" value="삭제">
+            </form>
+          </li>
+        </ul>
+      </a>
+      {% endif %}
+    {% endfor %}
+  </section>
+</article>
+{% endblock content %}
+
+{% block script %}{% endblock script %}
+

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'balances',
     'posts',
     'my_messages',
+    'paints',
 
     'imagekit',
     'taggit',

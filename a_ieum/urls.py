@@ -32,6 +32,7 @@ urlpatterns = [
     path('balances/', include('balances.urls')),
     path('accounts/', include('accounts.urls')),
     path('my_messages/', include('my_messages.urls')),
+    path('paints/', include('paints.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('upload/', login_required(views_ckeditor.upload), name='ckeditor_upload'),
     path('browse/', never_cache(login_required(views_ckeditor.browse)), name='ckeditor_browse'),
