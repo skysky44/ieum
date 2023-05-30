@@ -208,7 +208,7 @@ def profile(request, username):
         'person': person,
         'music': music,
         'username': username,
-        'distance': distance
+        'distance': distance,
         'post_count': post_count,
 
     }
