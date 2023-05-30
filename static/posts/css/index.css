@@ -39,12 +39,12 @@
 
 .posts--img-wrap p img:nth-child(odd):not(:first-child) {
   transform: rotate(0.01turn);
-  z-index: 99;
+  z-index: 10;
 }
 
 .posts--img-wrap p img:nth-child(even):not(:first-child) {
   transform: rotate(-0.01turn);
-  z-index: 999;
+  z-index: 11;
 }
 
 
