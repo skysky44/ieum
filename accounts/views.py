@@ -42,15 +42,17 @@ def update(request):
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.save()
             return redirect('accounts:profile', request.user.username)
     else:
         form = CustomUserChangeForm(instance=request.user)
     context = {
-        'form':form,
+        'form': form,
     }
-    
+
     return render(request, 'accounts/update.html', context)
+
 
 
 def signup(request):
@@ -62,11 +64,11 @@ def signup(request):
         form = CustomUserCreationForm(request.POST, files=request.FILES)
         # print(form)
         if form.is_valid():
-            # form.save()
-            user = form.save()
+            user = form.save(commit=False)
+            user.save()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
-            return redirect('accounts:login')
+            return redirect('posts:index')
     else:
         form = CustomUserCreationForm()
         my_sentence = request.POST.getlist('tag')
