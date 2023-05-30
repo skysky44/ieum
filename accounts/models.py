@@ -86,9 +86,24 @@ class Track(models.Model):
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     album = models.CharField(max_length=100)
-    image_url = models.URLField()
     preview_url = models.URLField()
-    is_selected = models.BooleanField(default=False)  # 선택 여부를 나타내는 필드
+    is_selected = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='track_images')
 
     def __str__(self):
         return self.title
+    # is_selected = models.OneToOneField(
+    #     'self',
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     related_name='selected_by'
+    # )  # 선택 여부를 나타내는 필드
+
+    # def save(self, *args, **kwargs):
+    #     if self.is_selected and self.is_selected.user != self.user:
+    #         self.is_selected = None
+    #     super().save(*args, **kwargs)
+
+    # def __str__(self):
+    #     return self.title
