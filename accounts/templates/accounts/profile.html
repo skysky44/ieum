@@ -13,6 +13,9 @@
       <img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필사진">
     </div>
     <h3 class="d-flex justify-content-center mt-3"><strong>{{ person.username }}</strong></h3>
+    {% comment %} 유저 간 거리 {% endcomment %}
+    <p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
+
 
     <div class="d-flex justify-content-center mt-3">
       <!-- 팔로잉 & 팔로우 & 피드 -->
@@ -57,7 +60,7 @@
   <div class="d-flex flex-column">
     <div class="d-flex justify-content-end mb-3">
       <!-- 쪽지 -->
-      <a href="{% url 'my_messages:inbox' %}" class="me-4">
+      <a href="{% url 'my_messages:received_messages' %}" class="me-4">
         <i class="bi bi-envelope" style="font-size:1.8rem;"></i>
       </a>
       <!-- 프로필 설정 -->
@@ -104,8 +107,6 @@
 </div>
 
 
-{% comment %} 유저 간 거리 {% endcomment %}
-<p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
 
 
 <!-- Button trigger modal -->
