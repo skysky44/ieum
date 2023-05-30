@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}그림그리기{% endblock title %}
+
+{% block style %}
+canvas {
+    width: 400px;
+    height: 400px;
+    border:5px solid black;
+}
+
+.paint__create--container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.line--width--wrap {
+  background-color: #eee;
+  border-radius: 20px;
+  padding: 1px 10px;
+}
+#line-width {
+  margin-top: 6px;
+}
+.palette--wrap {
+  display:flex;
+}
+.color-option {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+#thisColor {
+    -webkit-appearance: none;
+    border-radius: 10px;
+    border: none;
+    width: 20px;
+    height: 20px;
+    background: none;
+}
+#thisColor::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+#thisColor::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+#colorList {
+  display: block;
+}
+.color--list {
+ display: flex;
+}
+.paint--button {
+  background-color: #eee;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+.paint--button:hover {
+  background-color: #ddd;
+  
+}
+{% endblock style %}  
+
+{% block content %}
+<article class="paint__create--container">
+  <h1>그림 그리기</h1>
+   
+  <section>
+    <canvas id="myCanvas"></canvas>
+  </section>
+  <section>
+    <div>
+      <div class="line--width--wrap">
+        <span>굵기선택</span>
+        <input id="line-width" type="range" min="1" max="10" value="5">
+      </div>
+      <button id="mode-btn" class="paint--button">그리기</button>
+    </div>
+    <div class="palette--wrap">
+      <div class="line--width--wrap">
+        <span>팔레트</span>
+        <input id="thisColor" type="color" class="this--color">
+      </div>
+      <button id="colorListBtn" class="paint--button">색상선택</button>
+      <div id="colorList">
+        <ul class="color--list">
+          <li class="color-option" style="background-color: #d63031;" data-color="#d63031"></li>
+          <li class="color-option" style="background-color: #fdcb6e;" data-color="#fdcb6e"></li>
+          <li class="color-option" style="background-color: #ffeaa7;" data-color="#ffeaa7"></li>
+          <li class="color-option" style="background-color: #a29bfe;" data-color="#a29bfe"></li>
+          <li class="color-option" style="background-color: #0984e3;" data-color="#0984e3"></li>
+          <li class="color-option" style="background-color: #6c5ce7;" data-color="#6c5ce7"></li>
+          <li class="color-option" style="background-color: #e84393;" data-color="#e84393"></li>
+          <li class="color-option" style="background-color: #2d3436;" data-color="#2d3436"></li>
+        </ul>
+      </div>
+    </div>
+    <button id="undoBtn" class="paint--button"> 실행 취소</button>
+  </section>
+  <section>
+    <button onclick="downloadImage()" class="paint--button">이미지 업로드</button>
+  </section>
+  <hr>
+  <a href="{% url 'paints:index' %}">그림 게시판으로 가기</a> 
+</article>
+
+<script>
+    const paint = document.getElementById("myCanvas");
+
+    // 
+    const modeBtn = document.getElementById("mode-btn")
+    const colorOptions = Array.from(
+        document.getElementsByClassName("color-option")
+    );
+    const thisColor = document.getElementById("thisColor");
+    const lineWidth = document.getElementById("line-width");
+    const canvas = document.querySelector("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 400;
+    canvas.height = 400;
+    ctx.lineWidth = lineWidth.value; 
+    let isPainting = false;
+    let isFilling = false;
+
+    function onMove(event) {
+        if(isPainting) {
+            ctx.lineTo(event.offsetX, event.offsetY);
+            ctx.stroke();
+            return;
+        }
+        ctx.moveTo(event.offsetX, event.offsetY);
+    }
+    
+    function startPainting() {
+        isPainting = true;
+    }
+    
+    function cancelPainting() {
+        isPainting = false;
+        ctx.beginPath();
+    }
+    
+    function onLineWidthChange(event) {
+        // console.log(event);
+        ctx.beginPath();
+        ctx.lineWidth = event.target.value;
+    }
+    
+    function onClolorChange(event) {
+        // console.log(event.target.value);
+        ctx.strokeStyle = event.target.value;
+        ctx.fillStyle = event.target.value;
+    
+    }
+    
+    function onColorClick(event) {
+        // console.dir(event.target.dataset.color);
+        const colorValue = event.target.dataset.color
+        ctx.strokeStyle = colorValue;
+        ctx.fillStyle = colorValue;
+        thisColor.value = colorValue
+    }
+    
+    function onModeClick() {
+        if(isFilling){
+            isFilling = false;
+            modeBtn.innerText = "그리기";
+        } else {
+            isFilling = true;
+            modeBtn.innerText = "배경색";
+        
+        }
+    }
+    
+    function onCanvasClick() {
+        if (isFilling) {
+            ctx.fillRect(0, 0, 400, 400);
+        }
+    }
+    
+    
+    canvas.addEventListener("mousemove", onMove);
+    canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mouseup", cancelPainting);
+    canvas.addEventListener("mouseleave", cancelPainting);
+    // document.addEventListener("mouseup", cancelPainting)
+    
+    canvas.addEventListener("click", onCanvasClick)
+    
+    lineWidth.addEventListener("change", onLineWidthChange);
+    thisColor.addEventListener("change", onClolorChange)
+    
+    
+    // console.log(colorOptions);
+    colorOptions.forEach(color => color.addEventListener("click",
+    onColorClick));
+    
+    modeBtn.addEventListener("click", onModeClick)
+
+    let canvasHistory = [canvas.toDataURL()]; // 그리기 이력을 저장하는 배열에 초기 canvas 상태를 추가
+    let step = 0; // 현재 그리기 위치를 추적
+    
+    function startPainting() {
+        isPainting = true;
+    }
+    
+    function cancelPainting() {
+        isPainting = false;
+        ctx.beginPath();
+        // 그리기가 끝나는 시점에 이력을 저장
+        step++;
+        if (step < canvasHistory.length) { 
+            canvasHistory.length = step; // 현재 단계 이후의 그리기 이력을 제거
+        }
+        canvasHistory.push(canvas.toDataURL()); // 그리기 이력에 현재 캔버스 상태를 추가
+    }
+    
+    // 실행 취소 기능
+    function undoLast() {
+        if (step > 0) {
+            step--;
+            let canvasPic = new Image();
+            canvasPic.src = canvasHistory[step];
+            canvasPic.onload = function () { 
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(canvasPic, 0, 0); 
+            }
+        }
+    }
+    
+    // 실행 취소 버튼 이벤트
+    const undoBtn = document.getElementById('undoBtn');
+    undoBtn.addEventListener('click', undoLast);
+
+
+
+    // color list toggle
+    document.getElementById("colorListBtn").addEventListener("click", function() {
+        let colorList = document.getElementById("colorList");
+        if (colorList.style.display === "none") {
+          colorList.style.display = "block";
+        } else {
+          colorList.style.display = "none";
+        }
+      });
+    
+    // 그림을 서버로 전송하는 함수
+    function downloadImage() {
+        // canvas의 이미지를 base64 형식으로 인코딩
+        const image = paint.toDataURL("image/png");
+    
+        // AJAX를 이용하여 서버에 이미지 데이터를 POST 방식으로 전송
+        $.ajax({
+            type: 'POST',
+            url: '/paints/create/',  // 서버의 URL을 입력
+            data: {
+                'image': image,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (response) {
+                alert("그림이 저장되었습니다~ >< ");
+            }
+        });
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock content %}
+
+{% block script %}{% endblock script %}
