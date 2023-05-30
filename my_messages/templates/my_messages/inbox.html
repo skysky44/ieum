@@ -23,8 +23,12 @@
       {% for message in sent_messages %}
         <li>
           <a href="{% url 'my_messages:view_message' message.id %}">{{ message.receiver }} - {{ message.timestamp }}</a>
-          {% if not message.receiver.is_read %}
-            - <a href="{% url 'my_messages:delete_message' message.id %}">삭제</a>
+          {% if message.receiver.is_read %}
+            - 수신 확인 완료
+          {% else %}
+            {% if not message.receiver.is_read %}
+              - <a href="{% url 'my_messages:delete_message' message.id %}">전송 취소</a>
+            {% endif %}
           {% endif %}
         </li>
       {% endfor %}
