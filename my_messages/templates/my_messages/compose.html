@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>쪽지 보내기</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">보내기</button>
+  </form>
+  
+  <a href="{% url 'my_messages:received_messages' %}">받은 쪽지함으로 돌아가기</a>
+{% endblock %}

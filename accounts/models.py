@@ -3,24 +3,24 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 # Create your models here.
 class User(AbstractUser):
-    SEOUL = '서울특별시청'
-    INCHEON = '인천광역시청'
-    BUSAN = '부산광역시청'
-    ULSAN = '울산광역시청'
-    DAEGU = '대구광역시청'
-    GWANGJU = '광주광역시청'
-    DAEJEON = '대전광역시청'
-    JEJU = '제주특별자치도청'
-    GYEONGGI = '경기도청'
-    GANGWON = '강원도청'
-    CHUNGBUK = '충청북도청'
-    CHUNGNAM = '충청남도청'
-    JEONBUK = '전라북도청'
-    JEONNAM = '전라남도청'
-    GYEONGBUK = '경상북도청'
-    GYEONGNAM = '경상남도청'    
+    SEOUL = '서울특별시'
+    INCHEON = '인천광역시'
+    BUSAN = '부산광역시'
+    ULSAN = '울산광역시'
+    DAEGU = '대구광역시'
+    GWANGJU = '광주광역시'
+    DAEJEON = '대전광역시'
+    JEJU = '제주특별자치도'
+    GYEONGGI = '경기도'
+    GANGWON = '강원도'
+    CHUNGBUK = '충청북도'
+    CHUNGNAM = '충청남도'
+    JEONBUK = '전라북도'
+    JEONNAM = '전라남도'
+    GYEONGBUK = '경상북도'
+    GYEONGNAM = '경상남도'    
     REGION_CHOICES = [
-        (SEOUL, '서울특별시청'), (INCHEON, '인천광역시청'), (BUSAN, '부산광역시청'), (ULSAN, '울산광역시청'), (DAEGU, '대구광역시청'), (GWANGJU, '광주광역시청'), (DAEJEON, '대전광역시청'), (JEJU, '제주특별자치도청'), (GYEONGGI, '경기도청'), (GANGWON, '강원도청'), (CHUNGBUK, '충청북도청'), (CHUNGNAM, '충청남도청'), (JEONBUK, '전라북도청'), (JEONNAM, '전라남도청'), (GYEONGBUK, '경상북도청'),(GYEONGNAM, '경상남도청'),
+        (SEOUL, '서울특별시'), (INCHEON, '인천광역시'), (BUSAN, '부산광역시'), (ULSAN, '울산광역시'), (DAEGU, '대구광역시'), (GWANGJU, '광주광역시'), (DAEJEON, '대전광역시'), (JEJU, '제주특별자치도'), (GYEONGGI, '경기도'), (GANGWON, '강원도'), (CHUNGBUK, '충청북도'), (CHUNGNAM, '충청남도'), (JEONBUK, '전라북도'), (JEONNAM, '전라남도'), (GYEONGBUK, '경상북도'),(GYEONGNAM, '경상남도'),
     ]
     followings = models.ManyToManyField('self', related_name='followers', symmetrical=False)
     birthday = models.DateField(null=True, blank=True)
@@ -29,6 +29,8 @@ class User(AbstractUser):
     region = models.CharField(max_length=10, choices=REGION_CHOICES, default=SEOUL)
     score = models.IntegerField(default=100)
     taste = models.CharField(max_length=2, default='N')
+    privacy = models.BooleanField(default=False)
+    pick = models.CharField(max_length=10, default=3)
 
     # SMALL = "특별함 보다 소소한 행복을 추구해요."
     # FUTURE = "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."
@@ -87,9 +89,24 @@ class Track(models.Model):
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     album = models.CharField(max_length=100)
-    image_url = models.URLField()
     preview_url = models.URLField()
-    is_selected = models.BooleanField(default=False)  # 선택 여부를 나타내는 필드
+    is_selected = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='track_images')
 
     def __str__(self):
         return self.title
+    # is_selected = models.OneToOneField(
+    #     'self',
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     related_name='selected_by'
+    # )  # 선택 여부를 나타내는 필드
+
+    # def save(self, *args, **kwargs):
+    #     if self.is_selected and self.is_selected.user != self.user:
+    #         self.is_selected = None
+    #     super().save(*args, **kwargs)
+
+    # def __str__(self):
+    #     return self.title

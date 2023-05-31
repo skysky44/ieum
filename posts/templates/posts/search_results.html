@@ -1,0 +1,22 @@
+{% load static %}
+<div id="search-results">
+  {% if tracks %}
+  <ul>
+    {% comment %} <form method="POST" action="{% url 'posts:create' %}" enctype="multipart/form-data"> {% endcomment %}
+      {% comment %} {% csrf_token %} {% endcomment %}
+      {% for track in tracks %}
+        <li id="track-{{ forloop.counter }}" class="track-item">
+          <img style="width:50px;" src="{{ track.album.images.0.url }}" alt="{{ track.album.name }}">
+          <span>{{ track.name }}</span>
+          <a href="#" class="play-track-create" data-src="{{ track.preview_url }}">재생</a>
+          <input type="checkbox" name="selected_tracks[]" value="{{ track.id }}" onchange="checkSelectedCheckboxes(this)">
+        </li>
+      {% endfor %}
+      {% comment %} <button type="submit" class="save-button" disabled>저장</button>
+    </form> {% endcomment %}
+  </ul>
+  {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'posts/js/search_results.js' %}"></script>

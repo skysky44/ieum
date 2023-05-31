@@ -14,6 +14,9 @@ urlpatterns = [
     path('<int:post_pk>/comments/<int:comment_pk>/comment_update/', views.comment_update, name='comment_update'),
     path('<int:post_pk>/comments/<int:comment_pk>/comment_delete/', views.comment_delete, name='comment_delete'),
     path('<int:post_pk>/comments/<int:comment_pk>/comment_likes/', views.comment_likes, name='comment_likes'),
+    path('search/', views.search_spotify, name='search_spotify'),
+    # path('save_track/', views.save_track, name='save_track'),
+    # path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
     
     # 저는 이만 밥먹으러 가겠습니다 -미영-
 ]

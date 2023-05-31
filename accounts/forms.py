@@ -86,6 +86,16 @@ class CustomUserCreationForm(UserCreationForm):
             }
         ),
     )
+
+    privacy = forms.BooleanField(
+        label="지역 공개 여부",
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'form-check-input',
+            }
+        ),
+    )
     # SENTENCE_CHOICES = [('특별함 보다 소소한 행복을 추구해요.', "특별함 보다 소소한 행복을 추구해요."),
     #     ('미래보다는 매 순간 최선을 다하는 것이 더 중요해요.', "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."),
     #     ('내가 좋아하는 걸로 삶을 채워가고 싶어요.', "내가 좋아하는 걸로 삶을 채워가고 싶어요."),
@@ -126,7 +136,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
         fields = ('username', 'first_name', 'birthday', 'email',
-                  'image', 'password1', 'password2', 'region',)
+                  'image', 'password1', 'password2', 'region', 'privacy')
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -148,21 +158,23 @@ class CustomUserChangeForm(UserChangeForm):
             }
         ),
     )
-    REGION_CHOICES = [
-        ('서울특별시청', '서울특별시청'), ('인천광역시청', '인천광역시청'), ('부산광역시청', '부산광역시청'),
-        ('울산광역시청', '울산광역시청'), ('대구광역시청', '대구광역시청'), ('광주광역시청', '광주광역시청'),
-        ('대전광역시청', '대전광역시청'), ('제주특별자치도청', '제주특별자치도청'), ('경기도청', '경기도청'),
-        ('강원도청', '강원도청'), ('충청북도청', '충청북도청'), ('충청남도청', '충청남도청'), ('전라북도청', '전라북도청'),
-        ('전라남도청', '전라남도청'), ('경상북도청', '경상북도청'), ('경상남도청', '경상남도청'),
-    ]
-
     region = forms.ChoiceField(
-        choices=REGION_CHOICES,
-        label=False,
+        choices=User.REGION_CHOICES,
+        label='지역',
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
 
+            }
+        ),
+    )
+
+    privacy = forms.BooleanField(
+        label="지역 공개 여부",
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'form-check-input',
             }
         ),
     )
@@ -192,7 +204,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
-        fields = ('email', 'first_name', 'region', 'birthday', 'image')
+        fields = ('email', 'first_name', 'region', 'privacy', 'birthday', 'image')
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -202,7 +214,7 @@ class CustomAuthenticationForm(AuthenticationForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '아이디',
-
+                'style':'width: 350px;',
             }
         ),
     )
@@ -212,6 +224,7 @@ class CustomAuthenticationForm(AuthenticationForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '비밀번호',
+                'style':'width: 350px;',
             }
         ),
     )

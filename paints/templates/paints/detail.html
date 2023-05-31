@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}그림게시판{% endblock title %}
+
+{% block style %}
+.paint--container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.paints--list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #efefef;
+  padding: 1rem;
+  margin: 1rem;
+}
+.paint--image {
+  width: 400px;
+  height: 400px;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 0.2rem;
+  margin: 0 0.5rem 0.5rem;
+}
+{% endblock style %}  
+
+{% block content %}
+<article class="paint--container">
+  <h1>{{ paint.user }} 님의 그림</h1>
+  {% if paint.image %}
+    <ul class="paints--list">
+        <li><img class="paint--image" src="{{ paint.image.url }}" alt="{{ paint.user }}의 그림"></li>
+        <li>
+        <form action="{% url 'paints:delete' paint.pk %}">
+            <input type="submit" value="삭제">
+        </form>
+        </li>
+        <li>
+            <form action="{% url 'paints:likes' paint.pk %}" method ='POST'>
+              {% csrf_token %}
+              {% if request.user in paint.like_users.all %}
+                <button type="submit" value="좋아요">
+                  <i class="" style=""></i>
+                </button>
+              {% else %}
+                  <button type="submit" value="좋아요 취소">
+                    <i class="" style=""></i>
+                  </button>
+              {% endif %}
+            </form>
+            <span>{{paint.like_users.count}}</span>
+        </li>
+    </ul>
+  {% endif %}
+  <hr>
+  <a href="{% url 'paints:index' %}">그림 게시판으로 가기</a> 
+</article>
+{% endblock content %}
+
+{% block script %}{% endblock script %}

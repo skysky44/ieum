@@ -2,6 +2,7 @@
 {% block content %}
 <a href="{% url 'balances:create' %}">밸런스 게임 만들기</a>
 <h2>balances index</h2>
+<a href=""></a>
 
 {% for question in questions %}
   <div>
@@ -10,4 +11,5 @@
     </a>
   </div>
 {% endfor %}
+
 {% endblock content %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>보낸 쪽지함</h2>
+  {% if sent_messages %}
+    <ul>
+      {% for message in sent_messages %}
+        <li>
+          <a href="{% url 'my_messages:view_message' message.id %}">{{ message.receiver }} - {{ message.timestamp }}</a>
+          {% if message.is_read %}
+            - 읽음
+          {% else %}
+            {% if not message.is_read %}
+              - <a href="{% url 'my_messages:delete_message' message.id %}">전송 취소</a>
+            {% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>보낸 쪽지함에 메시지가 없습니다.</p>
+  {% endif %}
+  
+  <a href="{% url 'my_messages:received_messages' %}">받은 쪽지함으로 가기</a>
+{% endblock %}

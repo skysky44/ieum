@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ message.sender }} - {{ message.timestamp }}</h2>
+  <p>{{ message.content }}</p>
+
+  <h3>답장하기</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">보내기</button>
+  </form>
+
+  <a href="{% url 'my_messages:received_messages' %}">받은 쪽지함으로 돌아가기</a>
+  <a href="{% url 'my_messages:sent_messages' %}">보낸 쪽지함으로 가기</a>
+  <a href="{% url 'my_messages:delete_message' message.id %}">삭제</a>
+{% endblock %}
