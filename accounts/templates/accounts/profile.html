@@ -15,13 +15,16 @@
     <h3 class="d-flex justify-content-center mt-3"><strong>{{ person.username }}</strong></h3>
 
     {% comment %} 유저 간 거리 {% endcomment %}
-    {% if person.privacy == 1 and user.privacy == 1 %}
-      <p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
-    {% elif person.privacy == user.privacy  %}
-      <p>나</p>
+    {% if person == user  %}
+    <p>나</p>
     {% else %}
-      <p>거리 비공개</p>
+      {% if person.privacy == 1 and user.privacy == 1 %}
+        <p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
+      {% else %}
+        <p>거리 비공개</p>
+      {% endif %}
     {% endif %}
+
 
 
     <div class="d-flex justify-content-center mt-3">
