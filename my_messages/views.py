@@ -12,7 +12,7 @@ def compose_message(request):
             message = form.save(commit=False)
             message.sender = request.user
             message.save()
-            return redirect('my_messages:inbox')
+            return redirect('my_messages:received_messages')
     else:
         form = ComposeMessageForm(user=request.user)
     return render(request, 'my_messages/compose.html', {'form': form})
@@ -56,13 +56,13 @@ def mark_as_read(request, message_id):
     if request.user == message.receiver:
         message.is_read = True
         message.save()
-    return redirect('my_messages:inbox')
+    return redirect('my_messages:received_messages')
 
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     if request.user == message.sender and not message.is_read:
         message.delete()
-    return redirect('my_messages:inbox')
+    return redirect('my_messages:received_messages')
 
 @login_required
 def delete_message(request, message_id):
