@@ -3,6 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm
 from .models import Post, Comment
+from .models import PostTrack
+import os
+from django.conf import settings
+from django.http import HttpResponseBadRequest
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+import urllib.request
+import tempfile
+import requests
 
 def home(request):
     return render(request, 'home.html')
@@ -56,31 +65,31 @@ def index(request):
 #         'image_form': image_form,
 #     }
 #     return render(request, 'posts/create.html', context)
-@login_required
-def create(request):
-    if request.method =='POST':
-        tags = request.POST.get('tags').split(',')
-        form = PostForm(request.POST)
-        # image_form = PostImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit= False)
-            post.user = request.user
-            post.save()
+# @login_required
+# def create(request):
+#     if request.method =='POST':
+#         tags = request.POST.get('tags').split(',')
+#         form = PostForm(request.POST)
+#         # image_form = PostImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             post = form.save(commit= False)
+#             post.user = request.user
+#             post.save()
             
-            # for image in request.FILES.getlist('image'): 
-            #     PostImage.objects.create(post=post, image=image)
+#             # for image in request.FILES.getlist('image'): 
+#             #     PostImage.objects.create(post=post, image=image)
 
-            for tag in tags:
-                post.tags.add(tag.strip())
-            return redirect('posts:detail', post.pk)
+#             for tag in tags:
+#                 post.tags.add(tag.strip())
+#             return redirect('posts:detail', post.pk)
         
-    else:
-        form = PostForm()
-    context = {
-        'form' : form,
-        # 'image_form': image_form,
-    }
-    return render(request, 'posts/create.html', context)
+#     else:
+#         form = PostForm()
+#     context = {
+#         'form' : form,
+#         # 'image_form': image_form,
+#     }
+#     return render(request, 'posts/create.html', context)
 
 
 def detail(request, post_pk):
@@ -208,5 +217,169 @@ def comment_likes(request, post_pk, comment_pk):
     return redirect('posts:detail', post_pk)
 
 
+tracks = {}
+from django.template.loader import render_to_string
+def search_spotify(request):
+    global tracks
+    if request.method == 'GET':
+        query = request.GET.get('q')
+
+        if query:
+            tracks = search(query)  # 검색 기능 사용
+
+            context = {
+                'tracks': tracks,
+            }
+            return render(request, 'posts/search_results.html', context)
+
+    return render(request, 'posts/create.html')
+
+
+def search(query):
+    CLIENT_ID = settings.CLIENT_ID
+    CLIENT_SECRET = settings.CLIENT_SECRET
+
+    def get_access_token():
+        token_url = 'https://accounts.spotify.com/api/token'
+        auth = (CLIENT_ID, CLIENT_SECRET)
+        payload = {'grant_type': 'client_credentials'}
+        response = requests.post(token_url, data=payload, auth=auth)
+
+        if response.status_code == 200:
+            token_data = response.json()
+            access_token = token_data['access_token']
+            return access_token
+        else:
+            raise Exception('Failed to retrieve access token from Spotify.')
+
+    def search(query):
+        search_url = 'https://api.spotify.com/v1/search'
+        headers = {'Authorization': f'Bearer {get_access_token()}'}
+        params = {'q': query, 'type': 'track'}
+
+        response = requests.get(search_url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            search_results = response.json()
+            tracks = search_results['tracks']['items']
+            return tracks
+        else:
+            raise Exception('Failed to search tracks on Spotify.')
+
+    tracks = search(query)
+    return tracks
+
+@login_required
+def create(request):
+    global tracks
+    selected_tracks = request.POST.getlist('selected_tracks[]')
+    music = PostTrack.objects.filter(user_id=request.user.id)
+
+    if request.method =='POST':
+        tags = request.POST.get('tags').split(',')
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit= False)
+            post.user = request.user
+            post.save()
+            for tag in tags:
+                post.tags.add(tag.strip())
+
+        if music.exists():
+            for track in music:
+                if request.user == track.user:
+                    if track.image:  
+                        image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                        if os.path.isfile(image_path):
+                            os.remove(image_path)
+                            track.delete()
+        
+    
+        for track_id in selected_tracks:
+            for track in tracks:
+                if track_id == track['id']:
+                    # 이미지 URL 가져오기
+                    image_url = track['album']['images'][0]['url']
+    
+                    # 이미지 다운로드 및 저장
+                    img_temp = tempfile.TemporaryFile()
+                    img_temp.write(urllib.request.urlopen(image_url).read())
+                    img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+    
+                    # Track 객체 생성 및 저장
+                    new_track = PostTrack()
+                    new_track.title = track['name']
+                    new_track.artist = track['artists'][0]['name']
+                    new_track.album = track['album']['name']
+                    new_track.preview_url = track['preview_url']
+                    new_track.user = request.user
+                    new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+            
+            return redirect('posts:create')
+    else:
+        form = PostForm()
+    context = {
+        'form' : form,
+    }
+    return render(request, 'posts/create.html', context)
+        # image_form = PostImageForm(request.POST, request.FILES)
+        
+            
+            # for image in request.FILES.getlist('image'): 
+            #     PostImage.objects.create(post=post, image=image)
+
+            
+        
+
+    
+
+# def save_track(request):
+#     global tracks
+#     if request.method == 'POST':
+#         selected_tracks = request.POST.getlist('selected_tracks[]')
+
+#     music = PostTrack.objects.filter(user_id=request.user.id)
+#     if music.exists():
+#         for track in music:
+#             if request.user == track.user:
+#                 if track.image:  
+#                     image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+#                     if os.path.isfile(image_path):
+#                         os.remove(image_path)
+#                 track.delete()
+
+#     for track_id in selected_tracks:
+#         for track in tracks:
+#             if track_id == track['id']:
+#                 # 이미지 URL 가져오기
+#                 image_url = track['album']['images'][0]['url']
+
+#                 # 이미지 다운로드 및 저장
+#                 img_temp = tempfile.TemporaryFile()
+#                 img_temp.write(urllib.request.urlopen(image_url).read())
+#                 img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+#                 # Track 객체 생성 및 저장
+#                 new_track = PostTrack()
+#                 new_track.title = track['name']
+#                 new_track.artist = track['artists'][0]['name']
+#                 new_track.album = track['album']['name']
+#                 new_track.preview_url = track['preview_url']
+#                 new_track.user = request.user
+#                 new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+#         return redirect('posts:create')
+#     else:
+#         return HttpResponseBadRequest("Invalid request method.")
+
+# def delete_track(request, track_pk):
+#     music = PostTrack.objects.get(pk=track_pk)
+#     if request.user == music.user:
+#         if music.image:  
+#             image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
+#             if os.path.isfile(image_path):
+#                 os.remove(image_path)
+#         music.delete()
+#     return redirect('posts:profile',username=request.user.username)
 
 

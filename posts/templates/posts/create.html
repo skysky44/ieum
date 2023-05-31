@@ -7,27 +7,46 @@
   
   <form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-      {{ form.media }}
-    <div class="">
+    {{ form.media }}
+    
+    <div>
       {{ form.category }}
     </div>
-    <div class="">
+    <div>
       {{ form.title }}
     </div>
-    {% comment %} <div class="">
+    {% comment %}
+    <div>
       {{ image_form }}
-    </div> {% endcomment %}
-    <div class="">
+    </div>
+    {% endcomment %}
+    <div>
       {{ form.address }}
     </div>
-    <div class="">
+    <div>
       {{ form.tags }}
     </div>
-    <div class=""> 
+    <div> 
       {{ form.content }}
     </div>
-{% comment %} 소담님❤️ {% endcomment %}
-    <div class="">
+    
+    <div>
+      <div>
+        <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">
+        <button id="search-button" type="button">검색</button>
+      </div>
+      
+      <div id="search-results">
+        {% include 'posts/search_results.html' %}
+      </div>
+      
+      <audio class="main-audio" controls>
+        <source src="" type="audio/mp3">
+      </audio>
+    </div>
+    
+
+    <div>
       <a href="{% url 'posts:index' %}" class="">취소</a>
       <button class="" type="submit">등록</button>
     </div>
@@ -37,11 +56,12 @@
   </div>
 
 
-<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
-<script>
-  ClassicEditor.create( document.querySelector( '#editor' ), {
-    language: "ko"
-  } );
+
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'posts/js/create_music_ajax.js' %}"></script>
+  <script>
+
 </script>
 {% endblock content %}
