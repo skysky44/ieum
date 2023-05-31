@@ -101,3 +101,16 @@ class CommentReport(models.Model):
     title = models.CharField(max_length=30)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now = True)
+
+
+class PostTrack(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100)
+    album = models.CharField(max_length=100)
+    preview_url = models.URLField()
+    is_selected = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='track_images')
+
+    def __str__(self):
+        return self.title
