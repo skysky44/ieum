@@ -8,13 +8,13 @@ from django.contrib.auth import get_user_model
 import requests
 from django.contrib import messages
 from .models import Track
+from pprint import pprint
 import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
-from django.core.files.base import ContentFile
-import urllib.request
-import tempfile
+from posts.models import Post
+
 
 # Create your views here.
 def login(request):
@@ -42,15 +42,17 @@ def update(request):
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.save()
             return redirect('accounts:profile', request.user.username)
     else:
         form = CustomUserChangeForm(instance=request.user)
     context = {
-        'form':form,
+        'form': form,
     }
-    
+
     return render(request, 'accounts/update.html', context)
+
 
 
 def signup(request):
@@ -62,11 +64,11 @@ def signup(request):
         form = CustomUserCreationForm(request.POST, files=request.FILES)
         # print(form)
         if form.is_valid():
-            # form.save()
-            user = form.save()
+            user = form.save(commit=False)
+            user.save()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
-            return redirect('accounts:login')
+            return redirect('posts:index')
     else:
         form = CustomUserCreationForm()
         my_sentence = request.POST.getlist('tag')
@@ -92,11 +94,98 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', context)
 
 
+
+
+# 거리 계산 api
+import math
+import requests
+
+def haversine_distance(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = math.sin(dlat/2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    r = 6371  # 지구의 반지름 (단위: km)
+
+    distance = r * c
+    distance = int(distance * 10) / 10  # 소수점 첫 번째 자리까지 버림
+    return distance
+
+
+def calculate_distance(address1, address2):
+    url = 'https://dapi.kakao.com/v2/local/search/address.json'
+    headers = {
+        'Authorization': 'KakaoAK ' + settings.KAKAO_API_KEY
+    }
+    
+    params = {
+        'query': address1
+    }
+    response = requests.get(url, headers=headers, params=params)
+    result1 = response.json()
+
+    params = {
+        'query': address2
+    }
+    response = requests.get(url, headers=headers, params=params)
+    result2 = response.json()
+
+    if 'documents' in result1 and result1['documents']:
+        point1 = result1['documents'][0]['address']
+    else:
+        # 주소 검색 결과가 없는 경우 처리
+        point1 = {
+            'x': '126.97843',
+            'y': '37.56668',
+            'address_name': '서울특별시 중구 서소문동 37-9'
+        }
+
+    if 'documents' in result2 and result2['documents']:
+        point2 = result2['documents'][0]['address']
+    else:
+        # 주소 검색 결과가 없는 경우 처리
+        point2 = {
+            'x': '126.97843',
+            'y': '37.56668',
+            'address_name': '서울특별시 중구 서소문동 37-9'
+        }
+    
+    url = 'https://dapi.kakao.com/v2/local/geo/transcoord.json'
+    params = {
+        'x': point1['x'],
+        'y': point1['y'],
+        'output_coord': 'WGS84'
+    }
+    response = requests.get(url, headers=headers, params=params)
+    result1 = response.json()
+
+    params = {
+        'x': point2['x'],
+        'y': point2['y'],
+        'output_coord': 'WGS84'
+    }
+    response = requests.get(url, headers=headers, params=params)
+    result2 = response.json()
+
+    if 'documents' in result1 and result1['documents'] and 'documents' in result2 and result2['documents']:
+        distance = haversine_distance(result1['documents'][0]['x'], result1['documents'][0]['y'], result2['documents'][0]['x'], result2['documents'][0]['y'])
+    else:
+        # 유효한 좌표를 가져오지 못한 경우, 기본 거리를 0으로 설정
+        distance = 0
+    print(distance)
+
+    return distance
+
+
+
 def profile(request, username):
     User = get_user_model()
     person = get_object_or_404(User, username=username)
     user_id = person.id
-
+    post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
 
     if request.method == 'GET':
@@ -111,15 +200,73 @@ def profile(request, username):
             }
             return render(request, 'accounts/profile.html', context)
 
+    if request.user.is_authenticated:
+        current_user = request.user
+        distance = calculate_distance(person.region, current_user.region)
+    else:
+        distance = None
+        
     context = {
         'person': person,
         'music': music,
         'username': username,
+        'distance': distance,
+        'post_count': post_count,
+
     }
     return render(request, 'accounts/profile.html', context)
 
 
+@login_required
+def follow(request, user_pk):
+    User = get_user_model()
+    person = User.objects.get(pk=user_pk)
+    if person != request.user:
+        if person.followers.filter(pk=request.user.pk).exists():
+            person.followers.remove(request.user)
+        else:
+            person.followers.add(request.user)
+            
+    return redirect('accounts:profile', person.username)
+
+
+# def profile(request, username):
+#     User = get_user_model()
+#     person = get_object_or_404(User, username=username)
+#     music = Track.objects.all()
+#     if request.method == 'GET':
+#         query = request.GET.get('q')  # GET 파라미터에서 'q' 값을 가져옵니다.
+
+#         if query:
+#             tracks = search_spotify(query)  # 검색 기능 사용
+#             context = {
+#                 'person': person,
+#                 'tracks': tracks,
+#                 'music' : music,
+#             }
+#             return render(request, 'accounts/profile.html', context)
+
+#     context = {
+#         'person': person,
+#         'music' : music,
+#     }
+#     return render(request, 'accounts/profile.html', context)
+
+
 tracks = {}
+# def search_spotify(request):
+#     global tracks
+#     if request.method == 'GET':
+#         query = request.GET.get('q')
+
+#         if query:
+#             tracks = search(query)  # 검색 기능 사용
+#             context = {
+#                 'tracks': tracks,
+#             }
+#             return render(request, 'accounts/profile.html', context)
+#         return render(request, 'accounts/profile.html')
+from django.template.loader import render_to_string
 
 def search_spotify(request):
     global tracks
@@ -136,7 +283,9 @@ def search_spotify(request):
 
     return render(request, 'accounts/search_results.html')
 
-
+from django.core.files.base import ContentFile
+import urllib.request
+import tempfile
 
 def save_track(request):
     global tracks
@@ -145,13 +294,7 @@ def save_track(request):
 
     music = Track.objects.filter(user_id=request.user.id)
     if music.exists():
-        for track in music:
-            if request.user == track.user:
-                if track.image:  
-                    image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-                    if os.path.isfile(image_path):
-                        os.remove(image_path)
-                track.delete()
+        music.delete()
 
     for track_id in selected_tracks:
         for track in tracks:
@@ -180,12 +323,36 @@ def save_track(request):
 def delete_track(request, track_pk):
     music = Track.objects.get(pk=track_pk)
     if request.user == music.user:
-        if music.image:  
-            image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
-            if os.path.isfile(image_path):
-                os.remove(image_path)
         music.delete()
     return redirect('accounts:profile',username=request.user.username)
+
+
+
+#     global tracks
+#     if request.method == 'POST':
+#         selected_tracks = request.POST.getlist('selected_tracks[]')
+#         # print(tracks)
+#         # print(selected_tracks)
+#     music = Track.objects.filter(user_id=request.user.id)
+#     if music is not None:
+#         # if request.user == music.user_id:
+#         music.delete()
+    
+#     for track_id in selected_tracks:
+#         for track in tracks:
+#             if track_id == track['id']:
+#                 Track.objects.create(
+#                     title=track['name'],
+#                     artist=track['artists'][0]['name'],
+#                     album=track['album']['name'],
+#                     image_url=track['album']['images'][0]['url'],
+#                     preview_url=track['preview_url'],
+#                     user = request.user
+#                 )
+#         return redirect('accounts:profile', username=request.user.username)
+#     else:
+#         return HttpResponseBadRequest("Invalid request method.")
+
 
 
 
@@ -234,3 +401,5 @@ def set_profile_music(request, track_id):
     messages.success(request, '프로필 뮤직이 설정되었습니다.')
 
     return redirect('accounts:profile', username=user.username)
+
+
