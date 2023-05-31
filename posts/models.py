@@ -104,13 +104,14 @@ class CommentReport(models.Model):
 
 
 class PostTrack(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='posts')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     album = models.CharField(max_length=100)
     preview_url = models.URLField()
     is_selected = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='track_images')
+    image = models.ImageField(upload_to='post_track_images')
 
     def __str__(self):
         return self.title

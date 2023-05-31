@@ -16,16 +16,6 @@ import requests
 def home(request):
     return render(request, 'home.html')
 
-# def index(request):
-#     posts = Post.objects.all()
-    
-#     context = {
-#         'posts': posts
-#     }
-
-#     return render(request, 'posts/index.html', context)
-
-
 def index(request):
     posts = Post.objects.order_by('-pk')
     page = request.GET.get('page', '1')
@@ -40,56 +30,64 @@ def index(request):
     return render(request, 'posts/index.html', context)
 
 
+@login_required
+def create(request):
+    global tracks
+    selected_tracks = request.POST.getlist('selected_tracks[]')
+    music = PostTrack.objects.filter(user_id=request.user.id)
+    
+    if request.method =='POST':
+        tags = request.POST.get('tags').split(',')
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit= False)
+            post.user = request.user
+            post.save()
+            for tag in tags:
+                post.tags.add(tag.strip())
+                
+        if not selected_tracks:
+            return redirect('posts:index')
+        else:
+            if music.exists():
+                for track in music:
+                    if request.user == track.user:
+                        if track.image:  
+                            image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                            if os.path.isfile(image_path):
+                                os.remove(image_path)
 
 
-# def create(request):
-#     if request.method =='POST':
-#         tags = request.POST.get('tags').split(',')
-#         form = PostForm(request.POST, request.FILES)
-#         image_form = PostImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             post = form.save(commit= False)
-#             post.user = request.user
-#             post.save()
-#             for tag in tags:
-#                 post.tags.add(tag.strip())
-#             for image in request.FILES.getlist('image'): 
-#                 PostImage.objects.create(post=post, image=image)
-#             return redirect('posts:detail', post.pk)
-        
-#     else:
-#         form = PostForm()
-#         image_form = PostImageForm()
-#     context = {
-#         'form' : form,
-#         'image_form': image_form,
-#     }
-#     return render(request, 'posts/create.html', context)
-# @login_required
-# def create(request):
-#     if request.method =='POST':
-#         tags = request.POST.get('tags').split(',')
-#         form = PostForm(request.POST)
-#         # image_form = PostImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             post = form.save(commit= False)
-#             post.user = request.user
-#             post.save()
-            
-#             # for image in request.FILES.getlist('image'): 
-#             #     PostImage.objects.create(post=post, image=image)
+            for track_id in selected_tracks:
+                for track in tracks:
+                    if track_id == track['id']:
+                        # 이미지 URL 가져오기
+                        image_url = track['album']['images'][0]['url']
 
-#             for tag in tags:
-#                 post.tags.add(tag.strip())
-#             return redirect('posts:detail', post.pk)
-        
-#     else:
-#         form = PostForm()
-#     context = {
-#         'form' : form,
-#         # 'image_form': image_form,
-#     }
-#     return render(request, 'posts/create.html', context)
+                        # 이미지 다운로드 및 저장
+                        img_temp = tempfile.TemporaryFile()
+                        img_temp.write(urllib.request.urlopen(image_url).read())
+                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                        # Track 객체 생성 및 저장
+                        new_track = PostTrack()
+                        new_track.post = post
+                        new_track.title = track['name']
+                        new_track.artist = track['artists'][0]['name']
+                        new_track.album = track['album']['name']
+                        new_track.preview_url = track['preview_url']
+                        new_track.user = request.user
+                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+                return redirect('posts:index')
+    else:
+        form = PostForm()
+    context = {
+        'form' : form,
+    }
+    return render(request, 'posts/create.html', context)
+
+
 
 
 def detail(request, post_pk):
@@ -98,13 +96,14 @@ def detail(request, post_pk):
     comments = post.comments.all()
     tags = post.tags.all()
     posts = Post.objects.all().order_by('like_users')
-    
+    music = PostTrack.objects.filter(post=post_pk)
     context ={
         'post' : post,
         'comment_form':comment_form,
         'comments' : comments,
         'tags' : tags,
         'posts' : posts,
+        'music' : music,
     }
 
     return render(request, 'posts/detail.html', context)
@@ -140,15 +139,6 @@ def delete(request,post_pk):
         post.delete()
     return redirect('posts:index')
 
-
-# @login_required
-# def likes(request, post_pk):
-#     post = Post.objects.get(pk=post_pk)
-#     if post.like_users.filter(pk=request.user.pk).exists():
-#         post.like_users.remove(request.user)
-#     else:
-#         post.like_users.add(request.user)
-#     return redirect('posts:detail', post.pk)
 
 
 def likes(request, post_pk):
@@ -268,118 +258,4 @@ def search(query):
 
     tracks = search(query)
     return tracks
-
-@login_required
-def create(request):
-    global tracks
-    selected_tracks = request.POST.getlist('selected_tracks[]')
-    music = PostTrack.objects.filter(user_id=request.user.id)
-
-    if request.method =='POST':
-        tags = request.POST.get('tags').split(',')
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit= False)
-            post.user = request.user
-            post.save()
-            for tag in tags:
-                post.tags.add(tag.strip())
-
-        if music.exists():
-            for track in music:
-                if request.user == track.user:
-                    if track.image:  
-                        image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-                        if os.path.isfile(image_path):
-                            os.remove(image_path)
-                            track.delete()
-        
-    
-        for track_id in selected_tracks:
-            for track in tracks:
-                if track_id == track['id']:
-                    # 이미지 URL 가져오기
-                    image_url = track['album']['images'][0]['url']
-    
-                    # 이미지 다운로드 및 저장
-                    img_temp = tempfile.TemporaryFile()
-                    img_temp.write(urllib.request.urlopen(image_url).read())
-                    img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
-    
-                    # Track 객체 생성 및 저장
-                    new_track = PostTrack()
-                    new_track.title = track['name']
-                    new_track.artist = track['artists'][0]['name']
-                    new_track.album = track['album']['name']
-                    new_track.preview_url = track['preview_url']
-                    new_track.user = request.user
-                    new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
-            
-            return redirect('posts:create')
-    else:
-        form = PostForm()
-    context = {
-        'form' : form,
-    }
-    return render(request, 'posts/create.html', context)
-        # image_form = PostImageForm(request.POST, request.FILES)
-        
-            
-            # for image in request.FILES.getlist('image'): 
-            #     PostImage.objects.create(post=post, image=image)
-
-            
-        
-
-    
-
-# def save_track(request):
-#     global tracks
-#     if request.method == 'POST':
-#         selected_tracks = request.POST.getlist('selected_tracks[]')
-
-#     music = PostTrack.objects.filter(user_id=request.user.id)
-#     if music.exists():
-#         for track in music:
-#             if request.user == track.user:
-#                 if track.image:  
-#                     image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-#                     if os.path.isfile(image_path):
-#                         os.remove(image_path)
-#                 track.delete()
-
-#     for track_id in selected_tracks:
-#         for track in tracks:
-#             if track_id == track['id']:
-#                 # 이미지 URL 가져오기
-#                 image_url = track['album']['images'][0]['url']
-
-#                 # 이미지 다운로드 및 저장
-#                 img_temp = tempfile.TemporaryFile()
-#                 img_temp.write(urllib.request.urlopen(image_url).read())
-#                 img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
-
-#                 # Track 객체 생성 및 저장
-#                 new_track = PostTrack()
-#                 new_track.title = track['name']
-#                 new_track.artist = track['artists'][0]['name']
-#                 new_track.album = track['album']['name']
-#                 new_track.preview_url = track['preview_url']
-#                 new_track.user = request.user
-#                 new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
-
-#         return redirect('posts:create')
-#     else:
-#         return HttpResponseBadRequest("Invalid request method.")
-
-# def delete_track(request, track_pk):
-#     music = PostTrack.objects.get(pk=track_pk)
-#     if request.user == music.user:
-#         if music.image:  
-#             image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
-#             if os.path.isfile(image_path):
-#                 os.remove(image_path)
-#         music.delete()
-#     return redirect('posts:profile',username=request.user.username)
-
 

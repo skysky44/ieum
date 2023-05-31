@@ -114,6 +114,16 @@
               </div>
           </div>
           {% endfor %}
+          {% for track in music %}
+          <div id="music-track">
+            <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+            <span>{{ track.album }}</span>
+            <a href="#" class="play-music-profile" data-src="{{ track.preview_url }}">재생</a>
+          </div>
+          {% endfor %}
+          <audio class="music-audio" controls>
+            <source src="" type="audio/mp3">
+          </audio>
         </li>
         <li>
           <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
@@ -144,6 +154,8 @@
 
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'posts/js/detail_music.js' %}"></script>
 <script>
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = {
@@ -181,5 +193,6 @@ geocoder.addressSearch( "{{ post.address }}", function(result, status) {
         map.setCenter(coords);
     } 
 });    
+
 </script>
 {% endblock content %}
