@@ -8,38 +8,89 @@
 
 {% block content %}
 <h2>밸런스게임 detail</h2>
+<a href="{% url 'posts:index' %}">이동</a>
 <h3>
   {{question.title}}
 </h3>
 
 {% comment %} 1번 답 {% endcomment %}
-<form action = "{% url 'balances:answer' question.id 1 %}" method="POST" enctype="multipart/form-data">
+<form id="form1" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
   {% csrf_token %}
-<div>
-  {{ question.content1 }}
-</div>
-<div>
-  <input type="submit" value="{{ question.content1 }}">
-</div>
+  <div>
+    {{ question.content1 }}
+  </div>
+  <div>
+      <input type="submit" value="{{ question.content1 }}">
+  </div>
 </form>
 
 {% comment %} 2번 답 {% endcomment %}
-<form action = "{% url 'balances:answer' question.id 2 %}" method="POST" enctype="multipart/form-data">
+<form  id="form2" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
   {% csrf_token %}
-<div>
-  {{ question.content2 }}
-</div>
-<div>
-  <input type="submit" value="{{ question.content2 }}">
-</div>
+  <div>
+    {{ question.content2 }}
+  </div>
+  <div>
+      <input type="submit" value="{{ question.content2 }}">
+  </div>
 </form>
+{% comment %} 이전 질문 버튼 {% endcomment %}
+{% if question.pk != 1 %}
+  <a href="{% url 'balances:detail' question.pk|add:-1 %}" class="btn btn-outline-dark">이전 질문</a>
+{% endif %}
 
-{% comment %} 
-어떻게 다음 페이지로 넘어갈 것인지?
-데이터 어떻게 리스트로 저장할 것인지
-{% endcomment %}
+{% comment %} 슈퍼유저에게만 보이는 것 {% endcomment %}
+{% if request.user.is_superuser %}
+  <a href="{% url 'balances:update' question.pk %}">수정</a>
+{% endif %}
+
 
 {% endblock content %}
 
 {% block script %}
+<script>
+  const form1 = document.getElementById('form1');
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+  form1.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    const nextUrl = event.target.dataset.nextUrl
+    const indexUrl = form2.dataset.indexUrl
+    const questionId = event.target.dataset.questionId
+    const lastId = event.target.dataset.lastId
+    console.log(nextUrl)
+    console.log(lastId)
+    axios({
+      method: 'post',
+      url: `/balances/${questionId}/answer/1/`,
+      headers: {'X-CSRFToken': csrftoken},
+    })
+
+    if (questionId === lastId) {
+      window.location.href = indexUrl
+    } else { 
+      window.location.href = nextUrl
+    }
+  });
+  const form2 = document.getElementById('form2');
+  form2.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const nextUrl = form2.dataset.nextUrl
+    const indexUrl = form2.dataset.indexUrl
+    const questionId = event.target.dataset.questionId
+    const lastId = event.target.dataset.lastId
+    console.log(nextUrl)
+    console.log(indexUrl)
+    axios({
+      method: 'post',
+      url: `/balances/${questionId}/answer/2/`,
+      headers: {'X-CSRFToken': csrftoken},
+    })
+    if (questionId === lastId) {
+      window.location.href = indexUrl
+    } else { 
+      window.location.href = nextUrl
+    }
+  });
+</script>
 {% endblock script %}
