@@ -14,6 +14,8 @@ from django.http import HttpResponseBadRequest
 
 # Create your views here.
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('posts:index')
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
         if form.is_valid():
@@ -33,6 +35,7 @@ def logout(request):
         auth_logout(request)
     return redirect('posts:index')
 
+
 @login_required
 def update(request):
     if request.method == 'POST':
@@ -48,6 +51,10 @@ def update(request):
     
     return render(request, 'accounts/update.html', context)
 
+@login_required
+def delete(request):
+    request.user.delete()
+    return redirect('posts:index')
 
 def signup(request):
     # my_sentence = []

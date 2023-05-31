@@ -34,6 +34,27 @@ class QuestionForm(forms.ModelForm):
             }
         )
     )
+    word1 = forms.CharField(
+        max_length=100,
+        required = False,
+        label='word1',
+        widget=forms.TextInput(
+            attrs={
+                
+            }
+        )
+    )
+
+    word2 = forms.CharField(
+        max_length=100,
+        required = False,
+        label='word2',
+        widget=forms.TextInput(
+            attrs={
+                
+            }
+        )
+    )
 
     image1 = forms.ImageField(
         label='A1_img',
@@ -56,7 +77,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ('title', 'content1','content2','image1','image2')
+        fields = ('title', 'content1','content2','image1','image2', 'word1', 'word2')
 
 
 

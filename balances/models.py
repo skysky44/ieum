@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+# from django.contrib.postgres.fields import JSONField
 
 
 
@@ -16,6 +17,8 @@ class Question(models.Model):
 
     content1 = models.TextField()
     content2 = models.TextField()
+    word1 = models.CharField(max_length=100, null=True, blank=True)
+    word2 = models.CharField(max_length=100, null=True, blank=True)
     
     image1 =  ProcessedImageField(
         upload_to= question_image_path,
@@ -36,4 +39,5 @@ class Result(models.Model):
     # category = models.ForeignKey(Question, on_delete=models.CASCADE )
     # chosen_result = models.CharField(max_length=100)
     chosen_result = models.JSONField(default=list)
+    word = models.JSONField(default=list)
     
