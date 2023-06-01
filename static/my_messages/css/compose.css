@@ -1,0 +1,21 @@
+.compose--btn1 {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    border: none;
+    background: #DEECA1;
+    border-radius: 5px;
+    padding: 3px 10px;
+    margin-right: 30px;
+}
+.compose--btn2 {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    border: none;
+    background: #DEECA1;
+    border-radius: 5px;
+    padding: 4.5px 10px;
+    margin-right: 30px;
+}
+.compose--btn1:hover, .compose--btn2:hover {
+    background: #d0df8d;
+}

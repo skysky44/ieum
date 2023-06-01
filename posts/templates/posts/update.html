@@ -1,8 +1,165 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/update.css' %}">
+{% endblock head %}
 {% block content %}
-  <form action="{% url 'posts:update' post.pk %}" method ='POST' enctype="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value='수정하기'>
-  </form>
+  <div class="d-flex justify-content-center">
+    <form action="{% url 'posts:update' post.pk %}" method ='POST' enctype="multipart/form-data">
+      {% csrf_token %}
+      {% comment %} {{form.as_p}} {% endcomment %}
+      <div class="mb-3">
+        <strong>제목 : </strong>
+        <div class="update--content">
+          {{ form.title }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <p><strong>내용 : </strong></p>
+        <div>
+          {{ form.media }}
+          {{ form.content }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <strong>분류 : </strong>
+        <div class="update--content">
+          {{ form.category }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <strong>주소 : </strong>
+        <div class="update--content">
+          {{ form.address }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <strong>태그 : </strong>
+        <div class="update--content">
+          {{ form.tags }}
+        </div>
+      </div>
+      <div class="update--music--box">
+        <div class="mt-3">
+          <button type="button" class="update--music--btn mb-3" data-bs-toggle="modal" data-bs-target="#musicModal">
+            프로필 음악 설정
+          </button>
+          {% if not music %}
+            <div class="mb-3">프로필 음악을 설정해 주세요.</div>
+          {% else %}
+            {% for track in music %}
+              <div id="track-{{ forloop.counter }}" class="d-flex justify-content-between align-items-center mb-3">
+                <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+                <span>{{ track.album }}</span>
+                <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
+                <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2">삭제</a>
+              </div>
+            {% endfor %}
+          {% endif %}
+          <audio class="main-audio" controls>
+            <source src="" type="audio/mp3">
+          </audio>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <input class="update--btn mt-3" type="submit" value='수정하기'>
+      </div>
+    </form>
+  </div>
+
+  <!-- 프로필 음악 모달 -->
+  <div class="modal fade" id="musicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">프로필 음악</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-x: hidden; overflow-y: auto;">
+          <form id="search-form" class="d-flex mb-3">
+            <input id="search-input" class="form-control me-3" type="text" name="q" placeholder="검색어를 입력하세요" style="width:300px;">
+            <button id="search-button" class="update--music--search--btn" type="submit">검색</button>
+          </form>
+          <div id="search-results" class="mb-3">
+          </div>
+          <audio id="audio-player" controls>
+            <source src="" type="audio/mp3">
+          </audio>
+
+        </div>
+        <div class="modal-footer">
+          <div id="error-message" style="color: red;"></div>
+          <div style="margin-right:120px;">하나 이상의 음원을 선택해야 합니다.</div>
+          <button type="button" class="update--music--close--btn" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
+{% block script %}
+  {% comment %} <script type="text/javascript">
+    CKEDITOR.replace('{{ form.content.auto_id }}',
+      {
+        width : '700px',  // 입력창의 넓이, 넓이는 config.js 에서 % 로 제어
+        height : '400px',  // 입력창의 높이
+        startupFocus : false,
+      }
+    );
+  </script> {% endcomment %}
+  {% comment %} <script>
+    // 이미지 업로드 기능 추가
+    CKEDITOR.replace( "textarea", {
+      filebrowserUploadUrl: "${pageContext.request.contextPath}/imageUpload.do"
+    });
+
+    window.parent.CKEDITOR.tools.callFunction(1, "${url}", "전송완료");
+
+    @RequestMapping(value = "/imageUpload.do", method=RequestMethod.POST)
+    public String imageUpload(Locale locale, Model model, HttpServletRequest request, HttpServletResponse response) {
+        
+        web.init();
+        
+        /** 컨텐츠 타입 명시 */
+        response.setContentType("application/json");
+        
+        try {
+            upload.multipartRequest();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
+        List<FileInfo> fileList = upload.getFileList();
+        
+        String url = "%s/downloadImage.do?file=%s/%s";
+        
+        String fileName = "";
+        
+        if (fileList.size() > 0) {
+            FileInfo temp = fileList.get(0);
+            
+            url = String.format(url, web.getRootPath(), temp.getFileDir(), temp.getFileName());
+            fileName = temp.getFileName();
+            
+            model.addAttribute("url", url);
+            
+        }
+        
+        /** (6) 처리 결과를 JSON으로 출력하기 */
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("uploaded", 1);
+        data.put("fileName", fileName);
+        data.put("url", url);
+        
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper.writeValue(response.getWriter(), data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+        
+    }
+  </script> {% endcomment %}
+{% endblock script %}

@@ -1,25 +1,82 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'my_messages/css/sent_messages.css' %}">
+{% endblock head %}
 {% block content %}
-  <h2>보낸 쪽지함</h2>
-  {% if sent_messages %}
-    <ul>
-      {% for message in sent_messages %}
-        <li>
-          <a href="{% url 'my_messages:view_message' message.id %}">{{ message.receiver }} - {{ message.timestamp }}</a>
-          {% if message.is_read %}
-            - 읽음
-          {% else %}
-            {% if not message.is_read %}
-              - <a href="{% url 'my_messages:delete_message' message.id %}">전송 취소</a>
-            {% endif %}
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>보낸 쪽지함에 메시지가 없습니다.</p>
-  {% endif %}
+  <div class="d-flex justify-content-between">
+    <h2>보낸 쪽지함</h2>
+    <div class="d-flex align-items-center">
+      <a href="{% url 'my_messages:received_messages' %}" class="sent_messages--btn">받은 쪽지함으로 가기</a>
+    </div>
+  </div>
+  <table class="table table-hover mt-5">
+    <thead style="text-align: center;">
+      <tr>
+        <th scope="col">이름</th>
+        <th scope="col">보낸 시간</th>
+        <th scope="col">확인 여부</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if sent_messages %}
+        {% for message in sent_messages %}
+          <tr>
+            <td style="text-align: center;  width: 200px;">
+              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.receiver }}</a>
+            </td>
+            <td style="text-align: center;  width: 200px;">
+              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.timestamp }}</a>
+            </td>
+            <td style="text-align: center;  width: 200px;">
+              {% if message.is_read %}
+                읽음
+              {% else %}
+                {% if not message.is_read %}
+                  <a href="{% url 'my_messages:delete_message' message.id %}" class="sent_messages--delete--btn">전송 취소</a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <p>보낸 쪽지함에 메시지가 없습니다.</p>
+      {% endif %}
+    </tbody>
+  </table>
   
-  <a href="{% url 'my_messages:received_messages' %}">받은 쪽지함으로 가기</a>
+  <!-- 페이지네이션 -->
+  <ul class="pagination justify-content-center">
+    {% if sent_messages.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ sent_messages.previous_page_number }}"><i class="bi bi-caret-left" style="color: black;"></i></a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color: black;"></i></a>
+      </li>
+    {% endif %}
+    {% for page_number in sent_messages.paginator.page_range %}
+      {% if page_number >= sent_messages.number|add:-5 and page_number <= sent_messages.number|add:5 %}
+        {% if page_number == sent_messages.number %}
+          <li class="page-item active" aria-current="page">
+            <a class="page-link sent_messages--pagination1" href="?page={{ page_number }}">{{ page_number }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link sent_messages--pagination2" href="?page={{ page_number }}">{{ page_number }}</a>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if sent_messages.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ sent_messages.next_page_number }}"><i class="bi bi-caret-right" style="color: black;"></i></a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right" style="color: black;"></i></a>
+      </li>
+    {% endif %}
+  </ul>
 {% endblock %}
