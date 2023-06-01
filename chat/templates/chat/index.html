@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} 채팅방 만들기 {% endblock title %}
+
+{% block head %}
+{% endblock head %}  
+
+{% block content %}
+  <h1>Create Chat Room</h1>
+  <input type="text" id="room-name-input" placeholder="Enter room name">
+  <button onclick="createChatRoom()">Create Room</button>
+  
+
+  {% for room in rooms  %}
+    <a href="{% url 'chat:room' room %}">{{ room }}</a>
+  {% endfor %}
+{% endblock content %}
+
+{% block script %}
+  <script>
+    // 채팅방 생성 함수
+    function createChatRoom() {
+        const roomNameInput = document.getElementById('room-name-input');
+        const roomName = roomNameInput.value;
+
+        // 채팅방 생성 요청을 서버로 보냄 (예: Ajax 요청 등)
+        // ...
+
+        // 생성된 채팅방으로 이동
+        window.location.href = `/chat/${roomName}/`;
+    }
+  </script>
+{% endblock script %}
