@@ -5,7 +5,7 @@
 {% block content %}
 <div class="">
   
-  <form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
+  <form action="{% url 'posts:anonymous_create' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.media }}
     
@@ -29,6 +29,7 @@
     <div> 
       {{ form.content }}
     </div>
+    
     <div>
       <div>
         <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">

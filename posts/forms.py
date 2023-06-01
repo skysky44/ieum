@@ -2,22 +2,15 @@ from django import forms
 from .models import Post, Comment, CommentReport
 from taggit.forms import TagField, TagWidget
 
-category_choices = (
-    ('모임', '모임'),
-    ('익명', '익명'),
-)
-
-
 class PostForm(forms.ModelForm):
     category = forms.ChoiceField(
         label='카테고리',
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
-                'placeholder' : '분류',
+                'placeholder': '분류',
             }
-        ),
-        choices=category_choices,
+        )
     )
     widgets = {
             'tags':TagWidget(
@@ -33,6 +26,10 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['tags'].label = '태그'
+        category_choices = kwargs.pop('category_choices', None)
+        super(PostForm, self).__init__(*args, **kwargs)
+        if category_choices:
+            self.fields['category'].choices = category_choices
 
     class Meta:
         model = Post
