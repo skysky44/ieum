@@ -11,6 +11,7 @@ urlpatterns = [
     path('<int:post_pk>/',views.detail, name='detail'),
     path('anonymous/<int:post_pk>/',views.anonymous_detail, name='anonymous_detail'),
     path('<int:post_pk>/update/', views.update , name='update'),
+    path('<int:post_pk>/anonymous_update/', views.anonymous_update , name='anonymous_update'),
     path('<int:post_pk>/delete/',views.delete, name='delete'),
     path('<int:post_pk>/likes/', views.likes, name='likes'),
     path('<int:post_pk>/comments_create/', views.comment_create, name='comment_create'),

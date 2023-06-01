@@ -13,9 +13,9 @@
         <div class="d-flex justify-content-between mb-1">
           <div class="d-flex flex-column">
             <h1>{{ post.title }}</h1>
-            <a href="{% url 'accounts:profile' username=post.user %}">
+            {% comment %} <a href="{% url 'accounts:profile' username=post.user %}"> {% endcomment %}
               {% comment %} <p><strong>{{ post.user }}</strong></p> {% endcomment %}
-            </a>
+            {% comment %} </a> {% endcomment %}
           </div>
           <div class="d-flex align-items-center">
             <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
@@ -54,7 +54,7 @@
             <div class="detail__btn--list">
               <div class="me-2" style="display:flex; align-self:center;">
                 <button class="">
-                  <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                  <a href="{% url 'posts:anonymous_update' post.pk %}" class="ieum--button--nobgc1">수정</a>
                 </button>
                 </div>
               </div>
