@@ -27,6 +27,8 @@ class User(AbstractUser):
     tags = models.CharField(max_length=100, default='태그')
     image = models.ImageField(blank=True, upload_to='')
     region = models.CharField(max_length=10, choices=REGION_CHOICES, default=SEOUL)
+    score = models.IntegerField(default=100)
+    taste = models.CharField(max_length=2, default='N')
     privacy = models.BooleanField(default=False)
     pick = models.CharField(max_length=10, default=3)
 

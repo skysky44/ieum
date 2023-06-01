@@ -5,86 +5,54 @@ from django.shortcuts import render, redirect
 from .models import Question, Result
 from .forms import QuestionForm
 from django.http import JsonResponse
-
-
+from django.contrib.auth import get_user_model
 
 def index(request):
-    questions = Question.objects.all()
-        
-    context ={
-        'questions' : questions,
-    }
-
-
-
-    return render(request, 'balances/index.html', context)
-
-def create(request):
-    if request.method =='POST':
-        form = QuestionForm(request.POST, request.FILES)
-        if form.is_valid():
-            question = form.save(commit= False)
-            question.user = request.user
-            question.save()
-        return redirect('balances:index')
+    if request.user.is_superuser:
+        questions = Question.objects.all()
+            
+        context ={
+            'questions' : questions,
+        }
+        return render(request, 'balances/index.html', context)
     else:
-        form = QuestionForm()
-    context = {
-        'form' : form,
-    }
-    return render(request, 'balances/create.html', context)
-
+        return redirect('posts:index')
+    
+def create(request):
+    if request.user.is_superuser:
+        if request.method =='POST':
+            form = QuestionForm(request.POST, request.FILES)
+            if form.is_valid():
+                question = form.save(commit= False)
+                question.user = request.user
+                question.save()
+            return redirect('balances:index')
+        else:
+            form = QuestionForm()
+        context = {
+            'form' : form,
+        }
+        return render(request, 'balances/create.html', context)
+    else:
+        return redirect('balances:index')
 
 def detail(request, question_pk):
     question = Question.objects.get(pk=question_pk)
-    
+    last = Question.objects.last()   
     context ={
         'question' : question,
+        'last' : last,
     }
-
     return render(request, 'balances/detail.html', context)
-
-
-# def answer(request, question_pk, select_answer):
-#     question = Question.objects.get(pk=question_pk)
-  
-    
-#     if request.method == 'POST':
-#         if select_answer == 1:
-#             pass
-#         elif select_answer == 2:
-#             pass
-#     return redirect('question:detail', question_pk )
-
-# def answer(request, question_pk, select_answer):
-#     question = Question.objects.get(pk=question_pk)
-#     user = request.user
-
-#     if request.method == 'POST':
-#         result, created = Result.objects.get_or_create(user=user)
-
-#         # Get the user's chosen results list
-#         chosen_results = result.chosen_result
-
-#         if isinstance(chosen_results, tuple):
-#             chosen_results = list(chosen_results)
-
-#         # Append the selected answer to the list
-            
-#             chosen_results.append(select_answer)
-
-#             # Update the chosen results list in the Result model
-#             result.chosen_result = chosen_results
-#             result.save()
-
-#     return redirect('balances:detail', question_pk)
 
 def answer(request, question_pk, select_answer):
     question = Question.objects.get(pk=question_pk)
     user = request.user
+    User = get_user_model()
 
     if request.method == 'POST':
         result, created = Result.objects.get_or_create(user=user)
+        user_score = user.score
 
         # Get the user's chosen results dictionary
         chosen_results = result.chosen_result
@@ -96,39 +64,75 @@ def answer(request, question_pk, select_answer):
         # Append the selected answer to the dictionary
         chosen_results[str(question_pk)] = select_answer
 
-        # Update the chosen results dictionary in the Result model
+        # Update the chosen_results field in the Result model
         result.chosen_result = chosen_results
         result.save()
 
+        # 유저의 워드 딕셔너리 만들기
+        word_list = result.word
+        if not word_list:
+            word_list = {}
+        
+         # 워드 값이 있는 경우에만 딕셔너리 만들어주기
+        if question.word1 != None and question.word2 != None:
+
+            if select_answer == 1:
+                selected_word = question.word1
+            elif select_answer == 2:
+                selected_word = question.word2
+            # Append the selected word to the list
+            word_list[str(question_pk)] = selected_word
+            # Update the word list in the Result model
+            result.word = word_list
+            result.save()
+        
+        # 점수 매기기
+        if question_pk <= 13:
+            # 질문 번호가 홀수인지 짝수인지 확인
+            if question_pk % 2 == 1:
+                # 홀수 번호의 질문에서 답변 1을 선택한 경우 10점 감점
+                if select_answer == 1:
+                    user_score -= 10
+            if question_pk % 2 == 0:
+                # 짝수 번호의 질문에서 답변 2을 선택한 경우 10점 감점
+                if select_answer == 2:
+                    user_score -= 10
+            # Result 모델의 score 필드 업데이트
+            user.score = user_score
+            user.save()
+        # question_pk가 13인 경우에 user_score 필드 업데이트
+        if question_pk == 13:
+            if user_score >= 70:
+                user.taste = 'T'
+            elif user_score >= 40:
+                user.taste = 'TF'
+            else:
+                user.taste = 'F'
+            user.save()
     return redirect('balances:detail', question_pk)
 
+def update(request, question_pk):
+    question = Question.objects.get(pk=question_pk)
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            form = QuestionForm(request.POST, request.FILES, instance=question)
+            if form.is_valid():
+                form.save()
+                return redirect('balances:detail', question_pk)
+        else:
+            form = QuestionForm(instance=question)
 
-# # @login_required
-# def update(request, post_pk):
-#     post = Post.objects.get(pk=post_pk)
-#     if request.method == 'POST':
-#         form = PostForm(request.POST, request.FILES, instance=post)
-#         if form.is_valid():
-#             tags = request.POST.get('tags').split(',')
-#             for tag in tags:
-#                 post.tags.add(tag.strip())
-#             form.save()
+        context = {
+            'question' : question,
+            'form' : form,
+        }
+        return render(request, 'balances/update.html', context)
+    else:
+        return redirect('balances:index')
 
-
-#             return redirect('posts:detail', post.pk)
-
-#     else:
-#         form = PostForm(instance=post)
-#     context = {
-#         'post' : post,
-#         'form' : form,
-#     }
-#     return render(request, 'posts/update.html', context)
-
-
-# # @login_required
-# def delete(request,post_pk):
-#     post = Post.objects.get(pk=post_pk)
-#     if request.user == post.user:
-#         post.delete()
-#     return redirect('posts:index')
+# def delete(request,question_pk):
+#     question = Question.objects.get(pk=question_pk)
+#     if request.user.is_superuser:
+#         question.delete()
+#     return redirect('balances:index')
+    

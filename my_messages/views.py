@@ -3,6 +3,7 @@ from .models import Message
 from .forms import ComposeMessageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 @login_required
 def compose_message(request):
@@ -20,12 +21,20 @@ def compose_message(request):
 @login_required
 def received_messages(request):
     received_messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
-    return render(request, 'my_messages/received_messages.html', {'received_messages': received_messages})
+    page = request.GET.get('page', '1')
+    per_page = 5
+    paginator = Paginator(received_messages, per_page)
+    page_obj = paginator.get_page(page)
+    return render(request, 'my_messages/received_messages.html', {'received_messages': received_messages, 'received_messages': page_obj,})
 
 @login_required
 def sent_messages(request):
     sent_messages = Message.objects.filter(sender=request.user).order_by('-timestamp')
-    return render(request, 'my_messages/sent_messages.html', {'sent_messages': sent_messages})
+    page = request.GET.get('page', '1')
+    per_page = 5
+    paginator = Paginator(sent_messages, per_page)
+    page_obj = paginator.get_page(page)
+    return render(request, 'my_messages/sent_messages.html', {'sent_messages': sent_messages, 'sent_messages': page_obj,})
 
 
 def view_message(request, message_id):
