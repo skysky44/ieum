@@ -1,0 +1,28 @@
+.received_messages--btn {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    border: none;
+    background: #DEECA1;
+    border-radius: 5px;
+    padding: 3px 10px;
+}
+.received_messages--btn:hover {
+    background: #d0df8d;
+}
+.received_messages--content {
+    width: 350px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    display: inline-block;
+}
+.received_messages--pagination1 {
+    background: #DEECA1 !important;
+    border: 1px solid #DEECA1 !important;
+    color: black;
+}
+.received_messages--pagination2 {
+    background: white !important;
+    border: 1px solid #DEECA1 !important;
+    color: black;
+}

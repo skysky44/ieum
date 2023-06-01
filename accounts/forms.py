@@ -145,7 +145,7 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
-
+                'style': 'width:350px; border:none;',
             }
         ),
     )
@@ -154,7 +154,7 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
-
+                'style': 'width:350px; border:none;',
             }
         ),
     )
@@ -164,7 +164,7 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
-
+                'style': 'width:350px; border:none;',
             }
         ),
     )
@@ -185,7 +185,7 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.DateInput(
             attrs={
                 'class': 'form-control',
-
+                'style': 'width:350px; border:none;',
             }
         ),
     )
@@ -196,7 +196,7 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.ClearableFileInput(
             attrs={
                 'class': 'form-control',
-
+                'style': 'width:350px;',
             }
         ),
     )

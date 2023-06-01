@@ -1,17 +1,37 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'my_messages/css/view.css' %}">
+{% endblock head %}
 {% block content %}
-  <h2>{{ message.sender }} - {{ message.timestamp }}</h2>
-  <p>{{ message.content }}</p>
-
-  <h3>답장하기</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">보내기</button>
-  </form>
-
-  <a href="{% url 'my_messages:received_messages' %}">받은 쪽지함으로 돌아가기</a>
-  <a href="{% url 'my_messages:sent_messages' %}">보낸 쪽지함으로 가기</a>
-  <a href="{% url 'my_messages:delete_message' message.id %}">삭제</a>
+  <div class="d-flex justify-content-between">
+    <div class="d-flex flex-column me-5" style="width: 50%;">
+      <h4>보낸 사람 : <strong>{{ message.sender }}</strong></h4>
+      <p class="mt-3" style="color:#bdbdbd; font-size:.8rem;">{{ message.timestamp }}</p>
+      <p class="mt-3 view--content--box">{{ message.content|linebreaksbr }}</p>
+      <div class="d-flex mt-4">
+        <a href="{% url 'my_messages:delete_message' message.id %}" class="view--btn1">삭제</a>
+        <a href="{% url 'my_messages:received_messages' %}" class="view--btn1">받은 쪽지함으로 돌아가기</a>
+      </div>
+    </div>
+    <div>
+      <h3 class="text-center">답장하기</h3>
+      <form method="post" class="mt-3" style="width: 400px;">
+        {% csrf_token %}
+        {% comment %} {{ form.as_p }} {% endcomment %}
+        <div>
+          <p>보낼 사람 : </p>
+          {{ form.receiver }}
+        </div>
+        <div class="mt-3">
+          <p>내용 : </p>
+          {{ form.content }}
+        </div>
+        <div class="mt-3">
+          <button type="submit" class="view--btn1">보내기</button>
+          <a href="{% url 'my_messages:sent_messages' %}" class="view--btn2">보낸 쪽지함으로 가기</a>
+        </div>
+      </form>
+    </div>
+  </div>
 {% endblock %}
