@@ -2,53 +2,193 @@
 {% load static %}
 {% block title %}그림게시판{% endblock title %}
 
+{% block head %}
+<link rel="stylesheet" href="{% static 'paints/css/index.css' %}">
+{% endblock head %}
+
 {% block style %}
-.paints--container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-.paints--list {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  border-radius: 10px;
-  background-color: #eee;
-  padding: 1rem;
-  margin: 1rem;
-}
-.paint--image {
-  width: 200px;
-  height: 200px;
-  border-radius: 10px;
-  background-color: #fff;
-  padding: 0.2rem;
-  margin: 0 0.5rem;
-}
 {% endblock style %}  
 
 {% block content %}
-<article>
-  <h1>그림 게시판</h1>
-  <a href="{% url 'paints:create' %}">그림 그리기</a>
-  <hr>
-  <section class="paints--container">
-    {% for paint in paints %}
-      {% if paint.image %}
-      <a href="{% url 'paints:detail' paint.pk %}">
-        <ul class="paints--list">
-          <li>{{ paint.user }}</li>
-          <li><img class="paint--image" src="{{ paint.image.url }}" alt="{{ paint.user }}의 그림"></li>
-          <li>
-            <form action="{% url 'paints:delete' paint.pk %}">
-              <input type="submit" value="삭제">
-            </form>
+<article class="paints--container" style="background-image: url('{% static "paints/image/ground_02.png" %}');">
+  <div id="tree-container" class="tree--container">
+    <img class="tree--image" src="{% static 'paints/image/ieum_tree_01.png' %}" alt="Tree Image" draggable="false">
+    <ul class="paints--list">
+      {% for paint, position in paint_positions %}
+        {% if paint.image %}
+          <li id="fruit-image-1" class="fruit-image hallabong-wrap" style="top:{{ position.top }}; left:{{ position.left }};">
+            <img class="paint--hallabong" src="{% static 'paints/image/hallabong_05.png' %}" alt="Fruit Image">
+            <div class="paint--content">
+              <img class="paint--userpaint" src="{{ paint.image.url }}" alt="{{ paint.user }}의 그림">
+              <p class="paint--user">{{ paint.user }}</p>
+            </div>
           </li>
-        </ul>
-      </a>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    <!-- 페이지네이션 -->
+    <ul class="page--previous">
+      {% if paints.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ paints.previous_page_number }}"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="이전페이지"></a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="이전페이지"></a>
+        </li>
       {% endif %}
-    {% endfor %}
-  </section>
+    </ul>
+    <ul class="page--next">
+      {% if paints.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ paints.next_page_number }}"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="다음페이지"></a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="다음페이지"></a>
+        </li>
+      {% endif %}
+    </ul>
+    <div class="paint--harbang--container">
+      <a class="paint--harbang--wrap" href="{% url 'paints:create' %}" >
+        <img class="paint--harbang" src="{% static 'paints/image/harbang_02_nodot.png' %}" alt="돌하르방" title="그림그리기">
+      </a>
+    </div>
+  </div>
+  <div class="big--content--wrap">
+    <div class="big--content"><img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paint.png' %}" alt="paint--image"></div>
+  </div>
 </article>
+
+
+<script>
+  let fruitImages = document.querySelectorAll('.fruit-image');
+  
+  // 현재 움직이고 있는 과일 이미지를 저장할 변수를 선언
+  let movingFruitImage = null;
+  let offsetX = 0, offsetY = 0;
+  
+  // 각 과일 이미지에 대해 이벤트 핸들러를 등록
+  fruitImages.forEach(function(fruitImage) {
+    fruitImage.addEventListener('mousedown', function(e) {
+      // 마우스 포인터와 이미지의 (0, 0) 좌표 사이의 거리를 계산
+      let rect = fruitImage.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+  
+      // 현재 움직이고 있는 과일 이미지를 설정
+      movingFruitImage = fruitImage;
+  
+      // 브라우저의 기본 드래그 동작을 막기
+      e.preventDefault();
+    });
+  });
+  
+  document.addEventListener('mousemove', function(e) {
+    if (movingFruitImage) {
+      // 나무 이미지를 기준으로 열매 이미지의 위치를 조정
+      let treeContainer = document.getElementById('tree-container');
+      let treeRect = treeContainer.getBoundingClientRect();
+  
+      let newLeft = e.clientX - treeRect.left - offsetX;
+      let newTop = e.clientY - treeRect.top - offsetY;
+  
+      // 픽셀 단위를 퍼센트 단위로 변환
+      let newLeftPercent = (newLeft / treeRect.width) * 100;
+      let newTopPercent = (newTop / treeRect.height) * 100;
+  
+      // 위치를 설정할 때는 퍼센트 단위를 사용
+      movingFruitImage.style.left = newLeftPercent + '%';
+      movingFruitImage.style.top = newTopPercent + '%';
+    }
+  });
+  
+  document.addEventListener('mouseup', function(e) {
+    // 마우스 버튼이 놓여지면 현재 움직이고 있는 과일 이미지를 초기화
+    movingFruitImage = null;
+  });
+
+  {% comment %} let hallabongElements = document.querySelectorAll('.hallabong-wrap');
+
+  hallabongElements.forEach(function(element) {
+    element.addEventListener('mouseenter', function() {
+      document.querySelector('.big--content').style.top = '0';
+    });
+
+    element.addEventListener('mouseleave', function() {
+      document.querySelector('.big--content').style.top = '-200px';
+    });
+  }); {% endcomment %}
+
+  {% comment %} document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
+    if (event.target.classList.contains('paint--userpaint')) {
+        let imgSrc = event.target.src;
+        document.querySelector('.paint--big--userpaint').src = imgSrc;
+    }
+  }); {% endcomment %}
+  let originalSrc = document.querySelector('.paint--big--userpaint').src;
+
+  document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
+      if (event.target.classList.contains('paint--userpaint')) {
+          let imgElement = document.querySelector('.paint--big--userpaint');
+          let imgSrc = event.target.src;
+          imgElement.style.opacity = '0';
+          setTimeout(function() {
+              imgElement.src = imgSrc;
+              imgElement.style.opacity = '1';
+          }, 500);
+      }
+  });
+
+  document.querySelector('.paints--list').addEventListener('mouseout', function(event) {
+      if (event.target.classList.contains('paint--userpaint')) {
+          let imgElement = document.querySelector('.paint--big--userpaint');
+          imgElement.style.opacity = '0';
+          setTimeout(function() {
+              imgElement.src = originalSrc;
+              imgElement.style.opacity = '1';
+          }, 500);
+      }
+  });
+  </script>
+{% comment %} <script>
+  let fruitImage = document.getElementById('fruit-image');
+  let isMouseDown = false;
+  
+  // 마우스 포인터와 이미지의 (0, 0) 좌표 사이의 거리를 저장할 변수를 선언합니다.
+  let offsetX = 0, offsetY = 0;
+  
+  fruitImage.addEventListener('mousedown', function(e) {
+    isMouseDown = true;
+  
+    // 마우스 포인터와 이미지의 (0, 0) 좌표 사이의 거리를 계산합니다.
+    let rect = fruitImage.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+  
+    // 브라우저의 기본 드래그 동작을 막습니다.
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', function(e) {
+    if (isMouseDown) {
+      // 나무 이미지를 기준으로 열매 이미지의 위치를 조정합니다.
+      let treeContainer = document.getElementById('tree-container');
+      let treeRect = treeContainer.getBoundingClientRect();
+  
+      let newLeft = e.clientX - treeRect.left - offsetX;
+      let newTop = e.clientY - treeRect.top - offsetY;
+  
+      // 위치를 설정할 때는 픽셀 단위를 사용합니다.
+      fruitImage.style.left = newLeft + 'px';
+      fruitImage.style.top = newTop + 'px';
+    }
+  });
+  
+  document.addEventListener('mouseup', function(e) {
+    isMouseDown = false;
+  });
+</script> {% endcomment %}
 {% endblock content %}
 
 {% block script %}{% endblock script %}
