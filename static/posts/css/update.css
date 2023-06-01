@@ -1,0 +1,53 @@
+.update--content {
+    border-bottom: 1px solid #d0df8d;
+    /* border-radius: 7px; */
+}
+.update--music--box {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    border-radius: 5px;
+    padding: 3px 6px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-bottom: 10px;
+}
+.update--music--btn {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    padding: 1px 6px;
+    background: #DEECA1;
+    border-radius: 5px;
+}
+.update--music--btn:hover {
+    background-color: #d0df8d;
+}
+.update--music--search--btn {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    padding: 1px 6px;
+    background: #FFF7D3;
+    border-radius: 5px;
+}
+.update--music--search--btn:hover {
+    background-color: #ffe570;
+}
+.update--music--close--btn {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    padding: 6px 12px;
+    background: #DEECA1;
+    border-radius: 5px;
+}
+.update--music--close--btn:hover {
+    background-color: #d0df8d;
+}
+.update--btn {
+    border: none;
+    background: #DEECA1;
+    border-radius: 5px;
+    padding: 3px 10px;
+    width: 350px;
+    height: 35px;
+}
+.update--btn:hover {
+    background: #d0df8d;
+}

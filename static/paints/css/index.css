@@ -1,0 +1,96 @@
+
+.paints--container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  grid-gap: 1rem;
+  align-items: flex-end; 
+  width: ; 
+  height: 70vh; 
+  background-repeat: no-repeat; 
+  background-position: bottom; 
+  background-size: contain;
+}
+.tree--container {
+  position: relative;
+}
+.tree--image {
+  width: 100%; 
+  height: 70vh; 
+  padding-bottom: 3rem;
+}
+.hallabong-wrap {
+  position: absolute; 
+}
+.paint--hallabong {
+  width: 100%;
+  height: auto;
+}
+.paint--content {
+  position: absolute; 
+  bottom:10%; left:50%; 
+  transform: translateX(-50%); 
+  width: 60%; 
+  background-color: #fff;
+  background: linear-gradient(
+    rgba(255,255,255,0.4), rgba(255,255,255,0.35), rgba(255,255,255,0.3), rgba(255,255,255,0.25), rgba(255,255,255,0.2),
+    rgba(255,255,255,0.25), rgba(255,255,255,0.35), rgba(255,255,255,0.4), rgba(255,255,255,0.5), rgba(255,255,255,0.6),
+    rgba(255,255,255,0.7), rgba(255,255,255,0.8), rgba(255,255,255,0.9));
+    box-shadow: 0 0 10px rgba(0,0,0,0.05), inset 0 0 10px rgba(0,0,0,0.05);
+}
+.paint--userpaint {
+  width: 100%;
+}
+.paint--user {
+  position:absolute;
+  bottom: -1rem; 
+  left:50%; 
+  transform: translateX(-50%); 
+  width: 100%; 
+  font-size: 0.8rem; 
+  text-align: center; 
+}
+.page--previous {
+  position: absolute;  
+  bottom: 2rem;
+  left: 32%;
+  transform: translateX(-50%); 
+}
+.page--next {
+  position: absolute; 
+  bottom: 2rem;
+  right: 40%;
+  transform: translateX(50%); 
+}
+.paint--harbang--container {
+  position: absolute;
+  right: 2rem;
+  bottom: -2rem;
+  width: 80px;
+}
+.paint--harbang--wrap {
+}
+.paint--harbang {
+  width: 100%;
+  margin-bottom: 7rem;
+}
+.big--content--wrap {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  height: 100%;
+  border-radius: 10px;
+}
+.big--content {
+  width: 400px;
+  height: 400px;
+  border-radius: 10px;
+  border: 10px solid #DEECA1;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.2);
+}
+.paint--big--userpaint {
+  width: 100%;
+  transition: opacity 0.3s;
+  opacity: 1;
+}

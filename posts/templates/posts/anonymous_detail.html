@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+  <!-- <link rel="stylesheet" href="{% static 'base/css/reset.css' %}"> -->
+  <link rel="stylesheet" href="{% static 'posts/css/detail.css' %}">
+{% endblock head %}
+
+{% block content %}
+  <article class="detail--container">   
+    <section class="detail--wrap">
+      <div>
+        <div class="d-flex justify-content-between mb-1">
+          <div class="d-flex flex-column">
+            <h1>{{ post.title }}</h1>
+            {% comment %} <a href="{% url 'accounts:profile' username=post.user %}"> {% endcomment %}
+              {% comment %} <p><strong>{{ post.user }}</strong></p> {% endcomment %}
+            {% comment %} </a> {% endcomment %}
+          </div>
+          <div class="d-flex align-items-center">
+            <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
+              {% csrf_token %}
+              {% if request.user in post.like_users.all %}
+                <button class="border-0 bg-transparent" type="submit" value="좋아요">
+                  <i class="bi bi-hand-thumbs-up text-primary" style="font-size:1.5rem;"></i>
+                </button>
+              {% else %}
+                  <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
+                    <i class="bi bi-hand-thumbs-up text-secondary" style="font-size:1.5rem;"></i>
+                  </button>
+              {% endif %}
+            </form>
+            <span class="ms-1" style="font-size:1.5rem;">{{post.like_users.count}}</span>
+          </div>
+        </div>
+        <ul>
+          <li class="mb-3">
+            <i style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
+          </li>
+          <li class="mb-3">
+            <div class="detail--content">{{ post.content|safe }}</div>
+          </li>
+          <li class="detail__map--wrap mb-3">
+            <div id="map" style="width:350px;height:200px;" class="detail__map"></div>
+          </li>
+          <li class="mb-3">
+            <div>
+              {% for tag in tags %}
+              <span class="detail--tag">#{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </li>
+          <li class="d-flex">
+            <div class="detail__btn--list">
+              <div class="me-2" style="display:flex; align-self:center;">
+                <button class="">
+                  <a href="{% url 'posts:anonymous_update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                </button>
+                </div>
+              </div>
+              <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
+                <input type="submit" value='삭제' class="ieum--button--nobgc2">
+              </form>
+              <!-- Button trigger modal -->
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <hr>
+    <section class="comments--wrap">
+      <ul>
+        <li>
+          {% for comment in comments %}
+          <div class="comments__content--wrap">
+            <div>
+              <div class="comments__user--wrap">
+                <p class="fw-bold">{{ comment.user }}</p>
+                <i class="comment--date">{{ comment.created_time }}</i>
+              </div>
+              <p>{{ comment.content }}</p>
+            </div>
+            <div class="comments__btn--list">
+              <div class="me-2" style="display:flex; align-self:center;">
+                <div class="ieum--button1">
+                  <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">수정</button>
+                </div>
+              </div>
+              <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                <input type="submit" value='삭제' class="ieum--button2">
+              </form>
+              <!-- Button trigger modal -->
+            </div>
+      
+              <!-- Modal -->
+              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{comment_form.as_p}}
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">수정하기</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+          {% for track in music %}
+          <div id="music-track">
+            <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+            <span>{{ track.album }}</span>
+            <a href="#" class="play-music-profile" data-src="{{ track.preview_url }}">재생</a>
+          </div>
+          {% endfor %}
+          <audio class="music-audio" controls>
+            <source src="" type="audio/mp3">
+          </audio>
+        </li>
+        <li>
+          <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
+            {% csrf_token %}
+            <div class="comment__create--list">
+              <div class="create--list__item1 comment__create--textarea--wrap">{{ comment_form.content }}</div>
+              <div class="create--list__item2">
+                <input type="submit" class="ieum--button1" value='등록'>
+              </div>
+            </div>
+          </form>
+        </li>
+      </ul>
+  </section>
+
+
+
+
+    
+    
+    
+    
+   
+
+
+
+
+
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'posts/js/detail_music.js' %}"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };  
+
+// 지도를 생성합니다    
+var map = new kakao.maps.Map(mapContainer, mapOption); 
+
+// 주소-좌표 변환 객체를 생성합니다
+var geocoder = new kakao.maps.services.Geocoder();
+
+// 주소로 좌표를 검색합니다
+geocoder.addressSearch( "{{ post.address }}", function(result, status) {
+
+    // 정상적으로 검색이 완료됐으면 
+    if (status === kakao.maps.services.Status.OK) {
+
+        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+        // 결과값으로 받은 위치를 마커로 표시합니다
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: coords
+        });
+
+        // 인포윈도우로 장소에 대한 설명을 표시합니다
+        var infowindow = new kakao.maps.InfoWindow({
+            content: '<div style="width:150px;text-align:center;padding:6px 0;">만나고 싶은 곳</div>'
+        });
+        infowindow.open(map, marker);
+
+        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+        map.setCenter(coords);
+    } 
+});    
+
+</script>
+{% endblock content %}

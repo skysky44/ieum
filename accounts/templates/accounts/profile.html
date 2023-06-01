@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
 {% endblock head %}
 {% block content %}
-<div class="d-flex justify-content-between mt-5 mx-5">
+<div class="d-flex justify-content-around mt-5 mx-5">
   <div class="d-flex flex-column">
     <!-- 프로필 사진 -->
     <div class="profile--img--box">
@@ -19,9 +19,9 @@
     <p>나</p>
     {% else %}
       {% if person.privacy == 1 and user.privacy == 1 %}
-        <p>당신과의 거리: {{ distance|floatformat:1 }} km</p>
+        <p class="text-center mt-3">당신과의 거리 : <strong>{{ distance|floatformat:1 }} km</strong></p>
       {% else %}
-        <p>거리 비공개</p>
+        <p class="text-center mt-3">거리 비공개</p>
       {% endif %}
     {% endif %}
 

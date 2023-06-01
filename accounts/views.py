@@ -8,12 +8,14 @@ from django.contrib.auth import get_user_model
 import requests
 from django.contrib import messages
 from .models import Track
-from pprint import pprint
 import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
 from posts.models import Post
+from django.core.files.base import ContentFile
+import urllib.request
+import tempfile
 
 
 # Create your views here.
@@ -236,45 +238,7 @@ def follow(request, user_pk):
             
     return redirect('accounts:profile', person.username)
 
-
-# def profile(request, username):
-#     User = get_user_model()
-#     person = get_object_or_404(User, username=username)
-#     music = Track.objects.all()
-#     if request.method == 'GET':
-#         query = request.GET.get('q')  # GET 파라미터에서 'q' 값을 가져옵니다.
-
-#         if query:
-#             tracks = search_spotify(query)  # 검색 기능 사용
-#             context = {
-#                 'person': person,
-#                 'tracks': tracks,
-#                 'music' : music,
-#             }
-#             return render(request, 'accounts/profile.html', context)
-
-#     context = {
-#         'person': person,
-#         'music' : music,
-#     }
-#     return render(request, 'accounts/profile.html', context)
-
-
 tracks = {}
-# def search_spotify(request):
-#     global tracks
-#     if request.method == 'GET':
-#         query = request.GET.get('q')
-
-#         if query:
-#             tracks = search(query)  # 검색 기능 사용
-#             context = {
-#                 'tracks': tracks,
-#             }
-#             return render(request, 'accounts/profile.html', context)
-#         return render(request, 'accounts/profile.html')
-from django.template.loader import render_to_string
-
 def search_spotify(request):
     global tracks
     if request.method == 'GET':
@@ -290,9 +254,7 @@ def search_spotify(request):
 
     return render(request, 'accounts/search_results.html')
 
-from django.core.files.base import ContentFile
-import urllib.request
-import tempfile
+
 
 def save_track(request):
     global tracks
@@ -301,7 +263,14 @@ def save_track(request):
 
     music = Track.objects.filter(user_id=request.user.id)
     if music.exists():
-        music.delete()
+        for track in music:
+            if request.user == track.user:
+                if track.image:  
+                    image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                    if os.path.isfile(image_path):
+                        os.remove(image_path)
+                        music.delete()
+                track.delete()
 
     for track_id in selected_tracks:
         for track in tracks:
@@ -330,37 +299,12 @@ def save_track(request):
 def delete_track(request, track_pk):
     music = Track.objects.get(pk=track_pk)
     if request.user == music.user:
+        if music.image:  
+            image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
+            if os.path.isfile(image_path):
+                os.remove(image_path)
         music.delete()
     return redirect('accounts:profile',username=request.user.username)
-
-
-
-#     global tracks
-#     if request.method == 'POST':
-#         selected_tracks = request.POST.getlist('selected_tracks[]')
-#         # print(tracks)
-#         # print(selected_tracks)
-#     music = Track.objects.filter(user_id=request.user.id)
-#     if music is not None:
-#         # if request.user == music.user_id:
-#         music.delete()
-    
-#     for track_id in selected_tracks:
-#         for track in tracks:
-#             if track_id == track['id']:
-#                 Track.objects.create(
-#                     title=track['name'],
-#                     artist=track['artists'][0]['name'],
-#                     album=track['album']['name'],
-#                     image_url=track['album']['images'][0]['url'],
-#                     preview_url=track['preview_url'],
-#                     user = request.user
-#                 )
-#         return redirect('accounts:profile', username=request.user.username)
-#     else:
-#         return HttpResponseBadRequest("Invalid request method.")
-
-
 
 
 def search(query):

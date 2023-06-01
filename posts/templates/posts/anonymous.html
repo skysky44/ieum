@@ -8,14 +8,14 @@
 {% block content %}
 <article>
   <div class="title--wrap">
-    <h2>{{ user }} 님 로그인 했구먼유 </h2>
-    <a href="{% url 'posts:create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
+    <h2> anonymous 게시판 입니다. </h2>
+    <a href="{% url 'posts:anonymous_create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
   </div>
   <section>
     <ul>
-      {% for post in category_class  %}
+      {% for post in category_anonymous  %}
         <li class="posts--wrap">
-          <a href="{% url 'posts:detail' post.pk %}">
+          <a href="{% url 'posts:anonymous_detail' post.pk %}">
             <div class="d-flex">
               <!-- 게시물 내용 -->
               <div class="posts--img-wrap">
@@ -81,18 +81,18 @@
 
   <!-- 페이지네이션 -->
   <ul class="pagination justify-content-center">
-    {% if category_class.has_previous %}
+    {% if category_anonymous.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ category_class.previous_page_number }}"><i class="bi bi-caret-left" style="color:#CE996A;"></i></a>
+        <a class="page-link" href="?page={{ category_anonymous.previous_page_number }}"><i class="bi bi-caret-left" style="color:#CE996A;"></i></a>
       </li>
     {% else %}
       <li class="page-item disabled">
         <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color:#CE996A;"></i></a>
       </li>
     {% endif %}
-    {% for page_number in category_class.paginator.page_range %}
-      {% if page_number >= category_class.number|add:-5 and page_number <= category_class.number|add:5 %}
-        {% if page_number == category_class.number %}
+    {% for page_number in category_anonymous.paginator.page_range %}
+      {% if page_number >= category_anonymous.number|add:-5 and page_number <= category_anonymous.number|add:5 %}
+        {% if page_number == category_anonymous.number %}
           <li class="page-item active" aria-current="page">
             <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
           </li>
@@ -103,9 +103,9 @@
         {% endif %}
       {% endif %}
     {% endfor %}
-    {% if category_class.has_next %}
+    {% if category_anonymous.has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ category_class.next_page_number }}"><i class="bi bi-caret-right" style="color:#CE996A;"></i></a>
+        <a class="page-link" href="?page={{ category_anonymous.next_page_number }}"><i class="bi bi-caret-right" style="color:#CE996A;"></i></a>
       </li>
     {% else %}
       <li class="page-item disabled">

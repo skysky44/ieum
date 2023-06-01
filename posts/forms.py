@@ -2,12 +2,6 @@ from django import forms
 from .models import Post, Comment, CommentReport
 from taggit.forms import TagField, TagWidget
 
-category_choices = (
-    ('모임', '모임'),
-    ('익명', '익명'),
-)
-
-
 class PostForm(forms.ModelForm):
     category = forms.ChoiceField(
         label='카테고리',
@@ -15,24 +9,29 @@ class PostForm(forms.ModelForm):
             attrs={
                 'class': 'form-control',
                 'placeholder' : '분류',
+                'style': 'width:400px;'
             }
-        ),
-        choices=category_choices,
+        )
     )
     widgets = {
             'tags':TagWidget(
                 attrs={
                     'class': 'form-control', 
                     'placeholder': '콤마로 구분하여 입력해주세요',
+                    'style': 'width:400px;'
                 }
             ),        
         }
-    help_texts = {
-            'tags': '콤마로 구분하여 입력해주세요',
-        }
+    # help_texts = {
+    #         'tags': '콤마로 구분하여 입력해주세요',
+    #     }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['tags'].label = '태그'
+        category_choices = kwargs.pop('category_choices', None)
+        super(PostForm, self).__init__(*args, **kwargs)
+        if category_choices:
+            self.fields['category'].choices = category_choices
 
     class Meta:
         model = Post
@@ -43,6 +42,7 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '제목을 입력해주세요',
+                    'style': 'width:400px;'
                 }
             ),
 
@@ -57,6 +57,7 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '주소',
+                    'style': 'width:350px;'
                 }
             ),
         }
@@ -65,12 +66,21 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['title'].label = '제목'
+        self.fields['title'].widget.attrs['style'] = 'width:100%; border: none;'
         self.fields["content"].required = False
         self.fields['content'].label = '내용'
+        self.fields['content'].widget.attrs['class'] = 'form-control'
+        self.fields['content'].widget.attrs['style'] = 'width:100%; border: none;'
         self.fields['address'].label = '주소'
+        self.fields['address'].widget.attrs['style'] = 'width:100%; border: none;'
+        self.fields['tags'].label = '태그'
+        self.fields['tags'].widget.attrs['class'] = 'form-control'
+        self.fields['tags'].widget.attrs['placeholder'] = '콤마로 구분하여 입력해주세요'
+        self.fields['tags'].widget.attrs['style'] = 'width:100%; border: none;'
         # self.fields['created_at'].label = '생성일'
         # self.fields['updated_at'].label = '수정일'
         self.fields['category'].label = '분류'
+        self.fields['category'].widget.attrs['style'] = 'width:100%; border: none;'
 
 
 # class PostImageForm(forms.ModelForm):
