@@ -34,13 +34,13 @@ SECRET_KEY = 'django-insecure-m-0!*yv=-wb#wq)80ix=3mk&xagc8ufs!l(^1!oqhxve@pa82y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost',]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels', 안써도 됨
     'daphne',
     'accounts',
     'balances',
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'taggit_templatetags2',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

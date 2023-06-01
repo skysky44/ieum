@@ -10,6 +10,10 @@
   <input type="text" id="room-name-input" placeholder="Enter room name">
   <button onclick="createChatRoom()">Create Room</button>
   
+
+  {% for room in rooms  %}
+    <a href="{% url 'chat:room' room %}">{{ room }}</a>
+  {% endfor %}
 {% endblock content %}
 
 {% block script %}
