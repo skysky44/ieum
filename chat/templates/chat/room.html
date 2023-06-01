@@ -9,7 +9,7 @@
   <div id="chat-log">
     {% for message in messages %}
         <div class="message">
-            <p>{{ message.content }}</p>
+            <p>{{ message.user }}:{{ message.content }}</p>
         </div>
     {% endfor %}
   </div>
