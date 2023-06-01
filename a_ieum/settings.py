@@ -40,12 +40,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'daphne',
     'accounts',
     'balances',
     'posts',
     'my_messages',
     'paints',
-
+    'chat',
     'imagekit',
     'taggit',
 
@@ -90,7 +92,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'a_ieum.wsgi.application'
+ASGI_APPLICATION = 'a_ieum.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

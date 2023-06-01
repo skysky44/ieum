@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} 채팅 {% endblock title %}
+
+{% block head %}
+{% endblock head %}  
+
+{% block content %}
+  <div id="chat-log"></div>
+  <form id="chat-form" data-room-name="{{ room_name }}">
+      <input type="text" id="chat-message" autocomplete="off">
+      <button type="submit">Send</button>
+      
+  </form>
+{% endblock content %}
+
+{% block script %}
+  <script>
+    // WebSocket 연결을 설정합니다.
+    const roomName = '{{ room_name }}';  // 채팅방 이름을 여기에 입력하세요.
+    {% comment %} const chatSocket = new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`); {% endcomment %}
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + roomName + '/'
+    );
+    console.log(chatSocket)
+
+    // WebSocket 연결이 열린 경우 실행되는 이벤트 핸들러입니다.
+    chatSocket.onopen = function(event) {
+        console.log('WebSocket connection is open.');
+
+        // Send a test message
+        const message = {
+            'type': 'chat.message',
+            'message': 'Hello, World!'
+        };
+        chatSocket.send(JSON.stringify(message));
+    };
+
+    // WebSocket 메시지 수신 시 실행되는 이벤트 핸들러입니다.
+    chatSocket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+
+        if (message.type === 'chat.message') {
+            const chatLog = document.getElementById('chat-log');
+            const messageElement = document.createElement('p');
+            messageElement.innerText = message.message;
+            chatLog.appendChild(messageElement);
+        }
+    };
+
+    // 채팅 메시지를 전송하는 이벤트 핸들러입니다.
+    document.getElementById('chat-form').onsubmit = function(event) {
+        event.preventDefault();
+        const messageInput = document.getElementById('chat-message');
+        const message = messageInput.value;
+
+        // 전송할 메시지 객체를 생성하여 WebSocket을 통해 전송합니다.
+        const chatMessage = {
+            'type': 'chat.message',
+            'message': message
+        };
+        chatSocket.send(JSON.stringify(chatMessage));
+
+        messageInput.value = '';
+    };
+</script>
+{% endblock script %}
