@@ -13,6 +13,7 @@
 
   {% for room in rooms  %}
     <a href="{% url 'chat:room' room %}">{{ room }}</a>
+    <a href="{% url 'chat:room_delete' room %}">X</a>
   {% endfor %}
 {% endblock content %}
 
