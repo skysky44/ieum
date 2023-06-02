@@ -31,57 +31,15 @@ class User(AbstractUser):
     taste = models.CharField(max_length=2, default='N')
     privacy = models.BooleanField(default=False)
     pick = models.CharField(max_length=10, default=3)
+    introductions = models.CharField(max_length=255)
 
-    # SMALL = "특별함 보다 소소한 행복을 추구해요."
-    # FUTURE = "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."
-    # lIKE = "내가 좋아하는 걸로 삶을 채워가고 싶어요."
-    # FAST = "빠른 것보다 천천히 나아가는 것이 낫다고 생각해요."
-    # HELP = "누군가에게 영감을 주는 삶을 살고 싶어요."
-    # HOBBY = "관심있는 취미들을 깊게 더 나눠보고 싶어요."
-    # VALUE = "경험을 통해 얻는 가치가 중요해요."
-    # START = "결과보다는 시작하는 것이 더 가치 있다고 생각해요."
-    # KIND = "선한 영향력을 가진 사람이 되고 싶어요."
-    # SEPECIAL = "반복되는 일상을 특별하게 만들어 보고 싶어요."
-    # PLAY = "함께 먹고 마시고 떠들며 놀고 싶어요!"
-    # GOAL = "새로운 목표를 같이 달성해보고 싶어요."
-    # GROWTH = "서로의 고민이나 생각을 나누며 함께 성장해보고 싶어요."
-    # TOGETHER = "혼자 하기 두려웠던 것들을 함께 시작해 보고 싶어요."
-    # ENJOYMAKE = "즐거운 삶은 스스로 만들어 나가는 것이라고 생각해요."
-    # BALANCE = "일과 삶의 균형을 중요하게 생각해요."
-    # CONTINUE = "지속 가능한 삶에 대해 중요하게 생각해요."
-    # VARIOUSSPACE = "가보지 못했던 다양한 장소를 같이 가보고 싶어요."
-    # NEW = "새로운 사람들과 함께 다채로운 경험을 쌓고 싶어요."
-    # QUESTION = "스스로에게 끊임 없이 질문하는 삶을 지향해요."
-    # LEARN = "늘 배우고 성장하는 것이 가장 큰 목표예요."
-    # EXCAVATE = "몰랐던 취미나 관심사를 함께 발굴해나가 봐요!"
-    
-    # SENTENCE_CHOICES = [(SMALL, "특별함 보다 소소한 행복을 추구해요."),
-    # (FUTURE, "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."),
-    # (lIKE, "내가 좋아하는 걸로 삶을 채워가고 싶어요."),
-    # (FAST, "빠른 것보다 천천히 나아가는 것이 낫다고 생각해요."),
-    # (HELP, "누군가에게 영감을 주는 삶을 살고 싶어요."),
-    # (HOBBY, "관심있는 취미들을 깊게 더 나눠보고 싶어요."),
-    # (VALUE, "경험을 통해 얻는 가치가 중요해요."),
-    # (START, "결과보다는 시작하는 것이 더 가치 있다고 생각해요."),
-    # (KIND, "선한 영향력을 가진 사람이 되고 싶어요."),
-    # (SEPECIAL, "반복되는 일상을 특별하게 만들어 보고 싶어요."),
-    # (PLAY, "함께 먹고 마시고 떠들며 놀고 싶어요!"),
-    # (GOAL, "새로운 목표를 같이 달성해보고 싶어요."),
-    # (GROWTH, "서로의 고민이나 생각을 나누며 함께 성장해보고 싶어요."),
-    # (TOGETHER, "혼자 하기 두려웠던 것들을 함께 시작해 보고 싶어요."),
-    # (ENJOYMAKE, "즐거운 삶은 스스로 만들어 나가는 것이라고 생각해요."),
-    # (BALANCE, "일과 삶의 균형을 중요하게 생각해요."),
-    # (CONTINUE, "지속 가능한 삶에 대해 중요하게 생각해요."),
-    # (VARIOUSSPACE, "가보지 못했던 다양한 장소를 같이 가보고 싶어요."),
-    # (NEW, "새로운 사람들과 함께 다채로운 경험을 쌓고 싶어요."),
-    # (QUESTION, "스스로에게 끊임 없이 질문하는 삶을 지향해요."),
-    # (LEARN, "늘 배우고 성장하는 것이 가장 큰 목표예요."),
-    # (EXCAVATE, "몰랐던 취미나 관심사를 함께 발굴해나가 봐요!")]
-    # my_sentence = models.CharField(max_length=100, choices=SENTENCE_CHOICES, blank=True, null=True)
+    # def set_introductions(self, introductions):
+    #     self.introductions = ','.join(introductions)
+
+    # def get_introduces(self):
+    #     return self.introductions.split(',')
 
     # reported = models.BooleanField(default=False)
-    
-
 
 class Track(models.Model):
     # id = models.CharField(max_length=100, primary_key=True)
