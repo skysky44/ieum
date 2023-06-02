@@ -52,7 +52,8 @@
             messageElement.classList.add('message');
 
             const content = document.createElement('p');
-            content.textContent = `${message.message}`;
+            content.textContent = `${message.user}:${message.message}`;
+            console.log(message.message)
             messageElement.appendChild(content);
 
             chatLog.appendChild(messageElement)
