@@ -6,8 +6,6 @@ from .models import Post, Comment
 from .models import PostTrack
 import os
 from django.conf import settings
-from django.http import HttpResponseBadRequest
-from django.http import JsonResponse
 from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
@@ -17,46 +15,58 @@ def home(request):
     return render(request, 'home.html')
 
 def index(request):
-    posts = Post.objects.order_by('-pk')
+    # posts = Post.objects.order_by('-pk')
+    category_class = Post.objects.filter(category='모임').order_by('-id')
     page = request.GET.get('page', '1')
     tags = Post.tags.all()
     per_page = 5
-    paginator = Paginator(posts, per_page)
+    paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
+    
     context = {
         'tags': tags,
-        'posts': page_obj,
+        # 'posts': page_obj,
+        'category_class' : page_obj,
+        
     }
     return render(request, 'posts/index.html', context)
 
+def anonymous(request):
+    # posts = Post.objects.order_by('-pk')
+    category_anonymous = Post.objects.filter(category='익명').order_by('-id')
+    per_page = 5
+    paginator = Paginator(category_anonymous, per_page)
+    page = request.GET.get('page', '1')
+    page_obj = paginator.get_page(page)
+    tags = Post.tags.all()
+    context ={
+        'category_anonymous' : page_obj,
+        'tags' : tags,
+        # 'posts' : page_obj
+
+    }
+    return render(request, 'posts/anonymous.html',context)
 
 @login_required
 def create(request):
     global tracks
+    category_choices = [
+        ('모임', '모임'),
+        ('익명', '익명'),
+    ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
     music = PostTrack.objects.filter(user_id=request.user.id)
-    
+
     if request.method =='POST':
         tags = request.POST.get('tags').split(',')
         form = PostForm(request.POST, request.FILES)
+        form.fields['category'].choices = category_choices
         if form.is_valid():
             post = form.save(commit= False)
             post.user = request.user
             post.save()
             for tag in tags:
                 post.tags.add(tag.strip())
-                
-        if not selected_tracks:
-            return redirect('posts:index')
-        else:
-            if music.exists():
-                for track in music:
-                    if request.user == track.user:
-                        if track.image:  
-                            image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-                            if os.path.isfile(image_path):
-                                os.remove(image_path)
-
 
             for track_id in selected_tracks:
                 for track in tracks:
@@ -82,14 +92,67 @@ def create(request):
                 return redirect('posts:index')
     else:
         form = PostForm()
+    form.fields['category'].choices = category_choices    
     context = {
         'form' : form,
     }
     return render(request, 'posts/create.html', context)
 
+@login_required
+def anonymous_create(request):
+    global tracks
+    category_choices = [
+        ('익명', '익명'),
+        ('모임', '모임'),
+    ]
+    selected_tracks = request.POST.getlist('selected_tracks[]')
+    music = PostTrack.objects.filter(user_id=request.user.id)
+
+
+    if request.method =='POST':
+        tags = request.POST.get('tags').split(',')
+        form = PostForm(request.POST, request.FILES)
+        form.fields['category'].choices = category_choices
+        if form.is_valid():
+            post = form.save(commit= False)
+            post.user = request.user
+            post.save()
+            for tag in tags:
+                post.tags.add(tag.strip())
+
+            for track_id in selected_tracks:
+                for track in tracks:
+                    if track_id == track['id']:
+                        # 이미지 URL 가져오기
+                        image_url = track['album']['images'][0]['url']
+
+                        # 이미지 다운로드 및 저장
+                        img_temp = tempfile.TemporaryFile()
+                        img_temp.write(urllib.request.urlopen(image_url).read())
+                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                        # Track 객체 생성 및 저장
+                        new_track = PostTrack()
+                        new_track.post = post
+                        new_track.title = track['name']
+                        new_track.artist = track['artists'][0]['name']
+                        new_track.album = track['album']['name']
+                        new_track.preview_url = track['preview_url']
+                        new_track.user = request.user
+                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+                return redirect('posts:anonymous')
+    else:
+        form = PostForm()
+    form.fields['category'].choices = category_choices    
+    context = {
+        'form' : form,
+    }
+    return render(request, 'posts/anonymous_create.html', context)
 
 
 
+@login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     comment_form = CommentForm()
@@ -108,34 +171,165 @@ def detail(request, post_pk):
 
     return render(request, 'posts/detail.html', context)
 
-
-# @login_required
-def update(request, post_pk):
+@login_required
+def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    comment_form = CommentForm()
+    comments = post.comments.all()
+    tags = post.tags.all()
+    posts = Post.objects.all().order_by('like_users')
+    music = PostTrack.objects.filter(post=post_pk)
+    context ={
+        'post' : post,
+        'comment_form':comment_form,
+        'comments' : comments,
+        'tags' : tags,
+        'posts' : posts,
+        'music' : music,
+    }
+
+    return render(request, 'posts/anonymous_detail.html', context)
+
+
+@login_required
+def update(request, post_pk):
+    category_choices = [
+        ('모임', '모임'),
+        ('익명', '익명'),
+    ]
+    post = Post.objects.get(pk=post_pk)
+    music = PostTrack.objects.filter(post=post_pk)
     if request.method == 'POST':
+        selected_tracks = request.POST.getlist('selected_tracks[]')
         form = PostForm(request.POST, request.FILES, instance=post)
+        form.fields['category'].choices = category_choices
         if form.is_valid():
             tags = request.POST.get('tags').split(',')
             for tag in tags:
                 post.tags.add(tag.strip())
             form.save()
+        
+        if music.exists():
+            if not selected_tracks:
+                    return redirect('posts:index')
+            else:
+                if music.exists():
+                    for track in music:
+                        if request.user == track.user:
+                            if track.image:  
+                                image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                                if os.path.isfile(image_path):
+                                    os.remove(image_path)
+                                    music.delete()
 
+            for track_id in selected_tracks:
+                for track in tracks:
+                    if track_id == track['id']:
+                        # 이미지 URL 가져오기
+                        image_url = track['album']['images'][0]['url']
+
+                        # 이미지 다운로드 및 저장
+                        img_temp = tempfile.TemporaryFile()
+                        img_temp.write(urllib.request.urlopen(image_url).read())
+                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                        # Track 객체 생성 및 저장
+                        new_track = PostTrack()
+                        new_track.post = post
+                        new_track.title = track['name']
+                        new_track.artist = track['artists'][0]['name']
+                        new_track.album = track['album']['name']
+                        new_track.preview_url = track['preview_url']
+                        new_track.user = request.user
+                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
 
             return redirect('posts:detail', post.pk)
 
     else:
         form = PostForm(instance=post)
+    form.fields['category'].choices = category_choices
     context = {
         'post' : post,
         'form' : form,
+        'music' : music,
     }
     return render(request, 'posts/update.html', context)
 
 
-# @login_required
+@login_required
+def anonymous_update(request, post_pk):
+    category_choices = [
+        ('모임', '모임'),
+        ('익명', '익명'),
+    ]
+    post = Post.objects.get(pk=post_pk)
+    music = PostTrack.objects.filter(post=post_pk)
+    if request.method == 'POST':
+        selected_tracks = request.POST.getlist('selected_tracks[]')
+        form = PostForm(request.POST, request.FILES, instance=post)
+        form.fields['category'].choices = category_choices
+        if form.is_valid():
+            tags = request.POST.get('tags').split(',')
+            for tag in tags:
+                post.tags.add(tag.strip())
+            form.save()
+        
+        if music.exists():
+            if not selected_tracks:
+                    return redirect('posts:index')
+            else:
+                if music.exists():
+                    for track in music:
+                        if request.user == track.user:
+                            if track.image:  
+                                image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                                if os.path.isfile(image_path):
+                                    os.remove(image_path)
+                                    music.delete()
+
+            for track_id in selected_tracks:
+                for track in tracks:
+                    if track_id == track['id']:
+                        # 이미지 URL 가져오기
+                        image_url = track['album']['images'][0]['url']
+
+                        # 이미지 다운로드 및 저장
+                        img_temp = tempfile.TemporaryFile()
+                        img_temp.write(urllib.request.urlopen(image_url).read())
+                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                        # Track 객체 생성 및 저장
+                        new_track = PostTrack()
+                        new_track.post = post
+                        new_track.title = track['name']
+                        new_track.artist = track['artists'][0]['name']
+                        new_track.album = track['album']['name']
+                        new_track.preview_url = track['preview_url']
+                        new_track.user = request.user
+                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+            return redirect('posts:anonymous_detail', post.pk)
+
+    else:
+        form = PostForm(instance=post)
+    form.fields['category'].choices = category_choices
+    context = {
+        'post' : post,
+        'form' : form,
+        'music' : music,
+    }
+    return render(request, 'posts/anonymous_update.html', context)
+
+
+@login_required
 def delete(request,post_pk):
     post = Post.objects.get(pk=post_pk)
+    music = PostTrack.objects.get(post=post_pk)
     if request.user == post.user:
+        if music.image:  
+            image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
+            if os.path.isfile(image_path):
+                os.remove(image_path)
         post.delete()
     return redirect('posts:index')
 
@@ -208,7 +402,6 @@ def comment_likes(request, post_pk, comment_pk):
 
 
 tracks = {}
-from django.template.loader import render_to_string
 def search_spotify(request):
     global tracks
     if request.method == 'GET':

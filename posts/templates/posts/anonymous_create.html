@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="">
+  
+  <form action="{% url 'posts:anonymous_create' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.media }}
+    
+    <div>
+      {{ form.category }}
+    </div>
+    <div>
+      {{ form.title }}
+    </div>
+    {% comment %}
+    <div>
+      {{ image_form }}
+    </div>
+    {% endcomment %}
+    <div>
+      {{ form.address }}
+    </div>
+    <div>
+      {{ form.tags }}
+    </div>
+    <div> 
+      {{ form.content }}
+    </div>
+    
+    <div>
+      <div>
+        <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">
+        <button id="search-button" type="button">검색</button>
+      </div>
+      
+      <div id="search-results">
+        {% include 'posts/search_results.html' %}
+      </div>
+      
+      <audio class="main-audio" controls>
+        <source src="" type="audio/mp3">
+      </audio>
+    </div>
+    
+
+    <div>
+      <a href="{% url 'posts:index' %}" class="">취소</a>
+      <button class="" type="submit">등록</button>
+    </div>
+  </form>
+
+
+  </div>
+
+
+
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'posts/js/create_music_ajax.js' %}"></script>
+  <script>
+
+</script>
+{% endblock content %}

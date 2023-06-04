@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from .models import Paint
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8,8 +9,25 @@ import uuid
 
 # Create your views here.
 def index(request):
-    paints = Paint.objects.all()
-    return render(request, 'paints/index.html', { 'paints' : paints })
+    paints = Paint.objects.order_by('-pk')
+    page = request.GET.get('page', '1')
+    per_page = 6
+    paginator = Paginator(paints, per_page)
+    page_obj = paginator.get_page(page)
+    POSITIONS = [
+        {'top': '20%', 'left': '8%'},
+        {'top': '45%', 'left': '9%'},
+        {'top': '6%', 'left': '28%'},
+        {'top': '26%', 'left': '40%'},
+        {'top': '32%', 'left': '80%'},
+        {'top': '10%', 'left': '50%'},
+    ]
+    paint_positions = list(zip(page_obj, POSITIONS))
+    context = {
+        'paint_positions' : paint_positions,
+        'paints': page_obj,
+    }
+    return render(request, 'paints/index.html', context)
 
 
 @csrf_exempt
