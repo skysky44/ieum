@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% comment %} {% load base_extras %} {% endcomment %}
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -13,6 +14,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_03.png' %}">
     <title>오늘, 이음{% block title %}{% endblock title %}</title>
     {% load static %}
+
     {% block head %}{% endblock head %}
     <style>
       @font-face {
@@ -35,6 +37,12 @@
             </a>
           </div>
           <div class="header--item2">
+            <div>
+              {% include 'my_messages/is_read.html' %}
+            </div>
+            <div>
+              {% comment %} {{ request.user|is_read_count }} {% endcomment %}
+            </div>
             <button id="navToggleButton">
               <i class="bi bi-list" style="font-size:1.8rem;"></i>
             </button>
