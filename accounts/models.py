@@ -1,7 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+import random
+import string
 # Create your models here.
+# def generate_anonymous_username():
+#     base_name = 'user'
+#     suffix = str(random.randint(100000, 999999))  # 6자리 숫자 생성
+#     username = f'{base_name}{suffix}'
+#     return username
+
 class User(AbstractUser):
     SEOUL = '서울특별시'
     INCHEON = '인천광역시'
