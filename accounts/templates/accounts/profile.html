@@ -82,9 +82,9 @@
     </div>
     <div class="text-end mb-3">
       <!-- 취향 문장 -->
-      <p class="mb-1">내 취향을 나타내는 문장 1</p>
-      <p class="mb-1">내 취향을 나타내는 문장 2</p>
-      <p>내 취향을 나타내는 문장 3</p>
+      {% for introduction in introductions_list %}
+        <p class="mb-1">{{ introduction}}</p>
+      {% endfor %}
     </div>
     <!-- 워드 -->
     <div class="d-flex justify-content-between">

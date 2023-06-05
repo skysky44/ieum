@@ -13,9 +13,7 @@
         <div class="d-flex justify-content-between mb-1">
           <div class="d-flex flex-column">
             <h1>{{ post.title }}</h1>
-            {% comment %} <a href="{% url 'accounts:profile' username=post.user %}"> {% endcomment %}
-              {% comment %} <p><strong>{{ post.user }}</strong></p> {% endcomment %}
-            {% comment %} </a> {% endcomment %}
+              <p><strong>익명</strong></p>
           </div>
           <div class="d-flex align-items-center">
             <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
@@ -71,49 +69,62 @@
     <section class="comments--wrap">
       <ul>
         <li>
-          {% for comment in comments %}
-          <div class="comments__content--wrap">
+{% for comment, u_comment_form in comment_forms %}
+    {% if comment.user == request.user %}
+        <div class="comments__content--wrap">
             <div>
-              <div class="comments__user--wrap">
-                <p class="fw-bold">{{ comment.user }}</p>
-                <i class="comment--date">{{ comment.created_time }}</i>
-              </div>
-              <p>{{ comment.content }}</p>
+                <div class="comments__user--wrap">
+                    {% if comment.user.username == post.user.username %}
+                        <p>익명(글쓴이): {{ comment.content }}</p>
+                    {% else %}
+                        <p>익명 : {{ comment.content }}</p>
+                    {% endif %}
+                    <i class="comment--date">{{ comment.created_time }}</i>
+                </div>
             </div>
             <div class="comments__btn--list">
-              <div class="me-2" style="display:flex; align-self:center;">
-                <div class="ieum--button1">
-                  <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">수정</button>
+                <div class="me-2" style="display:flex; align-self:center;">
+                  
+                    <div class="ieum--button1">
+                        <a type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</a>
+                    </div>
                 </div>
-              </div>
-              <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                <input type="submit" value='삭제' class="ieum--button2">
-              </form>
-              <!-- Button trigger modal -->
+                <form action="{% url 'posts:anonymous_comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                    <input type="submit" value='삭제' class="ieum--button2">
+                </form>
+                <!-- Button trigger modal -->
             </div>
-      
-              <!-- Modal -->
-              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
-                <div class="modal-dialog">
+
+            <!-- Modal -->
+            <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+              <div class="modal-dialog">
                   <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{comment_form.as_p}}
-                        <div class="modal-footer">
-                          <button type="submit" class="btn btn-primary">수정하기</button>
-                        </div>
-                      </form>
-                    </div>
+                      <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel">익명 댓글 수정</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form action="{% url 'posts:anonymous_comment_update' post.pk comment.pk %}" method="POST">
+                              {% csrf_token %}
+                              {{u_comment_form.as_p}}<!-- 수정 내용을 입력하는 필드 -->
+                              <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary">수정하기</button>
+                              </div>
+                          </form>
+                      </div>
                   </div>
-                </div>
               </div>
           </div>
-          {% endfor %}
+          </div>
+    {% else %}
+        {% if comment.user.username == post.user.username %}
+            <p>익명(글쓴이): {{ comment.content }}</p>
+        {% else %}
+            <p>익명 : {{ comment.content }}</p>
+        {% endif %}
+    {% endif %}
+  {% endfor %}
+
           {% for track in music %}
           <div id="music-track">
             <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
@@ -126,7 +137,7 @@
           </audio>
         </li>
         <li>
-          <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
+          <form action="{% url 'posts:anonymous_comment_create' post.pk %}" method='POST'>
             {% csrf_token %}
             <div class="comment__create--list">
               <div class="create--list__item1 comment__create--textarea--wrap">{{ comment_form.content }}</div>

@@ -6,7 +6,44 @@
     padding: 1rem;
     margin: 1rem;
 }
-
+#detail--main--box {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+}
+@media (max-width: 1024px) {
+  #detail--main--box {
+    display: block;
+  }
+}
+#header {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+}
+@media (max-width: 1024px) {
+  #header {
+    display: block;
+  }
+  .detail__map {
+    width: 100%;
+  }
+}
+#music-track {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+}
+@media (max-width: 1024px) {
+  #detail--music {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 540px) {
+  #music-track {
+    display: block;
+  }
+  .detail--music--playbtn {
+    display: block;
+  }
+}
 .detail--content p img {
   display: block;
   top: 100px;
@@ -24,12 +61,32 @@
   box-sizing: border-box;
   /* border: 1px solid black; */
   background: #DEECA1;
-  padding: 3px;
-  border-radius: 3px;
+  padding: 3px 6px;
+  border-radius: 20px;
 }
 
 .detail__map {
   border-radius: 10px;
+}
+.detail--music--box {
+  box-sizing: border-box;
+  /* border: 1px solid; */
+  border-radius: 5px;
+  padding: 3px 6px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  margin-bottom: 10px;
+  max-width: 350px;
+}
+.detail--music--playbtn {
+  text-align: center;
+  padding: 1px 6px;
+  background: #FFF7D3;
+  border-radius: 5px;
+  max-width: 50px;
+  height: 25px;
+}
+.detail--music--playbtn:hover {
+  background-color: #ffe570;
 }
 
 .comments__content--wrap {
@@ -49,8 +106,20 @@
   margin: 5px 0 0 5px;
 }
 .comments__btn--list {
-  display: flex;
-  /* flex-direction: ; */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 576px) {
+  .comments__content--wrap {
+    flex-direction: column;
+  }
+
+  .comments__btn--list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
 }
 .comment__create--list {
   display: grid;
@@ -67,11 +136,13 @@
 } 
 .comment__create--textarea--wrap textarea {
   max-height: 50px;
-  width: 100%;
+  width: 98%;
 }
 .create--list__item2 input {
   height: 100%;
   margin-left: 2px;
+  left: -11px;
+  position: relative;
 }
 /* 버튼 디자인, 나중에 한 폴더에 모을 예정 */
 
@@ -81,6 +152,7 @@
     border-radius: 5px;
     border: none;
     background-color: #FFF7D3;
+    width: 40px;
     padding: 0.1rem 0.5rem;
     transition: background-color .30s ease-in-out;
   }

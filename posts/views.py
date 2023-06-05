@@ -55,7 +55,6 @@ def create(request):
         ('익명', '익명'),
     ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
-    music = PostTrack.objects.filter(user_id=request.user.id)
 
     if request.method =='POST':
         tags = request.POST.get('tags').split(',')
@@ -68,28 +67,31 @@ def create(request):
             for tag in tags:
                 post.tags.add(tag.strip())
 
-            for track_id in selected_tracks:
-                for track in tracks:
-                    if track_id == track['id']:
-                        # 이미지 URL 가져오기
-                        image_url = track['album']['images'][0]['url']
-
-                        # 이미지 다운로드 및 저장
-                        img_temp = tempfile.TemporaryFile()
-                        img_temp.write(urllib.request.urlopen(image_url).read())
-                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
-
-                        # Track 객체 생성 및 저장
-                        new_track = PostTrack()
-                        new_track.post = post
-                        new_track.title = track['name']
-                        new_track.artist = track['artists'][0]['name']
-                        new_track.album = track['album']['name']
-                        new_track.preview_url = track['preview_url']
-                        new_track.user = request.user
-                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
-
+            if not selected_tracks:
                 return redirect('posts:index')
+            else:
+                for track_id in selected_tracks:
+                    for track in tracks:
+                        if track_id == track['id']:
+                            # 이미지 URL 가져오기
+                            image_url = track['album']['images'][0]['url']
+
+                            # 이미지 다운로드 및 저장
+                            img_temp = tempfile.TemporaryFile()
+                            img_temp.write(urllib.request.urlopen(image_url).read())
+                            img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                            # Track 객체 생성 및 저장
+                            new_track = PostTrack()
+                            new_track.post = post
+                            new_track.title = track['name']
+                            new_track.artist = track['artists'][0]['name']
+                            new_track.album = track['album']['name']
+                            new_track.preview_url = track['preview_url']
+                            new_track.user = request.user
+                            new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+                    return redirect('posts:index')
     else:
         form = PostForm()
     form.fields['category'].choices = category_choices    
@@ -106,7 +108,6 @@ def anonymous_create(request):
         ('모임', '모임'),
     ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
-    music = PostTrack.objects.filter(user_id=request.user.id)
 
 
     if request.method =='POST':
@@ -120,28 +121,31 @@ def anonymous_create(request):
             for tag in tags:
                 post.tags.add(tag.strip())
 
-            for track_id in selected_tracks:
-                for track in tracks:
-                    if track_id == track['id']:
-                        # 이미지 URL 가져오기
-                        image_url = track['album']['images'][0]['url']
-
-                        # 이미지 다운로드 및 저장
-                        img_temp = tempfile.TemporaryFile()
-                        img_temp.write(urllib.request.urlopen(image_url).read())
-                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
-
-                        # Track 객체 생성 및 저장
-                        new_track = PostTrack()
-                        new_track.post = post
-                        new_track.title = track['name']
-                        new_track.artist = track['artists'][0]['name']
-                        new_track.album = track['album']['name']
-                        new_track.preview_url = track['preview_url']
-                        new_track.user = request.user
-                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
-
+            if not selected_tracks:
                 return redirect('posts:anonymous')
+            else:
+                for track_id in selected_tracks:
+                    for track in tracks:
+                        if track_id == track['id']:
+                            # 이미지 URL 가져오기
+                            image_url = track['album']['images'][0]['url']
+
+                            # 이미지 다운로드 및 저장
+                            img_temp = tempfile.TemporaryFile()
+                            img_temp.write(urllib.request.urlopen(image_url).read())
+                            img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+
+                            # Track 객체 생성 및 저장
+                            new_track = PostTrack()
+                            new_track.post = post
+                            new_track.title = track['name']
+                            new_track.artist = track['artists'][0]['name']
+                            new_track.album = track['album']['name']
+                            new_track.preview_url = track['preview_url']
+                            new_track.user = request.user
+                            new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+
+                    return redirect('posts:anonymous')
     else:
         form = PostForm()
     form.fields['category'].choices = category_choices    
@@ -157,12 +161,20 @@ def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     comment_form = CommentForm()
     comments = post.comments.all()
+    comment_forms = []
+    for comment in comments:
+        u_comment_form = (
+            comment,
+            CommentForm(instance=comment)
+        )
+        comment_forms.append(u_comment_form) 
     tags = post.tags.all()
-    posts = Post.objects.all().order_by('like_users')
+    posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
     context ={
         'post' : post,
-        'comment_form':comment_form,
+        'comment_forms': comment_forms,
+        'comment_form': comment_form,
         'comments' : comments,
         'tags' : tags,
         'posts' : posts,
@@ -171,24 +183,63 @@ def detail(request, post_pk):
 
     return render(request, 'posts/detail.html', context)
 
+import uuid
+
+def generate_anonymous_id():
+    return str(uuid.uuid4())[:6]
+
 @login_required
 def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     comment_form = CommentForm()
     comments = post.comments.all()
+    comment_forms = []
+    for comment in comments:
+        u_comment_form = (
+            comment,
+            CommentForm(instance=comment)
+        )
+        comment_forms.append(u_comment_form) 
     tags = post.tags.all()
-    posts = Post.objects.all().order_by('like_users')
+    posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
     context ={
         'post' : post,
-        'comment_form':comment_form,
+        'comment_forms': comment_forms,
+        'comment_form': comment_form,
         'comments' : comments,
         'tags' : tags,
         'posts' : posts,
         'music' : music,
     }
 
+    # Generate or retrieve anonymous ID for the current user
+    anonymous_id = request.session.get('anonymous_id')
+    if not anonymous_id:
+        anonymous_id = generate_anonymous_id()
+        request.session['anonymous_id'] = anonymous_id
+    context['anonymous_id'] = anonymous_id
+    
     return render(request, 'posts/anonymous_detail.html', context)
+
+# @login_required
+# def anonymous_detail(request, post_pk):
+#     post = Post.objects.get(pk=post_pk)
+#     comment_form = CommentForm()
+#     comments = post.comments.all()
+#     tags = post.tags.all()
+#     posts = Post.objects.all().order_by('like_users')
+#     music = PostTrack.objects.filter(post=post_pk)
+#     context ={
+#         'post' : post,
+#         'comment_form':comment_form,
+#         'comments' : comments,
+#         'tags' : tags,
+#         'posts' : posts,
+#         'music' : music,
+#     }
+
+#     return render(request, 'posts/anonymous_detail.html', context)
 
 
 @login_required
@@ -209,7 +260,6 @@ def update(request, post_pk):
                 post.tags.add(tag.strip())
             form.save()
         
-        if music.exists():
             if not selected_tracks:
                     return redirect('posts:index')
             else:
@@ -274,9 +324,8 @@ def anonymous_update(request, post_pk):
                 post.tags.add(tag.strip())
             form.save()
         
-        if music.exists():
             if not selected_tracks:
-                    return redirect('posts:index')
+                    return redirect('posts:anonymous')
             else:
                 if music.exists():
                     for track in music:
@@ -324,12 +373,14 @@ def anonymous_update(request, post_pk):
 @login_required
 def delete(request,post_pk):
     post = Post.objects.get(pk=post_pk)
-    music = PostTrack.objects.get(post=post_pk)
+    music_queryset = PostTrack.objects.filter(post=post_pk)
     if request.user == post.user:
-        if music.image:  
-            image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
-            if os.path.isfile(image_path):
-                os.remove(image_path)
+        for music in music_queryset:
+            if music.image:  
+                image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
+                if os.path.isfile(image_path):
+                    os.remove(image_path)
+
         post.delete()
     return redirect('posts:index')
 
@@ -359,30 +410,58 @@ def comment_create(request, post_pk):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
+            comment.category = post.category  # 혹은 다른 문자열 값
             comment.user = request.user
             comment.save()
             return redirect('posts:detail', post.pk)
+        
+def anonymous_comment_create(request, post_pk):
+    post = Post.objects.get(pk=post_pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.category = post.category  # 혹은 다른 문자열 값
+            comment.user = request.user
+            comment.save()
+            return redirect('posts:anonymous_detail', post.pk)
 
 
 def comment_update(request, post_pk, comment_pk):
-    post = Post.objects.get(pk=post_pk)
     comment = Comment.objects.get(pk=comment_pk)
-    comment_form = CommentForm(instance=comment)
     if request.user == comment.user:
         if request.method == 'POST':
-            form = CommentForm(request.POST, instance=comment)
-            if form.is_valid():
-                form.save()
-                return redirect('posts:detail', post.pk)
+            comment_form = CommentForm(request.POST, instance=comment)
+            if comment_form.is_valid():
+                comment_form.save()
+                return redirect('posts:detail', post_pk)
+                # return JsonResponse({'status': 'success'})
         else:
-            form = CommentForm(instance=comment)
+            comment_form = CommentForm(instance=comment)
+        context = {
+            'comment_form': comment_form,
+            'comment': comment,
+        }
+        return render(request, 'posts/detail.html', context)
+
+
+def anonymous_comment_update(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    comment_form = CommentForm(request.POST, instance=comment)
+    if request.user == comment.user:
+        if request.method == 'POST':
+            comment_form = CommentForm(request.POST, instance=comment)
+            if comment_form.is_valid():
+                comment_form.save()
+                return redirect('posts:anonymous_detail', post_pk)
+        else:
+            comment_form = CommentForm(instance=comment)  # 인스턴스 설정
     context = {
-        'post': post,
-        'comment' : comment,
         'comment_form': comment_form,
-    
+        'comment': comment,
     }
-    return render(request, 'posts/detail.html', context)
+    return redirect('posts:anonymous_detail', context)
 
 def comment_delete(request, post_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
@@ -390,6 +469,11 @@ def comment_delete(request, post_pk, comment_pk):
         comment.delete()
     return redirect('posts:detail', post_pk)
 
+def anonymous_comment_delete(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    if request.user == comment.user:
+        comment.delete()
+    return redirect('posts:anonymous_detail', post_pk)
 
 # @login_required
 def comment_likes(request, post_pk, comment_pk):

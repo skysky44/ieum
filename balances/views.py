@@ -73,7 +73,7 @@ def answer(request, question_pk, select_answer):
         if not word_list:
             word_list = {}
         
-         # 워드 값이 있는 경우에만 딕셔너리 만들어주기
+        # 워드 값이 있는 경우에만 딕셔너리 만들어주기
         if question.word1 != None and question.word2 != None:
 
             if select_answer == 1:
