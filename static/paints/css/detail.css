@@ -1,0 +1,23 @@
+.paint--container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.paints--list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #efefef;
+  padding: 1rem;
+  margin: 1rem;
+}
+.paint--image {
+  width: 400px;
+  height: 400px;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 0.2rem;
+  margin: 0 0.5rem 0.5rem;
+}

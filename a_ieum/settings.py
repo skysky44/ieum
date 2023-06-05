@@ -34,18 +34,20 @@ SECRET_KEY = 'django-insecure-m-0!*yv=-wb#wq)80ix=3mk&xagc8ufs!l(^1!oqhxve@pa82y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost',]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # 'channels', 안써도 됨
+    'daphne',
     'accounts',
     'balances',
     'posts',
     'my_messages',
     'paints',
-
+    'chat',
     'imagekit',
     'taggit',
 
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'taggit_templatetags2',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,7 +93,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'a_ieum.wsgi.application'
+ASGI_APPLICATION = 'a_ieum.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
