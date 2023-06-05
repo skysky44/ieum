@@ -1,7 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+import random
+import string
 # Create your models here.
+# def generate_anonymous_username():
+#     base_name = 'user'
+#     suffix = str(random.randint(100000, 999999))  # 6자리 숫자 생성
+#     username = f'{base_name}{suffix}'
+#     return username
+
 class User(AbstractUser):
     SEOUL = '서울특별시'
     INCHEON = '인천광역시'
@@ -31,6 +40,13 @@ class User(AbstractUser):
     taste = models.CharField(max_length=2, default='N')
     privacy = models.BooleanField(default=False)
     pick = models.CharField(max_length=10, default=3)
+    # anonymous_username = models.CharField(max_length=8, unique=True)  # 익명 사용자 이름 필드
+
+    # def save(self, *args, **kwargs):
+    # # 새로운 사용자일 경우에만 익명 사용자 이름 할당
+    #     if not self.pk:
+    #         self.anonymous_username = generate_anonymous_username()
+    #     super().save(*args, **kwargs)
 
     # SMALL = "특별함 보다 소소한 행복을 추구해요."
     # FUTURE = "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."

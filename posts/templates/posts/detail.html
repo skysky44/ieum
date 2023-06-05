@@ -71,29 +71,36 @@
     <section class="comments--wrap">
       <ul>
         <li>
-          {% for comment in comments %}
-          <div class="comments__content--wrap">
-            <div>
+          {% for comment, u_comment_form in comment_forms %}
+            {% if comment.user == request.user %}
+            <div class="comments__content--wrap">
+              <div>
+                <div class="comments__user--wrap">
+                  <p class="fw-bold">{{ comment.user }}</p>
+                  <i class="comment--date">{{ comment.created_time }}</i>
+                </div>
+                <p>{{ comment.content }}</p>
+              </div>
+              <div class="comments__btn--list">
+                <div class="me-2" style="display:flex; align-self:center;">
+                  <div class="ieum--button1">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
+                  </div>
+                </div>
+                <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                  <input type="submit" value='삭제' class="ieum--button2">
+                </form>
+                <!-- Button trigger modal -->
+              </div>
+            {% else %}
               <div class="comments__user--wrap">
                 <p class="fw-bold">{{ comment.user }}</p>
                 <i class="comment--date">{{ comment.created_time }}</i>
               </div>
-              <p>{{ comment.content }}</p>
-            </div>
-            <div class="comments__btn--list">
-              <div class="me-2" style="display:flex; align-self:center;">
-                <div class="ieum--button1">
-                  <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">수정</button>
-                </div>
-              </div>
-              <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                <input type="submit" value='삭제' class="ieum--button2">
-              </form>
-              <!-- Button trigger modal -->
-            </div>
-      
+                <p>{{ comment.content }}</p>
+            {% endif %}
               <!-- Modal -->
-              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+              <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -103,7 +110,7 @@
                     <div class="modal-body">
                       <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{comment_form.as_p}}
+                        {{u_comment_form}}
                         <div class="modal-footer">
                           <button type="submit" class="btn btn-primary">수정하기</button>
                         </div>
