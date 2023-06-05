@@ -38,38 +38,6 @@ class Post(models.Model):
             return self.created_at.strftime('%Y-%m-%d')
 
 
-# class PostImage(models.Model):
-#     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_images')
-    
-#     def ieum_image_path(instance, filename):
-#         return f'posts/{instance.post.pk}/{filename}'
-
-#     image =  ProcessedImageField(
-#         upload_to=ieum_image_path,
-#         processors=[ResizeToFill(500,500)],
-#         format='JPEG',
-#         options={'quality' : 100},
-#         blank=True,
-#         null=True,
-#     )
-
-
-# class PostImage(models.Model):
-#     def default_image():
-#         return "default_image_path.jpg"
-#     post = models.ForeignKey(to=Post, on_delete=models.CASCADE, related_name='post_images')
-#     image = ProcessedImageField(
-#         upload_to='posts/images',
-#         processors=[ResizeToFill(800, 800)],
-#         format='JPEG',
-#         options={'quality': 90},
-#         default=default_image,
-#     )
-    
-#     def __str__(self):
-#         return f'{self.post.title} - {self.id}'
-
-
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -78,6 +46,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now = True)
     updated_at = models.DateTimeField(auto_now = True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comment' )
+    category = models.CharField(max_length=20)
 
     @property
     def created_time(self):

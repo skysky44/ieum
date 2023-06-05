@@ -122,8 +122,9 @@
                 </form>
               </div>
             
+
               <!-- Modal -->
-              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+              <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -133,7 +134,7 @@
                     <div class="modal-body">
                       <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{comment_form.as_p}}
+                        {{u_comment_form}}
                         <div class="modal-footer">
                           <button type="submit" class="btn btn-primary">수정하기</button>
                         </div>
