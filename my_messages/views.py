@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Message
+from accounts.models import User
 from .forms import ComposeMessageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -44,6 +45,7 @@ def view_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     if request.user == message.receiver:
         message.is_read = True
+        User.my_is_read = True
         message.save()
     
     if request.method == 'POST':
@@ -67,6 +69,7 @@ def mark_as_read(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     if request.user == message.receiver:
         message.is_read = True
+        User.my_is_read = True
         message.save()
         
     return redirect('my_messages:received_messages')
@@ -84,11 +87,3 @@ def delete_message(request, message_id):
         message.delete()
         messages.success(request, '쪽지가 삭제되었습니다.')
     return redirect('my_messages:received_messages')
-
-# def is_read(request):
-
-#     is_read_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
-#     context = {
-#         'is_read_messages': is_read_messages
-#     }
-#     return render(request, 'my_messages/is_read.html', context )

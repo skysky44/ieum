@@ -1,5 +1,7 @@
-<!DOCTYPE html>
 {% load static %}
+{% load posts.custom_tags %}
+<!DOCTYPE html>
+{% comment %} {% load my_context_processors %}  {% endcomment %}
 {% comment %} {% load base_extras %} {% endcomment %}
 <html lang="en">
   <head>
@@ -13,8 +15,6 @@
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_03.png' %}">
     <title>오늘, 이음{% block title %}{% endblock title %}</title>
-    {% load static %}
-
     {% block head %}{% endblock head %}
     <style>
       @font-face {
@@ -37,12 +37,14 @@
             </a>
           </div>
           <div class="header--item2">
-            <div>
-              {% include 'my_messages/is_read.html' %}
-            </div>
-            <div>
-              {% comment %} {{ request.user|is_read_count }} {% endcomment %}
-            </div>
+            {% if request.user.is_authenticated %}
+              {% get_unread_messages_count user as unread_messages_count %}
+              {% if unread_messages_count > 0 %}
+                <a href="{% url 'my_messages:received_messages' %}" class="me-4">
+                  <i class="bi bi-envelope text-danger" style="font-size: 1.8rem;"> {{ unread_messages_count }}</i>
+                </a>
+              {% endif %}
+            {% endif %}
             <button id="navToggleButton">
               <i class="bi bi-list" style="font-size:1.8rem;"></i>
             </button>
