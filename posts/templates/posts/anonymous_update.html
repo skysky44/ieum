@@ -63,21 +63,21 @@
       </div> {% endcomment %}
 
       <div>
-        <div>
-          <input id="search-input" type="text" name="q" placeholder="검색어를 입력하세요">
-          <button id="search-button" type="button">검색</button>
+        <div class="update--music--search--wrap">
+          <input id="search-input" class="form-control update--music--search--box" type="text" name="q" placeholder="검색어를 입력하세요">
+          <button id="search-button" class="update--music--search--btn" type="button">검색</button>
         </div>
         
-        <div id="search-results">
+        <div id="search-results" class="update--music--result">
           {% include 'posts/search_results.html' %}
         </div>
         
-        <audio class="main-audio" controls>
+        <audio class="main-audio mt-3" controls>
           <source src="" type="audio/mp3">
         </audio>
       </div>
-      <div class="d-flex justify-content-center">
-        <input class="update--btn mt-3" type="submit" value='수정하기'>
+      <div class="d-flex justify-content-center mt-3">
+        <input class="update--btn" type="submit" value='수정하기'>
       </div>
     </form>
   </div>
