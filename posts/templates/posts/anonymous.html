@@ -3,120 +3,96 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'posts/css/anonymous.css' %}">
 {% endblock head %}
 
 {% block content %}
-<article>
-  <div class="title--wrap">
-    <h2> anonymous 게시판 입니다. </h2>
-    <a href="{% url 'posts:anonymous_create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
-  </div>
-  <section>
-    <ul>
-      {% for post in category_anonymous  %}
-        <li class="posts--wrap">
-          <a href="{% url 'posts:anonymous_detail' post.pk %}">
-            <div class="d-flex">
-              <!-- 게시물 내용 -->
-              <div class="posts--img-wrap">
-                  {{ post.content|safe }}
-              </div>
-              <div class="posts--content-wrap">
-                <!-- 카테고리 태그 -->
-                <div class="posts--category--tag mb-3">
-                  {% for tag in post.tags.all %}
-                    #{{ tag }}
-                  {% endfor %}
+  <article>
+    <div class="title--wrap">
+      <h2> 익명 게시판 </h2>
+      <a href="{% url 'posts:anonymous_create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
+    </div>
+    <section>
+      <ul>
+        {% for post in category_anonymous  %}
+          <li class="posts--wrap">
+            <a href="{% url 'posts:anonymous_detail' post.pk %}">
+              <div class="d-flex">
+                <!-- 게시물 내용 -->
+                <div class="posts--img-wrap">
+                    {{ post.content|safe }}
                 </div>
-                <!-- 게시물 제목 -->
-                <p style="font-size:24px;">{{ post.title }}</p>
-                <!-- 게시물 작성한 시간? -->
-                <p class="mt-3" style="color:#656565;">{{ post.created_time }}</p>
-                <div class="d-flex">
-                  {% comment %} <!-- 좋아요 버튼 -->
-                  <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
-                  <!-- 좋아요 수 -->
-                  <p id="like-cnt">0</p> {% endcomment %}
-
-                  <!-- 좋아요 버튼 -->
-                  {% comment %} <form class="like-forms" data-post-id="{{ post.pk }}">
-                    {% csrf_token %}
-                    {% if user in post.like_users.all %}
-                      <span class="me-2">
-                        <button class="like-btn" type="submit">
-                          <i class="bi bi-heart"></i>
-                        </button>
-                      </span>
-                    {% else %}
-                      <span class="me-2">
-                        <button class="like-btn" type="submit">
-                          <i class="bi bi-heart-fill"></i>
-                        </button>
-                      </span>
-                    {% endif %}
-                  </form>
-                  <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
-
-                  <form action="{% url 'posts:likes' post.pk %}" method="POST">
-                    {% csrf_token %}
-                    {% if user in post.like_users.all  %}
-                    <button class="border-0 bg-transparent" type="submit">
-                      ❤️
-                    </button>
-                    {% else %}
+                <div class="posts--content-wrap">
+                  <!-- 카테고리 태그 -->
+                  <div class="d-flex">
+                    {% for tag in post.tags.all %}
+                      <div class="posts--category--tag mb-3 me-2">
+                        #{{ tag }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <!-- 게시물 제목 -->
+                  <p style="font-size:24px;">{{ post.title }}</p>
+                  <!-- 게시물 작성한 시간? -->
+                  <p class="mt-3" style="color:#656565;">{{ post.created_time }}</p>
+                  <div class="d-flex">
+                    <form action="{% url 'posts:likes' post.pk %}" method="POST">
+                      {% csrf_token %}
+                      {% if user in post.like_users.all  %}
                       <button class="border-0 bg-transparent" type="submit">
-                        🤍
+                        ❤️
                       </button>
-                    {% endif %}
-                  </form>
-                  <span class="ms-1">{{post.like_users.count}}</span>
+                      {% else %}
+                        <button class="border-0 bg-transparent" type="submit">
+                          🤍
+                        </button>
+                      {% endif %}
+                    </form>
+                    <span class="ms-1">{{post.like_users.count}}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- 페이지네이션 -->
+    <ul class="pagination justify-content-center">
+      {% if category_anonymous.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ category_anonymous.previous_page_number }}"><i class="bi bi-caret-left" style="color:black;"></i></a>
         </li>
-      {% endfor %}
-    </ul>
-  </section>
-
-  <!-- 페이지네이션 -->
-  <ul class="pagination justify-content-center">
-    {% if category_anonymous.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ category_anonymous.previous_page_number }}"><i class="bi bi-caret-left" style="color:#CE996A;"></i></a>
-      </li>
-    {% else %}
-      <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color:#CE996A;"></i></a>
-      </li>
-    {% endif %}
-    {% for page_number in category_anonymous.paginator.page_range %}
-      {% if page_number >= category_anonymous.number|add:-5 and page_number <= category_anonymous.number|add:5 %}
-        {% if page_number == category_anonymous.number %}
-          <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-          </li>
-        {% else %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-          </li>
-        {% endif %}
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color:black;"></i></a>
+        </li>
       {% endif %}
-    {% endfor %}
-    {% if category_anonymous.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ category_anonymous.next_page_number }}"><i class="bi bi-caret-right" style="color:#CE996A;"></i></a>
-      </li>
-    {% else %}
-      <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right" style="color:#CE996A;"></i></a>
-      </li>
-    {% endif %}
-  </ul>
-  
-  
-</article>
-
+      {% for page_number in category_anonymous.paginator.page_range %}
+        {% if page_number >= category_anonymous.number|add:-5 and page_number <= category_anonymous.number|add:5 %}
+          {% if page_number == category_anonymous.number %}
+            <li class="page-item active" aria-current="page">
+              <a class="page-link anonymous--pagination1" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link anonymous--pagination2" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if category_anonymous.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ category_anonymous.next_page_number }}"><i class="bi bi-caret-right" style="color:black;"></i></a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right" style="color:black;"></i></a>
+        </li>
+      {% endif %}
+    </ul>
+  </article>
 {% endblock content %}
 
 {% block script %}
