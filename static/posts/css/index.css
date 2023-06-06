@@ -72,3 +72,13 @@
   padding: 3px 9px;
   letter-spacing: -.4px;
 }
+.posts--pagination1 {
+  background: #DEECA1 !important;
+  border: 1px solid #DEECA1 !important;
+  color: black;
+}
+.posts--pagination2 {
+  background: white !important;
+  border: 1px solid #DEECA1 !important;
+  color: black;
+}
