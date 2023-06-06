@@ -5,6 +5,7 @@
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
 {% endblock head %}
+
 {% block content %}
 <div class="d-flex justify-content-around mt-5 mx-5">
   <div class="d-flex flex-column">
@@ -14,6 +15,7 @@
     </div>
     <h3 class="d-flex justify-content-center mt-3"><strong>{{ person.username }}</strong></h3>
 
+    
     {% comment %} 유저 간 거리 {% endcomment %}
     {% if person == user  %}
     <p>나</p>

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Message
+from accounts.models import User
 from .forms import ComposeMessageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -25,7 +26,10 @@ def received_messages(request):
     per_page = 5
     paginator = Paginator(received_messages, per_page)
     page_obj = paginator.get_page(page)
-    return render(request, 'my_messages/received_messages.html', {'received_messages': received_messages, 'received_messages': page_obj,})
+    is_read_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
+
+
+    return render(request, 'my_messages/received_messages.html', {'received_messages': received_messages, 'received_messages': page_obj, 'is_read_messages': is_read_messages})
 
 @login_required
 def sent_messages(request):
@@ -41,6 +45,7 @@ def view_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     if request.user == message.receiver:
         message.is_read = True
+        User.my_is_read = True
         message.save()
     
     if request.method == 'POST':
@@ -64,7 +69,9 @@ def mark_as_read(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     if request.user == message.receiver:
         message.is_read = True
+        User.my_is_read = True
         message.save()
+        
     return redirect('my_messages:received_messages')
 
 def delete_message(request, message_id):
