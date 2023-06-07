@@ -35,6 +35,7 @@
         <div id="header" class="mb-1">
           <div class="">
             <h1>{{ post.title }}</h1>
+            <a href="{% url 'posts:post_report' post.pk %}">신고하기</a>
             <div>
               <i class="mt-1" style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
             </div>
@@ -120,6 +121,7 @@
                 <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
                   <input type="submit" value='삭제' class="ieum--button2">
                 </form>
+                <a href="{% url 'posts:comment_report' post.pk comment.pk %}">신고하기</a>
               </div>
             
 
