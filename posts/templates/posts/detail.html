@@ -35,7 +35,28 @@
         <div id="header" class="mb-1">
           <div class="">
             <h1>{{ post.title }}</h1>
-            <a href="{% url 'posts:post_report' post.pk %}">신고하기</a>
+            <!-- 게시물 신고 모달 버튼 -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PostReportModal">
+              신고
+            </button>
+            <!-- 게시물 신고 모달 -->
+            <div class="modal fade" id="PostReportModal" tabindex="-1" aria-labelledby="PostReportModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="PostReportModalLabel">신고하기</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'posts:post_report' post.pk %}"  method ='POST'>
+                      {% csrf_token %}
+                      {{ post_report_form }}
+                      <input type="submit" value="신고하기">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div>
               <i class="mt-1" style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
             </div>
@@ -121,10 +142,29 @@
                 <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
                   <input type="submit" value='삭제' class="ieum--button2">
                 </form>
-                <a href="{% url 'posts:comment_report' post.pk comment.pk %}">신고하기</a>
+                <!-- 댓글 신고 모달 버튼 -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}">
+                  신고
+                </button>
+                <!-- 댓글 신고 모달 -->
+                <div class="modal fade" id="CommentReportModal-{{comment.pk}}" tabindex="-1" aria-labelledby="CommentReportModalLabel-{{comment.pk}}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="CommentReportModalLabel-{{comment.pk}}">신고하기</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{% url 'posts:comment_report' post.pk comment.pk %}"  method ='POST'>
+                          {% csrf_token %}
+                          {{ comment_report_form }}
+                          <input type="submit" value="신고하기">
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            
-
               <!-- Modal -->
               <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
                 <div class="modal-dialog">
