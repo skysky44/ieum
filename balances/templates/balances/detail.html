@@ -8,7 +8,7 @@
 
 {% block content %}
 <h2>밸런스게임 detail</h2>
-<a href="{% url 'posts:index' %}">이동</a>
+
 <h3>
   {{question.title}}
 </h3>
@@ -17,6 +17,9 @@
 <form id="form1" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
   {% csrf_token %}
   <div>
+    {% if question.image1 %}
+      <img src="{{  question.image1.url }}" alt="">
+    {% endif %}
     {{ question.content1 }}
   </div>
   <div>
@@ -28,6 +31,9 @@
 <form  id="form2" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
   {% csrf_token %}
   <div>
+    {% if question.image2 %}
+      <img src="{{  question.image2.url }}" alt="">
+    {% endif %}
     {{ question.content2 }}
   </div>
   <div>

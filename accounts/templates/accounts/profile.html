@@ -55,7 +55,7 @@
         <div><input type="submit" value="Follow" disabled="disabled"></div>
       {% elif request.user != person %}
         <div>
-          <form action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
+          <form id='follow-form' action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
             {% csrf_token %}
             {% if request.user in person.followers.all %}
               <input type="submit" value="Unfollow" class="profile--follow--btn">
@@ -213,7 +213,7 @@
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
 <script>
-
+  const form = document.querySelector('#follow-form')
 </script>
 {% endblock content %}
 {% block script %}
