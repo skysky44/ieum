@@ -121,21 +121,21 @@
 
 <!-- 팔로워 모달 -->
 <div class="modal fade" id="followerModal" tabindex="-1" aria-labelledby="followerModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="width:350px;">
+  <div class="modal-dialog" style="width: 350px;">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5 fw-bold" id="followerModalLabel" style="">팔로워</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="background-color:whitesmoke;">
+      <div class="modal-body" style="background-color: whitesmoke;">
         <ul class="mt-2 modal_list">
           {% for follower in person.followers.all %}
-            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item">
+            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item">
               <div class="profile--follow--img--box">
                 {% if follower.image %}
-                    <img src="{{ follower.image.url }}" class="profile--follow--img" alt="프로필 사진">
-                  {% else %}
-                    <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img" alt="기본 프로필 사진">
+                  <img src="{{ follower.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
+                {% else %}
+                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
                 {% endif %}
               </div>
               <li><span>{{ follower }}</span></li>
@@ -149,25 +149,25 @@
 
 <!-- 팔로잉 모달 -->
 <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="width:350px;">
+  <div class="modal-dialog" style="width: 350px;">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5 fw-bold" id="followingModalLabel" style="">팔로잉</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="background-color:whitesmoke;">
+      <div class="modal-body" style="background-color: whitesmoke;">
         <ul class="modal_list d-flex mt-2" style="display: flex;">
           {% for following in person.followings.all %}
-          <a href="{% url 'accounts:profile' following %}" class="modal_list_item">
-            <div class="profile--follow--img--box">
-              {% if following.image %}
-                  <img src="{{ following.image.url }}" class="profile--follow--img" alt="프로필 사진">
+            <a href="{% url 'accounts:profile' following %}" class="modal_list_item">
+              <div class="profile--follow--img--box">
+                {% if following.image %}
+                  <img src="{{ following.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
                 {% else %}
-                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img" alt="기본 프로필 사진">
-              {% endif %}
-            </div>
-            <li><span>{{ following }}</span></li>
-          </a>
+                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
+                {% endif %}
+              </div>
+              <li><span>{{ following }}</span></li>
+            </a>
           {% endfor %}
         </ul>
       </div>
@@ -213,46 +213,53 @@
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
 <script>
-  const form = document.querySelector('#follow-form')
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+  const form = document.querySelector('#follow-form');
 
   form.addEventListener('submit', function (event) {
-
-    event.preventDefault()
-
-    const userId = event.target.dataset.userId
-
+    event.preventDefault();
+    const userId = event.target.dataset.userId;
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
     axios({
       method: 'post',
       url: `/accounts/follow/${userId}/`,
-      headers: {'X-CSRFToken': csrftoken,},
+      headers: { 'X-CSRFToken': csrftoken },
     })
+      .then((response) => {
+        console.log(response);
+        const isFollowed = response.data.is_followed;
+        const followBtn = document.querySelector('#follow-form > input[type=submit]');
+  
+        if (isFollowed === true) {
+          followBtn.value = 'Unfollow';
+        } else {
+          followBtn.value = 'Follow';
+        }
+  
+        const followingCountTag = document.querySelector('#followings-count');
+        const followerCountTag = document.querySelector('#followers-count');
+        const followingList = document.querySelector('#followingModal .modal_list');
+        const followerList = document.querySelector('#followerModal .modal_list');
+  
+        followingCountTag.textContent = response.data.followings_count;
+        followerCountTag.textContent = response.data.followers_count;
+  
+        followingList.innerHTML = '';
+        followerList.innerHTML = '';
 
-    .then((response) => {
-      console.log(response)
-      const isFollowed = response.data.is_followed
-      const followBtn = document.querySelector('#follow-form > input[type=submit]')
-
-      if (isFollowed === true) {
-        followBtn.value = 'Unfollow'
-      } else {
-        followBtn.value = 'Follow'
-      }
-          const followingCountTag = document.querySelector('#followings-count')
-          const followerCountTag = document.querySelector('#followers-count')
-
-          const followingsCountData = response.data.followings_count
-          const followersCountData = response.data.followers_count
-
-
-          followingCountTag.textContent = followingsCountData 
-          followerCountTag.textContent = followersCountData
-
-        })
-      }
-      )
-      
-
+  
+        // 팔로워 리스트
+        response.data.followers_list.forEach((follower) => {
+          const listItem = document.createElement('li');
+          const profileImg = document.createElement('img');
+          profileImg.src = follower.image_url;  // 프로필 이미지 URL을 설정하세요.
+          profileImg.alt = '프로필 사진';
+          listItem.appendChild(profileImg);
+          listItem.innerHTML += `<span>${follower.username}</span>`;
+          followerList.appendChild(listItem);
+        });
+      });
+  });
 </script>
 {% endblock content %}
 {% block script %}
