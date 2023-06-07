@@ -33,13 +33,13 @@
       <!-- 팔로잉 & 팔로우 & 피드 -->
       <div class="d-flex flex-column">
         <strong class="me-4">팔로잉</strong>
-        <strong class="d-flex justify-content-center me-4"><a href="#" data-bs-toggle="modal" data-bs-target="#followingModal" style="text-decoration:none; color:black;">
+        <strong class="d-flex justify-content-center me-4"><a href="#" id="followings-count" data-bs-toggle="modal" data-bs-target="#followingModal" style="text-decoration:none; color:black;">
           {{ person.followings.all|length }}
         </a></strong>
       </div>
       <div class="d-flex flex-column">
         <strong class="me-4">팔로워</strong>
-        <strong class="d-flex justify-content-center me-4"><a href="#" data-bs-toggle="modal" data-bs-target="#followerModal" style="text-decoration:none; color:black;">
+        <strong class="d-flex justify-content-center me-4"><a href="#" id="followers-count" data-bs-toggle="modal" data-bs-target="#followerModal" style="text-decoration:none; color:black;">
           {{ person.followers.all|length }}
         </a></strong>
       </div>
@@ -55,7 +55,7 @@
         <div><input type="submit" value="Follow" disabled="disabled"></div>
       {% elif request.user != person %}
         <div>
-          <form id='follow-form' action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
+          <form id='follow-form' data-user-id="{{ person.pk }}" action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
             {% csrf_token %}
             {% if request.user in person.followers.all %}
               <input type="submit" value="Unfollow" class="profile--follow--btn">
@@ -213,7 +213,46 @@
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
 <script>
-  {% comment %} const form = document.querySelector('#follow-form') {% endcomment %}
+  const form = document.querySelector('#follow-form')
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+  form.addEventListener('submit', function (event) {
+
+    event.preventDefault()
+
+    const userId = event.target.dataset.userId
+
+    axios({
+      method: 'post',
+      url: `/accounts/follow/${userId}/`,
+      headers: {'X-CSRFToken': csrftoken,},
+    })
+
+    .then((response) => {
+      console.log(response)
+      const isFollowed = response.data.is_followed
+      const followBtn = document.querySelector('#follow-form > input[type=submit]')
+
+      if (isFollowed === true) {
+        followBtn.value = 'Unfollow'
+      } else {
+        followBtn.value = 'Follow'
+      }
+          const followingCountTag = document.querySelector('#followings-count')
+          const followerCountTag = document.querySelector('#followers-count')
+
+          const followingsCountData = response.data.followings_count
+          const followersCountData = response.data.followers_count
+
+
+          followingCountTag.textContent = followingsCountData 
+          followerCountTag.textContent = followersCountData
+
+        })
+      }
+      )
+      
+
 </script>
 {% endblock content %}
 {% block script %}
