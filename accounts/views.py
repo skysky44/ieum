@@ -80,10 +80,9 @@ def signup(request):
             return redirect('posts:index')
     else:
         form = CustomUserCreationForm()
-        my_sentence = request.POST.getlist('tag')
+        # my_sentence = request.POST.getlist('tag')
     context = {
         'form': form,
-        # 'my_sentence':my_sentence,
     }
     return render(request, 'accounts/signup.html', context)
 
@@ -101,9 +100,6 @@ def change_password(request):
         'form': form,
     }
     return render(request, 'accounts/change_password.html', context)
-
-
-
 
 # 거리 계산 api
 import math
@@ -196,7 +192,21 @@ def profile(request, username):
     user_id = person.id
     post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
-
+    # introductions = request.person.get('introductions').split(',')
+    # for intro in person.introductions:
+    #     print(intro)
+    # introductions_list = [intro.strip("'") for intro in person.introductions]
+    introductions_list = []
+    sign = ["[","]","'",","]
+    word = ""
+    # print(person.introductions)
+    for introduction in person.introductions:
+        if introduction == ",":
+                introductions_list.append(word)
+                word = ""
+        if introduction not in sign:
+            word += introduction
+            
     if request.method == 'GET':
         query = request.GET.get('q')
 
@@ -216,11 +226,13 @@ def profile(request, username):
         distance = None
         
     context = {
+        'introductions_list' : introductions_list,
         'person': person,
         'music': music,
         'username': username,
         'distance': distance,
         'post_count': post_count,
+        'introductions_list': introductions_list,
 
     }
     return render(request, 'accounts/profile.html', context)

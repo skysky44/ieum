@@ -5,6 +5,7 @@
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
 {% endblock head %}
+
 {% block content %}
 <div class="d-flex justify-content-around mt-5 mx-5">
   <div class="d-flex flex-column">
@@ -14,6 +15,7 @@
     </div>
     <h3 class="d-flex justify-content-center mt-3"><strong>{{ person.username }}</strong></h3>
 
+    
     {% comment %} 유저 간 거리 {% endcomment %}
     {% if person == user  %}
     <p>나</p>
@@ -53,7 +55,7 @@
         <div><input type="submit" value="Follow" disabled="disabled"></div>
       {% elif request.user != person %}
         <div>
-          <form action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
+          <form id='follow-form' action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
             {% csrf_token %}
             {% if request.user in person.followers.all %}
               <input type="submit" value="Unfollow" class="profile--follow--btn">
@@ -80,9 +82,9 @@
     </div>
     <div class="text-end mb-3">
       <!-- 취향 문장 -->
-      <p class="mb-1">내 취향을 나타내는 문장 1</p>
-      <p class="mb-1">내 취향을 나타내는 문장 2</p>
-      <p>내 취향을 나타내는 문장 3</p>
+      {% for introduction in introductions_list %}
+        <p class="mb-1">{{ introduction}}</p>
+      {% endfor %}
     </div>
     <!-- 워드 -->
     <div class="d-flex justify-content-between">
@@ -211,7 +213,7 @@
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
 <script>
-
+  const form = document.querySelector('#follow-form')
 </script>
 {% endblock content %}
 {% block script %}
