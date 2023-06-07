@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'accounts',
     'balances',
     'posts',
+    'paints',
     'imagekit',
     'taggit',
     'ckeditor',
