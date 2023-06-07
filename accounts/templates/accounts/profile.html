@@ -203,6 +203,39 @@
     </div>
   </div>
 </div>
+{% if request.user.is_authenticated and request.user.username == username %}
+    <div>
+        <a href="{% url 'accounts:logout' %}">로그아웃</a>
+    </div>
+{% endif %}
+<!-- 신고 당한 게시물과 댓글 표시 -->
+{% comment %} {% if request.user.is_superuser %} {% endcomment %}
+  <!-- 신고 당한 게시물=-->
+  <h3>신고당한 게시물들</h3>
+  {% for post_report in post_reports %}
+    <p>신고자: {{post_report.user}}</p>
+    <p>신고대상: {{ post_report.post.user }}</p>
+    <p>신고내용: {{ post_report.content }}</p>
+    <p>사유: {{ post_report.title }}</p>
+    <p>작성일: {{ post_report.created_at|date:"Y. m. d" }}</p>
+    <a href="{% url 'posts:detail' post_report.post_id %}">확인하기</a>  
+ 
+  {% endfor %}
+  <hr>
+  <!-- 신고 당한 댓글-->
+  <h3>신고당한 댓글들</h3>
+  {% for comment_report in comment_reports %}
+    <p>신고자: {{comment_report.user}}</p>
+    <p>신고대상: {{ comment_report.comment.user }}</p>
+    <p>신고내용: {{ comment_report.content }}</p>
+    <p>사유: {{ comment_report.title }}</p>
+    <p>작성일: {{ comment_report.created_at|date:"Y. m. d" }}</p>
+    <a href="{% url 'posts:detail' comment_report.comment.post_id %}">확인하기</a>
+  
+  {% endfor %}
+{% comment %} {% endif %} {% endcomment %}
+
+  
 
 
 

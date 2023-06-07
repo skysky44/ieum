@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment, CommentReport
+from .models import Post, Comment, PostReport, CommentReport
 from taggit.forms import TagField, TagWidget
 
 class PostForm(forms.ModelForm):
@@ -95,8 +95,6 @@ class PostForm(forms.ModelForm):
 #     )
 
 
-
-
 class CommentForm(forms.ModelForm):
     content = forms.CharField(
         max_length=200,
@@ -108,9 +106,55 @@ class CommentForm(forms.ModelForm):
             }
         )
     )
-
     class Meta:
         model = Comment
         fields = (
             "content",
         )
+
+
+class PostReportForm(forms.ModelForm):
+
+    title = forms.ChoiceField(
+        choices=PostReport.TITLE_CHOICES,
+        label='분류(필수)',
+        widget=forms.Select(
+            attrs={
+                'required': True,
+            }
+        )
+    )
+    content = forms.CharField(
+        label='허위 신고자에게는  불이익이 발생할 수 있습니다. 신고 내용을 신중하게 생각하셔서, 정확하고 상세하게 기입해 주십시오.',
+        widget=forms.Textarea(
+            attrs={
+              
+            }
+        )
+    )
+    class Meta:
+        model = PostReport
+        fields = ('title', 'content')
+
+class CommentReportForm(forms.ModelForm):
+
+    title = forms.ChoiceField(
+        choices=CommentReport.TITLE_CHOICES,
+        label='분류(필수)',
+        widget=forms.Select(
+            attrs={
+                'required': True,
+            }
+        )
+    )
+    content = forms.CharField(
+        label='허위 신고자에게는  불이익이 발생할 수 있습니다. 신고 내용을 신중하게 생각하셔서, 정확하고 상세하게 기입해 주십시오.',
+        widget=forms.Textarea(
+            attrs={
+
+            }
+        )
+    )
+    class Meta:
+        model = CommentReport
+        fields = ('title', 'content')
