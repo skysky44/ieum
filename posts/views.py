@@ -162,6 +162,8 @@ def detail(request, post_pk):
     comment_form = CommentForm()
     comments = post.comments.all()
     comment_forms = []
+    post_report_form = PostReportForm()
+    comment_report_form = CommentReportForm()
     for comment in comments:
         u_comment_form = (
             comment,
@@ -179,6 +181,8 @@ def detail(request, post_pk):
         'tags' : tags,
         'posts' : posts,
         'music' : music,
+        'post_report_form' : post_report_form,
+        'comment_report_form' : comment_report_form,
     }
 
     return render(request, 'posts/detail.html', context)
@@ -191,6 +195,8 @@ def generate_anonymous_id():
 @login_required
 def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    post_report_form = PostReportForm()
+    comment_report_form = CommentReportForm()
     comment_form = CommentForm()
     comments = post.comments.all()
     comment_forms = []
@@ -211,6 +217,8 @@ def anonymous_detail(request, post_pk):
         'tags' : tags,
         'posts' : posts,
         'music' : music,
+        'post_report_form' : post_report_form,
+        'comment_report_form' : comment_report_form,
     }
 
     # Generate or retrieve anonymous ID for the current user
@@ -425,11 +433,11 @@ def post_report(request, post_pk):
             post.save()
             return redirect('posts:detail', post_pk)
             
-    context = {
-        'post_report_form': form,
-        'post_pk' : post_pk,
-    }
-    return render(request, 'posts/post_report.html', context)
+    # context = {
+    #     'post_report_form': form,
+    #     'post_pk' : post_pk,
+    # }
+    # return render(request, 'posts/post_report.html', context)
 
 
 def comment_create(request, post_pk):
@@ -523,12 +531,12 @@ def comment_report(request, post_pk, comment_pk):
             comment.save()
             return redirect('posts:detail', post_pk)
             
-    context = {
-        'comment_report_form': form,
-        'post_pk' : post_pk,
-        'comment_pk' : comment_pk,
-    }
-    return render(request, 'posts/comment_report.html', context)
+    # context = {
+    #     'comment_report_form': form,
+    #     'post_pk' : post_pk,
+    #     'comment_pk' : comment_pk,
+    # }
+    # return render(request, 'posts/comment_report.html', context)
 
 # @login_required
 def comment_likes(request, post_pk, comment_pk):
