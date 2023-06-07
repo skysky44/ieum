@@ -20,6 +20,29 @@
             <img class="paint--hallabong" src="{% static 'paints/image/hallabong_05.png' %}" alt="Fruit Image">
             <div class="paint--content">
               <img class="paint--userpaint" src="{{ paint.image.url }}" alt="{{ paint.user }}의 그림">
+              <div class="paint--etc--wrap">
+                {% if request.user.is_authenticated %}
+                  <form id="paints-form-{{paint.pk}}" data-paint-id="{{ paint.pk }}">
+                    {% csrf_token %}
+                    {% if request.user in paint.like_users.all %}
+                      <button type="submit" class="">
+                        <i class="bi-suit-heart-fill" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
+                          <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
+                        </i>
+                      </button>
+                    {% else %}
+                      <button type="submit" class="">
+                        <i class="bi-suit-heart" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
+                          <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
+                        </i>
+                      </button>
+                    {% endif %}
+                  </form>
+                {% endif %}  
+                <a class="paint--update" href="{% url 'paints:update' paint.pk %}">
+                  <i class="bi-pencil-fill" style="color: #008d63;"></i>
+                </a>
+              </div>
               <p class="paint--user">{{ paint.user }}</p>
             </div>
           </li>
@@ -56,7 +79,9 @@
     </div>
   </div>
   <div class="big--content--wrap">
-    <div class="big--content"><img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paint.png' %}" alt="paint--image"></div>
+    <div class="big--content">
+      <img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paint.png' %}" alt="paint--image">
+    </div>
   </div>
 </article>
 
@@ -108,24 +133,6 @@
     movingFruitImage = null;
   });
 
-  {% comment %} let hallabongElements = document.querySelectorAll('.hallabong-wrap');
-
-  hallabongElements.forEach(function(element) {
-    element.addEventListener('mouseenter', function() {
-      document.querySelector('.big--content').style.top = '0';
-    });
-
-    element.addEventListener('mouseleave', function() {
-      document.querySelector('.big--content').style.top = '-200px';
-    });
-  }); {% endcomment %}
-
-  {% comment %} document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
-    if (event.target.classList.contains('paint--userpaint')) {
-        let imgSrc = event.target.src;
-        document.querySelector('.paint--big--userpaint').src = imgSrc;
-    }
-  }); {% endcomment %}
   let originalSrc = document.querySelector('.paint--big--userpaint').src;
 
   document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
@@ -150,45 +157,42 @@
           }, 500);
       }
   });
+
+  const forms = document.querySelectorAll('[id^="paints-form"]')  // select all forms
+
+  forms.forEach((form) => {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+  
+    form.addEventListener('submit', function (event) {
+      event.preventDefault()
+      const paintId = this.dataset.paintId  // get paint id from the specific form
+      axios({
+        method: 'post',
+        url: `/paints/${paintId}/like_users/`,
+        headers: {'X-CSRFToken': csrftoken},
+      })
+        .then((response) => {
+          const isLike = response.data.is_like
+          const likeBtni = this.querySelector('button[type=submit] > i')  // select the specific button
+          
+          if (isLike === true) {
+            likeBtni.classList.remove('bi-suit-heart')
+            likeBtni.classList.add('bi-suit-heart-fill') 
+          } else {
+            likeBtni.classList.remove('bi-suit-heart-fill')
+            likeBtni.classList.add('bi-suit-heart')  
+          }
+          const paintCountTag = this.querySelector('span')  // select the specific span
+          const paintCountData = response.data.paint_likes_count
+          paintCountTag.textContent = paintCountData
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    })
+  })
+
   </script>
-{% comment %} <script>
-  let fruitImage = document.getElementById('fruit-image');
-  let isMouseDown = false;
-  
-  // 마우스 포인터와 이미지의 (0, 0) 좌표 사이의 거리를 저장할 변수를 선언합니다.
-  let offsetX = 0, offsetY = 0;
-  
-  fruitImage.addEventListener('mousedown', function(e) {
-    isMouseDown = true;
-  
-    // 마우스 포인터와 이미지의 (0, 0) 좌표 사이의 거리를 계산합니다.
-    let rect = fruitImage.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-  
-    // 브라우저의 기본 드래그 동작을 막습니다.
-    e.preventDefault();
-  });
-  
-  document.addEventListener('mousemove', function(e) {
-    if (isMouseDown) {
-      // 나무 이미지를 기준으로 열매 이미지의 위치를 조정합니다.
-      let treeContainer = document.getElementById('tree-container');
-      let treeRect = treeContainer.getBoundingClientRect();
-  
-      let newLeft = e.clientX - treeRect.left - offsetX;
-      let newTop = e.clientY - treeRect.top - offsetY;
-  
-      // 위치를 설정할 때는 픽셀 단위를 사용합니다.
-      fruitImage.style.left = newLeft + 'px';
-      fruitImage.style.top = newTop + 'px';
-    }
-  });
-  
-  document.addEventListener('mouseup', function(e) {
-    isMouseDown = false;
-  });
-</script> {% endcomment %}
 {% endblock content %}
 
 {% block script %}{% endblock script %}

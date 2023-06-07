@@ -4,6 +4,7 @@ from .models import Paint
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
+from django.contrib.auth.decorators import login_required
 import base64
 import uuid
 
@@ -30,6 +31,16 @@ def index(request):
     return render(request, 'paints/index.html', context)
 
 
+# def likes(request, paint_pk):
+#     paint_instance = Paint.objects.get(pk=paint_pk)
+#     if paint_instance.like_users.filter(pk=request.user.pk).exists():
+#         paint_instance.like_users.remove(request.user)
+#     else:
+#         paint_instance.like_users.add(request.user)
+
+#     return redirect('paints:index')
+
+
 @csrf_exempt
 def create(request):
     if request.method == 'POST':
@@ -47,22 +58,62 @@ def create(request):
         return render(request, 'paints/create.html')
     
 
+@login_required
 def detail(request, paint_pk):
     paint = Paint.objects.get(pk=paint_pk)
+
     return render(request, 'paints/detail.html', { 'paint': paint })
 
 
+@csrf_exempt
+def update(request, paint_pk):
+    paint = Paint.objects.get(pk=paint_pk)
+
+    if request.method == 'POST':
+        image_data = request.POST['image']
+        format, imgstr = image_data.split(';base64,')
+        ext = format.split('/')[-1]
+        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+
+        # 기존 이미지 삭제
+        if paint.image:
+            paint.image.delete()
+
+        # 새로운 이미지 저장
+        paint.image.save(f"{uuid.uuid4()}.png", data)
+        paint.save()
+
+        return JsonResponse({'status': 'success'})
+    else:
+        context = {
+            'paint': paint, 
+            'paint_pk': paint_pk
+            }
+        return render(request, 'paints/update.html', context)
+
+
+
+@login_required
 def delete(request, paint_pk):
     paint = Paint.objects.get(pk=paint_pk)
     if request.user == paint.user:
         paint.delete()
+
     return redirect('paints:index')
 
-def likes(request, paint_pk):
-    paint = paint.objects.get(pk=paint_pk)
-    if paint.like_users.filter(pk=request.user.pk).exists():
+
+
+@login_required
+def like_users(request, paint_pk):
+    paint = Paint.objects.get(pk=paint_pk)
+    if request.user in paint.like_users.all():
         paint.like_users.remove(request.user)
+        is_like = False
     else:
         paint.like_users.add(request.user)
-
-    return redirect('paints:index')
+        is_like = True
+    context = {
+        'is_like': is_like,
+        'paint_likes_count': paint.like_users.count()
+    }
+    return JsonResponse(context)

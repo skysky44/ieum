@@ -40,6 +40,19 @@
 .paint--userpaint {
   width: 100%;
 }
+
+.paint--etc--wrap{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.8rem;
+  /* background-color: rgba(255,255,255,0.5); */
+}
+
+.paint--update {
+}
 .paint--user {
   position:absolute;
   bottom: -1rem; 
@@ -49,6 +62,7 @@
   font-size: 0.8rem; 
   text-align: center; 
 }
+
 .page--previous {
   position: absolute;  
   bottom: 2rem;
