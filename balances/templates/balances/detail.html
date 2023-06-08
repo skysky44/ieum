@@ -1,56 +1,79 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}밸런스게임{% endblock title %}
+{% block title %} : 밸런스게임{% endblock title %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'balances/css/detail.css' %}">
+{% endblock head %}
 
 {% block style %}
 {% endblock style %}  
 
 {% block content %}
-<h2>밸런스게임 detail</h2>
+  <div class="container balances--question--box">
+    <h2 class="mb-3" style="text-align: center;">
+      <p style=" word-break: keep-all;"><strong>{{question.title}}</strong></p>
+    </h2>
+    
+    <div class="balances--question--wrap">
+      {% comment %} 1번 답 {% endcomment %}
+      <div class="balances--question--line">
+        <form id="form1" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div>
+            <div class="balances--question--content mb-3">
+              {% comment %} <h3><strong>{{ question.content1 }}</strong></h3> {% endcomment %}
+            </div>
+            <div class="balances--question--content">
+              {% if question.image1 %}
+                <img src="{{  question.image1.url }}" alt="1번 사진" class="balances--question--img">
+              {% endif %}
+            </div>
+          </div>
+          <div class="balances--question--content mt-4 mb-4">
+              <input class="balances--question--btn" type="submit" value="{{ question.content1 }}" style="font-size: 1.2rem;">
+          </div>
+        </form>
+      </div>
 
-<h3>
-  {{question.title}}
-</h3>
-
-{% comment %} 1번 답 {% endcomment %}
-<form id="form1" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div>
-    {% if question.image1 %}
-      <img src="{{  question.image1.url }}" alt="">
-    {% endif %}
-    {{ question.content1 }}
+      <!-- vs 사진 -->
+      <div class="balances--question--vs__img">
+        <img src="{% static 'balances/image/vs.png' %}" alt="vs" style="width:80px; height:80px;">
+      </div>
+    
+      {% comment %} 2번 답 {% endcomment %}
+      <div>
+        <form id="form2" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="d-flex flex-column">
+            <div class="balances--question--content mb-3">
+              {% comment %} <h3><strong>{{ question.content2 }}</strong></h3> {% endcomment %}
+            </div>
+            <div class="balances--question--content">
+              {% if question.image2 %}
+                <img src="{{  question.image2.url }}" alt="2번 사진" class="balances--question--img">
+              {% endif %}
+            </div>
+          </div>
+          <div class="balances--question--content mt-4">
+              <input class="balances--question--btn" type="submit" value="{{ question.content2 }}" style="font-size: 1.2rem;">
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="mt-3" style="text-align: end;">
+      {% comment %} 이전 질문 버튼 {% endcomment %}
+      {% if question.pk != 1 %}
+        <a href="{% url 'balances:detail' question.pk|add:-1 %}" class="balances--question--before--btn">이전 질문</a>
+      {% endif %}
+      
+      {% comment %} 슈퍼유저에게만 보이는 것 {% endcomment %}
+      {% if request.user.is_superuser %}
+        <a href="{% url 'balances:update' question.pk %}" class="balances--question--update--btn">수정</a>
+      {% endif %}
+    </div>
   </div>
-  <div>
-      <input type="submit" value="{{ question.content1 }}">
-  </div>
-</form>
-
-{% comment %} 2번 답 {% endcomment %}
-<form  id="form2" data-question-id="{{ question.id }}" data-last-id="{{ last.id }}" data-next-url="{% url 'balances:detail' question.pk|add:1 %}" data-index-url="{% url 'posts:index' %}" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div>
-    {% if question.image2 %}
-      <img src="{{  question.image2.url }}" alt="">
-    {% endif %}
-    {{ question.content2 }}
-  </div>
-  <div>
-      <input type="submit" value="{{ question.content2 }}">
-  </div>
-</form>
-{% comment %} 이전 질문 버튼 {% endcomment %}
-{% if question.pk != 1 %}
-  <a href="{% url 'balances:detail' question.pk|add:-1 %}" class="btn btn-outline-dark">이전 질문</a>
-{% endif %}
-
-{% comment %} 슈퍼유저에게만 보이는 것 {% endcomment %}
-{% if request.user.is_superuser %}
-  <a href="{% url 'balances:update' question.pk %}">수정</a>
-{% endif %}
-
-
 {% endblock content %}
 
 {% block script %}

@@ -12,7 +12,7 @@ import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
-from posts.models import Post
+from posts.models import Post, PostReport, CommentReport
 from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
@@ -216,14 +216,11 @@ def profile(request, username):
     user_id = person.id
     post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
-    # introductions = request.person.get('introductions').split(',')
-    # for intro in person.introductions:
-    #     print(intro)
-    # introductions_list = [intro.strip("'") for intro in person.introductions]
+    post_reports = PostReport.objects.order_by('post_id', 'title')
+    comment_reports = CommentReport.objects.order_by('comment_id', 'title')
     introductions_list = []
     sign = ["[","]","'",","]
     word = ""
-    # print(person.introductions)
     for introduction in person.introductions:
         if introduction == ",":
                 introductions_list.append(word)
@@ -257,6 +254,8 @@ def profile(request, username):
         'distance': distance,
         'post_count': post_count,
         'introductions_list': introductions_list,
+        'post_reports' : post_reports,
+        'comment_reports' : comment_reports,
 
     }
     return render(request, 'accounts/profile.html', context)

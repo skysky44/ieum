@@ -1,25 +1,29 @@
 
 body {
   display: grid;
-  grid-template-rows: auto minmax(88vh, 1fr) auto;
+  grid-template-rows: auto auto minmax(88vh, 1fr) auto;
   grid-template-columns: repeat(6, 1fr);
   grid-template-areas: 
   "header header header header header header"
+  "aside aside aside aside aside aside"
   ". main main main main ."
-  "footer footer footer footer footer footer"
+  "footer footer footer footer footer footer";
 }
 header.base--item {
   grid-area: header;
   position: fixed;
   width: 100%;
-  background-color: #DEECA1;
-  border-radius: 0 100px 0 100px;
-  padding: 1rem 0;
+  background-color: #EFEFEF;
   z-index: 100;
+}
+aside.base--item {
+  grid-area: aside;
+  padding-top: 70px;
+  background-color: #efefef;
 }
 main.base--item {
   grid-area: main;
-  margin: 10rem 0 3rem;
+  margin: 3rem 0;
 }
 footer.base--item {
   grid-area: footer;
@@ -29,19 +33,23 @@ footer.base--item {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-areas: ". header--wrap header--wrap header--wrap header--wrap .";
+  height: 70px;
 }
 .header--wrap {
   grid-area: header--wrap;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-areas: "header--item1 . . header--item2";
+  grid-template-areas: "header--item1 header--item2 header--item2 header--item3";
+  align-items: center;
 }
 .header--item1 {
   grid-area: header--item1;
 }
 .header--item2 {
   grid-area: header--item2;
-  text-align: right;
+}
+.header--item3 {
+  grid-area: header--item3;
 }
 .nav--hidden {
   display: none;
@@ -59,6 +67,7 @@ footer.base--item {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-areas: ". nav nav nav nav .";
+  justify-content: center;
 }
 .nav--list {
   grid-area: nav;
@@ -66,13 +75,12 @@ footer.base--item {
   justify-content: space-around;
   border-radius: 0 100px 0 100px;
   background-color: rgba(239,239,239, .7);
-  padding: 1rem 0;
+}
+.nav--list--text {
+  font-size: 1.2rem;
 }
 .nav--list--text:hover {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  text-decoration-color: #CE996A;
-  text-decoration-thickness: 2px;
+  color: #777;
 }
 
 .footer--container {
