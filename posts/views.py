@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm, PostReportForm, CommentReportForm
 from .models import Post, Comment
+from paints.models import Paint
 from .models import PostTrack
 import os
 from django.conf import settings
@@ -12,7 +13,17 @@ import tempfile
 import requests
 
 def home(request):
-    return render(request, 'home.html')
+    paints = Paint.objects.all().order_by('-id')[:6]
+    category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
+    category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
+    
+    context = {
+        'paints': paints,
+        'category_class' : category_class,
+        'category_anonymous' : category_anonymous,
+    }
+
+    return render(request, 'home.html', context)
 
 def index(request):
     # posts = Post.objects.order_by('-pk')
@@ -27,8 +38,8 @@ def index(request):
         'tags': tags,
         # 'posts': page_obj,
         'category_class' : page_obj,
-        
     }
+
     return render(request, 'posts/index.html', context)
 
 def anonymous(request):
