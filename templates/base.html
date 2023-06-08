@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="{% static 'base/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_03.png' %}">
-    <title>오늘, 이음{% block title %}{% endblock title %}</title>
     {% block head %}{% endblock head %}
+    <title>오늘, 이음{% block title %}{% endblock title %}</title>
     <style>
       @font-face {
         font-family: 'GangwonEdu_OTFBoldA';
@@ -32,54 +32,40 @@
       <div class="header--container">
         <div class="header--wrap">
           <div class="header--item1">
-            <a href="{% url 'posts:index' %}">
-              <h1 class="font--gangwon">오늘, 이음</h1>
+            <a href="{% url 'home' %}">
+              <h1 class="font--gangwon" style="color:#482121;"><span style="color:#47A992;">♪</span>오늘, 이음</h1>
             </a>
           </div>
           <div class="header--item2">
-            {% if request.user.is_authenticated %}
-              {% get_unread_messages_count user as unread_messages_count %}
-              {% if unread_messages_count > 0 %}
-                <a href="{% url 'my_messages:received_messages' %}" class="me-4">
-                  <i class="bi bi-envelope text-danger" style="font-size: 1.8rem;"> {{ unread_messages_count }}</i>
-                </a>
-              {% endif %}
-            {% endif %}
-            <button id="navToggleButton">
-              <i class="bi bi-list" style="font-size:1.8rem;"></i>
-            </button>
-          </div>
-        </div>
-        <div id="navToggle" class="nav--hidden nav--container">
-          <nav class="nav--wrap">
-            <div class="nav--list--wrap">
+            <nav>
               <ul class="nav--list">
+                <!-- 공감 or 현실 -->
                 <li class="nav--list--text">
-                  <a href="#">
+                  <a href="{% url 'posts:index' %}">
                     공감 이음
                   </a>
                 </li>
+                <!--
                 <li class="nav--list--text">
-                  <a href="#">
+                  <a href="{% url 'posts:index' %}">
                     현실 이음
+                  </a>
+                </li> -->
+                <li class="nav--list--text">
+                  <a href="{% url 'paints:index' %}">
+                    그림 이음
                   </a>
                 </li>
                 <li class="nav--list--text">
                   <a href="{% url 'posts:anonymous' %}">
-                    익명 고민
+                    고민 이음
                   </a>
                 </li>
                 {% if request.user.is_authenticated %}
                 <li class="nav--list--text">
-                  <!-- 로그아웃 -->
-                  <div>
-                    <a href="{% url 'accounts:logout' %}">로그아웃</a>
-                  </div>
-                </li>
-                <li class="nav--list--text">
                   <!-- 프로필페이지 -->
                   <div>
-                    <a href="{% url 'accounts:profile' user %}">마이페이지</a>
+                    <a href="{% url 'accounts:profile' user %}">내페이지</a>
                   </div>
                 </li>
                 {% else %}
@@ -89,7 +75,72 @@
                       <a href="{% url 'accounts:login' %}">로그인</a>
                     </div>
                   </li>
-                  <li class="nav--list--text">
+                {% endif %}
+              </ul>
+            </nav>
+            {% if request.user.is_authenticated %}
+              {% get_unread_messages_count user as unread_messages_count %}
+              {% if unread_messages_count > 0 %}
+                <a href="{% url 'my_messages:received_messages' %}" class="me-4">
+                  <i class="bi bi-envelope text-danger" style="font-size: 1.8rem;"> {{ unread_messages_count }}</i>
+                </a>
+              {% endif %}
+            {% endif %}
+            <!-- 모바일 네비 토글키 -->
+            <button id="navToggleButton" style="display:none;">
+              <i class="bi bi-list" style="font-size:1.8rem;"></i>
+            </button>
+          </div>
+          <div class="header--item3">
+            <!-- 네 정환님 검색 하신다구요? 네 -->
+            <!-- 검색 넣으실때 아래는 다지우고 넣으셔도 됩니다 정환님 데헷 -->
+            <form method="GET" action="#">
+              <input class="form-control" type="text" name="query" placeholder="검색어를 입력하세요">
+            </form>
+            <!-- 여기까지에요 흐흐흐 -->
+          </div>
+        </div>
+        <!-- 모바일 네비 토글 메뉴 -->
+        <div id="navToggle" class="nav--hidden mobile__nav--container">
+          <nav class="mobile__nav--wrap">
+            <div class="mobile__nav--list--wrap">
+              <ul class="mobile__nav--list">
+                <li class="mobile__nav--list--text">
+                  <a href="#">
+                    공감 이음
+                  </a>
+                </li>
+                <li class="mobile__nav--list--text">
+                  <a href="#">
+                    현실 이음
+                  </a>
+                </li>
+                <li class="mobile__nav--list--text">
+                  <a href="{% url 'posts:anonymous' %}">
+                    익명 고민
+                  </a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="mobile__nav--list--text">
+                  <!-- 로그아웃 -->
+                  <div>
+                    <a href="{% url 'accounts:logout' %}">로그아웃</a>
+                  </div>
+                </li>
+                <li class="mobile__nav--list--text">
+                  <!-- 프로필페이지 -->
+                  <div>
+                    <a href="{% url 'accounts:profile' user %}">마이페이지</a>
+                  </div>
+                </li>
+                {% else %}
+                  <li class="mobile__nav--list--text">
+                    <!-- 로그인 -->
+                    <div>
+                      <a href="{% url 'accounts:login' %}">로그인</a>
+                    </div>
+                  </li>
+                  <li class="mobile__nav--list--text">
                     <!-- 회원가입 -->
                     <div>
                       <a href="{% url 'accounts:signup' %}">회원가입</a>
@@ -102,15 +153,18 @@
         </div>
       </div>
     </header>
-    <aside class="nori">
-      <h1>떠든사람: 장민지</h1>
-
-      <p>지우지마시오</p>
+    <aside class="base--item">
+      {% block aside %}{% endblock aside %}
     </aside>
     <main class="base--item">
     {% block content %}
     {% endblock content %}
     </main>
+    <div class="nori">
+      <h3>떠든사람: 장민지</h3>
+
+      <p>지우지마시오</p>
+    </div>
     <footer class="base--item footer--container">
       <div>
         <div class="footer--copyright--wrap">

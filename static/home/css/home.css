@@ -1,0 +1,98 @@
+/* 
+.home--containter {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+} */
+
+.home__paints--container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas: ". paints paints paints paints .";
+  height: 600px;
+
+}
+.home__paints--wrap {
+  grid-area: paints;
+}
+.home__paints--list {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  height: 100%;
+
+}
+.paints__title--wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.paints__title--wrap :nth-child(1) {
+  margin-bottom: 1rem;
+
+}
+.paints__title--wrap :nth-child(2) {
+  margin-bottom: 0.5rem;
+
+}
+#viewport {
+  position: relative;
+}
+#wheel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  animation: rint 30s infinite linear;
+}
+.paint__image--wrap {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border: 5px solid #dedede;
+  border-radius: 5px;
+  margin: -100px 0 0 -100px;
+}
+.paint__image {
+  width: 100%;
+  height: 100%;
+}
+.paint__image--wrap:nth-child(1) { transform: rotateY(   0deg ) translateZ( -200px ); }
+.paint__image--wrap:nth-child(2) { transform: rotateY(  60deg ) translateZ( -200px ); }
+.paint__image--wrap:nth-child(3) { transform: rotateY( 120deg ) translateZ( -200px ); }
+.paint__image--wrap:nth-child(4) { transform: rotateY( 180deg ) translateZ( -200px ); }
+.paint__image--wrap:nth-child(5) { transform: rotateY( 240deg ) translateZ( -200px ); }
+.paint__image--wrap:nth-child(6) { transform: rotateY( 300deg ) translateZ( -200px ); }
+
+
+
+@keyframes rint {
+  from {
+    transform: rotateX(  -30deg ) rotateY(   0deg );
+  }
+
+  to {
+    transform: rotateX(  -30deg ) rotateY(   360deg );
+    
+  }
+}
+
+.home__posts--container {
+}
+.home__posts--wrap {
+  grid-area: posts;
+}
+.home__posts--index {
+
+}
+
+.home__posts--anonymous {
+  background-color: #E6F3E6;
+}
+
+/* 버튼 디자인 */
+.home__etc--button {
+  font-size: 0.8rem;
+  border-radius: 5px;
+  background-color: #ddd;
+  padding: 2px 5px;
+}
