@@ -1,0 +1,16 @@
+.signup--content {
+  border-bottom: 1px solid #d0df8d;
+  width: 350px;
+  /* border-radius: 7px; */
+}
+.signup--btn {
+  border: none;
+  background: #DEECA1;
+  border-radius: 5px;
+  padding: 3px 10px;
+  width: 350px;
+  height: 35px;
+}
+.signup--btn:hover {
+  background: #d0df8d;
+}

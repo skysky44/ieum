@@ -86,6 +86,20 @@ def signup(request):
     }
     return render(request, 'accounts/signup.html', context)
 
+# 중복 아이디 체크
+
+def check_username(request):
+    username = request.POST.get('username', '')
+    print(username)
+    User = get_user_model()
+    try:
+        User.objects.get(username=username)
+        available = False
+    except User.DoesNotExist:
+        available = True
+
+    return JsonResponse({'available': available})
+
 @login_required
 def change_password(request):
     if request.method == 'POST':

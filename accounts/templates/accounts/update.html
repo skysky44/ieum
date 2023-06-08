@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/update.css' %}">
 {% endblock head %}
+
 {% block title %}회원정보 수정{% endblock title %}
 
 {% block content %}
@@ -48,6 +50,7 @@
       </div>
     </div>
     <div class="d-flex justify-content-center">
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
       <input class="update--btn mt-3" type="submit" value="수정하기">
     </div>
   </form>
