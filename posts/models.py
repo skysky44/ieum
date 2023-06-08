@@ -7,6 +7,13 @@ from datetime import timedelta,datetime
 from taggit.managers import TaggableManager
 # from ckeditor_uploader.fields import RichTextUploadingField
 from ckeditor_uploader.fields import RichTextUploadingField
+import re
+
+def extract_image_urls(content):
+    pattern = r'<img.*?src=["\'](.*?)["\'].*?>'
+    image_urls = re.findall(pattern, content)
+    return image_urls
+
 # Create your models here.
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -21,6 +28,12 @@ class Post(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_post')
     tags = TaggableManager(blank=True)
     report = models.BooleanField('신고', default=False)
+    image_urls = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # content에서 이미지 URL 추출하여 image_urls 필드에 저장
+        self.image_urls = ', '.join(extract_image_urls(self.content))
+        super().save(*args, **kwargs)
 
     @property
     def created_time(self):

@@ -28,6 +28,7 @@ from django.views.decorators.cache import never_cache
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('aboutus/', views.aboutus, name='aboutus'),
     path('posts/', include('posts.urls')),
     path('balances/', include('balances.urls')),
     path('accounts/', include('accounts.urls')),
