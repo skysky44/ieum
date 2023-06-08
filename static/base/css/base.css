@@ -13,13 +13,13 @@ header.base--item {
   grid-area: header;
   position: fixed;
   width: 100%;
-  background-color: #EFEFEF;
+  background-color: rgba(255, 255, 255, 0.9);
   z-index: 100;
 }
 aside.base--item {
   grid-area: aside;
   padding-top: 70px;
-  background-color: #efefef;
+  background-color: #E6F3E6;
 }
 main.base--item {
   grid-area: main;
@@ -74,7 +74,7 @@ footer.base--item {
   display: flex;
   justify-content: space-around;
   border-radius: 0 100px 0 100px;
-  background-color: rgba(239,239,239, .7);
+  /* background-color: rgba(239,239,239, .7); */
 }
 .nav--list--text {
   font-size: 1.2rem;
@@ -82,20 +82,16 @@ footer.base--item {
 .nav--list--text:hover {
   color: #777;
 }
-
+.nav__active {
+  color: #489F48;
+  font-weight: 600;
+}
+.nav__active:hover {
+  color: #489F48;
+}
 .footer--container {
   background-color: #efefef;
   padding: 3rem 0;
   text-align: center;
 }
 
-
-.nori {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  border-radius: 15px;
-  background-color: #FFF7D3;
-  box-shadow: 3px 3px 5px 5px rgba(225, 225, 225, 0.5);
-  padding: 2rem;
-}

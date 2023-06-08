@@ -15,14 +15,8 @@
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_03.png' %}">
     {% block head %}{% endblock head %}
-    <title>오늘, 이음{% block title %}{% endblock title %}</title>
+    <title>{% block title %}{% endblock title %}오늘, 이음</title>
     <style>
-      @font-face {
-        font-family: 'GangwonEdu_OTFBoldA';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-      }
     {% block style %}{% endblock style %}
     </style>
   </head>
@@ -33,51 +27,46 @@
         <div class="header--wrap">
           <div class="header--item1">
             <a href="{% url 'home' %}">
-              <h1 class="font--gangwon" style="color:#482121;"><span style="color:#47A992;">♪</span>오늘, 이음</h1>
+              <h1 class="font--gangwon" style="color:#482121;"><span style="color:#489F48;">♪</span>오늘, 이음</h1>
             </a>
           </div>
           <div class="header--item2">
-            <nav>
-              <ul class="nav--list">
-                <!-- 공감 or 현실 -->
-                <li class="nav--list--text">
-                  <a href="{% url 'posts:index' %}">
-                    공감 이음
-                  </a>
-                </li>
-                <!--
-                <li class="nav--list--text">
-                  <a href="{% url 'posts:index' %}">
-                    현실 이음
-                  </a>
-                </li> -->
-                <li class="nav--list--text">
-                  <a href="{% url 'paints:index' %}">
-                    그림 이음
-                  </a>
-                </li>
-                <li class="nav--list--text">
-                  <a href="{% url 'posts:anonymous' %}">
-                    고민 이음
-                  </a>
-                </li>
-                {% if request.user.is_authenticated %}
-                <li class="nav--list--text">
-                  <!-- 프로필페이지 -->
-                  <div>
-                    <a href="{% url 'accounts:profile' user %}">내페이지</a>
-                  </div>
-                </li>
-                {% else %}
-                  <li class="nav--list--text">
-                    <!-- 로그인 -->
-                    <div>
-                      <a href="{% url 'accounts:login' %}">로그인</a>
-                    </div>
-                  </li>
-                {% endif %}
-              </ul>
-            </nav>
+          <!-- 공감 or 현실 -->
+          <nav>
+            <ul class="nav--list">
+              <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' %}nav__active{% endif %}">
+                <a href="{% url 'posts:index' %}">
+                  공감 이음
+                </a>
+              </li>
+              <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
+                <a href="{% url 'paints:index' %}">
+                  그림 이음
+                </a>
+              </li>
+              <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:anonymous' %}nav__active{% endif %}">
+                <a href="{% url 'posts:anonymous' %}">
+                  고민 이음
+                </a>
+              </li>
+              {% if request.user.is_authenticated %}
+              <li class="nav--list--text {% if request.resolver_match.view_name == 'accounts:profile' %}nav__active{% endif %}">
+                <!-- 프로필페이지 -->
+                <div>
+                  <a href="{% url 'accounts:profile' user %}">내페이지</a>
+                </div>
+              </li>
+              {% else %}
+              <li class="nav--list--text">
+                <!-- 로그인 -->
+                <div>
+                  <a href="{% url 'accounts:login' %}">로그인</a>
+                </div>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+
             {% if request.user.is_authenticated %}
               {% get_unread_messages_count user as unread_messages_count %}
               {% if unread_messages_count > 0 %}
@@ -160,15 +149,20 @@
     {% block content %}
     {% endblock content %}
     </main>
-    <div class="nori">
-      <h3>떠든사람: 장민지</h3>
-
-      <p>지우지마시오</p>
-    </div>
+    <a href="#">
+      <div class="nori--viewport">
+        <div class="nori--wheel">
+          <div class="nori--item">
+            <p>떠든사람</p>
+            <p>장민지</p>
+          </div>
+        </div>
+      </div>
+    </a>
     <footer class="base--item footer--container">
       <div>
         <div class="footer--copyright--wrap">
-          <i class="footer--copyright">copyrightⓒ 2023 All rights reserved by 오늘, 이음</i>
+          <i class="footer--copyright">copyrightⓒ 2023 All rights reserved by <a href="{% url 'aboutus' %}">오늘, 이음</a></i>
         </div>
       </div>
     </footer>
@@ -179,6 +173,7 @@
       const nav = document.getElementById('navToggle');
       nav.classList.toggle('nav--hidden');
       });
+
     </script>
     {% block script %}{% endblock script %}
   </body>
