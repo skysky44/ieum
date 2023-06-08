@@ -35,6 +35,8 @@
         <div class="signup--content">
           <label for="{{ form.email.id_for_label }}"><strong>이메일 :</strong></label>
           {{ form.email }}
+          <button type="button" id="check-email" value="aaa">중복 확인</button>
+          <div id="email-result"></div>
         </div>
       </div>
       <div class="d-flex flex-column mt-3" style="margin: auto;">
@@ -85,18 +87,19 @@
   document.addEventListener('DOMContentLoaded', function () {
     const checkUsernameButton = document.getElementById('check-username');
     const usernameResult = document.getElementById('username-result');
-    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value; // csrf 토큰 가져오기
-  
+    const checkEmailButton = document.getElementById('check-email');
+    const emailResult = document.getElementById('email-result');
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
     checkUsernameButton.addEventListener('click', function () {
       const usernameInput = document.getElementById('id_username');
       const username = usernameInput.value.trim();
-  
+
       if (username !== '') {
-        // AJAX 요청
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '{% url 'accounts:check_username' %}');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.setRequestHeader('X-CSRFToken', csrfToken); // csrf 토큰 헤더에 추가
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
         xhr.onload = function () {
           if (xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
@@ -108,6 +111,29 @@
           }
         };
         xhr.send('username=' + encodeURIComponent(username));
+      }
+    });
+
+    checkEmailButton.addEventListener('click', function () {
+      const emailInput = document.getElementById('id_email');
+      const email = emailInput.value.trim();
+
+      if (email !== '') {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url 'accounts:check_email' %}');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.available) {
+              emailResult.textContent = '사용 가능한 이메일입니다.';
+            } else {
+              emailResult.textContent = '이미 사용 중인 이메일입니다.';
+            }
+          }
+        };
+        xhr.send('email=' + encodeURIComponent(email));
       }
     });
   });

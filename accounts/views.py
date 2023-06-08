@@ -100,6 +100,16 @@ def check_username(request):
 
     return JsonResponse({'available': available})
 
+# 중복 이메일 체크
+
+def check_email(request):
+    email = request.POST.get('email', '')
+    User = get_user_model()
+    users_with_email = User.objects.filter(email=email)
+    available = not users_with_email.exists()
+
+    return JsonResponse({'available': available})
+
 @login_required
 def change_password(request):
     if request.method == 'POST':
