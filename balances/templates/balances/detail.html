@@ -13,7 +13,7 @@
 {% block content %}
   <div class="container balances--question--box">
     <h2 class="mb-3" style="text-align: center;">
-      <strong>{{question.title}}</strong>
+      <p style=" word-break: keep-all;"><strong>{{question.title}}</strong></p>
     </h2>
     
     <div class="balances--question--wrap">
@@ -23,7 +23,7 @@
           {% csrf_token %}
           <div>
             <div class="balances--question--content mb-3">
-              <h3><strong>{{ question.content1 }}</strong></h3>
+              {% comment %} <h3><strong>{{ question.content1 }}</strong></h3> {% endcomment %}
             </div>
             <div class="balances--question--content">
               {% if question.image1 %}
@@ -31,7 +31,7 @@
               {% endif %}
             </div>
           </div>
-          <div class="balances--question--content mt-4 mb-3">
+          <div class="balances--question--content mt-4 mb-4">
               <input class="balances--question--btn" type="submit" value="{{ question.content1 }}" style="font-size: 1.2rem;">
           </div>
         </form>
@@ -48,7 +48,7 @@
           {% csrf_token %}
           <div class="d-flex flex-column">
             <div class="balances--question--content mb-3">
-              <h3><strong>{{ question.content2 }}</strong></h3>
+              {% comment %} <h3><strong>{{ question.content2 }}</strong></h3> {% endcomment %}
             </div>
             <div class="balances--question--content">
               {% if question.image2 %}
