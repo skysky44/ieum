@@ -25,11 +25,11 @@
               {% csrf_token %}
               {% if request.user in paint.like_users.all %}
                 <button type="submit" value="좋아요">
-                  <i class="" style=""></i>
+                  <i class="bi bi-suit-heart"></i>
                 </button>
               {% else %}
                   <button type="submit" value="좋아요 취소">
-                    <i class="" style=""></i>
+                    <i class="bi bi-suit-heart-fill"></i>
                   </button>
               {% endif %}
             </form>

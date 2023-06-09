@@ -9,6 +9,7 @@ urlpatterns = [
     path('create/',views.create, name='create'),
     path('anonymous_create/',views.anonymous_create, name='anonymous_create'),
     path('<int:post_pk>/',views.detail, name='detail'),
+    path('<int:post_pk>/post_report',views.post_report, name='post_report'),
     path('anonymous/<int:post_pk>/',views.anonymous_detail, name='anonymous_detail'),
     path('<int:post_pk>/update/', views.update , name='update'),
     path('<int:post_pk>/anonymous_update/', views.anonymous_update , name='anonymous_update'),
@@ -18,6 +19,7 @@ urlpatterns = [
     path('<int:post_pk>/anonymous_likes/', views.anonymous_likes, name='anonymous_likes'),
     path('<int:post_pk>/comments_create/', views.comment_create, name='comment_create'),
     path('<int:post_pk>/anonymous_comments_create/', views.anonymous_comment_create, name='anonymous_comment_create'),
+    path('<int:post_pk>/comments/<int:comment_pk>/comment_report/', views.comment_report, name='comment_report'),
     path('<int:post_pk>/comments/<int:comment_pk>/anonymous_comment_update/', views.anonymous_comment_update, name='anonymous_comment_update'),
     path('<int:post_pk>/comments/<int:comment_pk>/comment_update/', views.comment_update, name='comment_update'),
     path('<int:post_pk>/comments/<int:comment_pk>/comment_delete/', views.comment_delete, name='comment_delete'),
@@ -25,6 +27,8 @@ urlpatterns = [
     path('<int:post_pk>/comments/<int:comment_pk>/comment_likes/', views.comment_likes, name='comment_likes'),
     path('<int:post_pk>/comments/<int:comment_pk>/anonymous_comment_likes/', views.anonymous_comment_likes, name='anonymous_comment_likes'),
     path('search/', views.search_spotify, name='search_spotify'),
+    # 포춘쿠키
+    path('fortune_cookie/', views.fortune_cookie, name='fortune_cookie'),
     # path('save_track/', views.save_track, name='save_track'),
     # path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
     

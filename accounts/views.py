@@ -12,10 +12,11 @@ import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
-from posts.models import Post
+from posts.models import Post, PostReport, CommentReport, Fortune
 from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your views here.
@@ -180,7 +181,7 @@ def calculate_distance(address1, address2):
     else:
         # 유효한 좌표를 가져오지 못한 경우, 기본 거리를 0으로 설정
         distance = 0
-    print(distance)
+    # print(distance)
 
     return distance
 
@@ -192,14 +193,22 @@ def profile(request, username):
     user_id = person.id
     post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
-    # introductions = request.person.get('introductions').split(',')
-    # for intro in person.introductions:
-    #     print(intro)
-    # introductions_list = [intro.strip("'") for intro in person.introductions]
+    post_reports = PostReport.objects.order_by('post_id', 'title')
+    comment_reports = CommentReport.objects.order_by('comment_id', 'title')
+    try:
+        fortunes = Fortune.objects.get(user_id=user_id)
+    except ObjectDoesNotExist:
+        fortunes = None
+    # print(fortunes)
+    # for fortune in fortunes:
+    #     fortune_message = fortune.message
+    #     print(fortune_message)
+
+
+
     introductions_list = []
     sign = ["[","]","'",","]
     word = ""
-    # print(person.introductions)
     for introduction in person.introductions:
         if introduction == ",":
                 introductions_list.append(word)
@@ -233,22 +242,42 @@ def profile(request, username):
         'distance': distance,
         'post_count': post_count,
         'introductions_list': introductions_list,
+        'post_reports' : post_reports,
+        'comment_reports' : comment_reports,
+        'fortunes' : fortunes,
 
     }
     return render(request, 'accounts/profile.html', context)
 
 
+
 @login_required
 def follow(request, user_pk):
-    User = get_user_model()
-    person = User.objects.get(pk=user_pk)
+    person = get_object_or_404(User, pk=user_pk)
+
     if person != request.user:
         if person.followers.filter(pk=request.user.pk).exists():
             person.followers.remove(request.user)
+            is_followed = False
         else:
             person.followers.add(request.user)
-            
-    return redirect('accounts:profile', person.username)
+            is_followed = True
+
+        followers_list = [{'username': follower.username, 'image_url': follower.image.url} for follower in person.followers.all()]
+        # followings_list = [{'username': following.username, 'image_url': following.image.url} for following in person.followings.all()]
+
+        context = {
+            'is_followed': is_followed,
+            'followings_count': person.followings.count(),
+            'followers_count': person.followers.count(),
+            # 'followings_list': followings_list,
+            'followers_list': followers_list,
+        }
+
+        return JsonResponse(context)
+
+    return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
+
 
 tracks = {}
 def search_spotify(request):

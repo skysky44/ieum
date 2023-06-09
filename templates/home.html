@@ -1,14 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}">
+{% endblock head %}
+
+{% block style %}
+{% endblock style %}
+
+{% block aside %}
+<article class="home__paints--container">
+  <section class="home__paints--wrap">
+    <article class="home__paints--list">
+      <div class="paints__title--wrap">
+        <h1 class="font--gangwon">그림 전시회</h1>
+        <p>그림으로 이어지는 공간 <a class="home__etc--button" href="{% url 'paints:index' %}">더보기</a></p>
+        <p>너의 그림이 궁금해 <a class="home__etc--button" href="{% url 'paints:create' %}">그리기</a></p>
+      </div>
+      <div id="viewport">
+        <ul id="wheel">
+          {% for paint in paints %}
+            <li class="paint__image--wrap"><img class="paint__image" src="{{ paint.image.url }}" alt=""></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </article>
+    <article class="paints__list--wrap">
+      <ul>
+        <li></li>
+      </ul>
+    </article>
+  </section>
+</article>
+{% endblock aside %}
+
 {% block content %}
-<h2>home(index)</h2>
+<article class="home__posts--container">
+  <div class="home__posts--wrap">
+    <section class="home__posts--index">
+      <h1 class="font--gangwon">이 길을 따라, 공감 이음</h1>
+      <ul>
+        {% for ieum in category_class %}
+          <li>
+            {{ ieum.user }}
+            {{ ieum.title }}
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="">
+        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기</a>
+      </div>
+    </section>
+    <section class="home__posts--anonymous'">
+      <h1 class="font--gangwon">털어놔요, 고민 이음</h1>
+      <ul>
+        {% for anonymous in category_anonymous %}
+          <li>
+            {{ anonymous.user }}
+            {{ anonymous.title }}
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="">
+        <a class="home__etc--button" href="{% url 'posts:anonymous' %}">더보기</a>
+      </div>
+    </section>
+  </div>
+</article>
 
-<h5>그림전시회</h5>
-<h5>오늘의 내 이음은?</h5>
-<h5>익명 게시판</h5>
-
-<!-- 더보기 버튼 -->
-<div class="d-flex justify-content-center mt-3">
-  <a class="posts--more--btn" href="{% url 'posts:index' %}">더보기</a>
-</div>
 
 {% endblock content %}
+
+{% block script %}
+<script>
+
+</script>
+{% endblock script %}

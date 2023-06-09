@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}댓글 신고하기{% endblock title %}
+
+{% block style %}
+{% endblock style %}  
+
+{% block content %}
+  <form action="{% url 'posts:comment_report' post_pk comment_pk %}" method="POST">
+    {% csrf_token %}
+    {{ comment_report_form.as_p }}
+    <input type="submit" value="신고하기">
+  </form>
+{% endblock content %}
+
+{% block script %}{% endblock script %}

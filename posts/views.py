@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .forms import PostForm, CommentForm
-from .models import Post, Comment
+from .forms import PostForm, CommentForm, PostReportForm, CommentReportForm
+from .models import Post, Comment, Fortune
+from paints.models import Paint
 from .models import PostTrack
 import os
 from django.conf import settings
@@ -13,7 +14,23 @@ import requests
 from django.db.models import Count
 
 def home(request):
-    return render(request, 'home.html')
+    paints = Paint.objects.all().order_by('-id')[:6]
+    category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
+    category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
+    
+    context = {
+        'paints': paints,
+        'category_class' : category_class,
+        'category_anonymous' : category_anonymous,
+    }
+
+    return render(request, 'home.html', context)
+
+
+def aboutus(request):
+    print('안녕')
+    return render(request, 'aboutus.html')
+
 
 def index(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')
@@ -40,8 +57,11 @@ def index(request):
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
+        'tags': tags,
     }
+
     return render(request, 'posts/index.html', context)
+
 
 def anonymous(request):
     category_class = Post.objects.filter(category='익명').order_by('-id')
@@ -70,6 +90,7 @@ def anonymous(request):
         'total_pages': total_pages,
     }
     return render(request, 'posts/anonymous.html', context)
+
 
 @login_required
 def create(request):
@@ -123,6 +144,7 @@ def create(request):
         'form' : form,
     }
     return render(request, 'posts/create.html', context)
+
 
 @login_required
 def anonymous_create(request):
@@ -188,6 +210,8 @@ def detail(request, post_pk):
     comments = post.comments.all().order_by('created_at')
     comment_latest = post.comments.all().order_by('-created_at')
     comment_forms = []
+    post_report_form = PostReportForm()
+    comment_report_form = CommentReportForm()
     for comment in comments:
         u_comment_form = (
             comment,
@@ -207,6 +231,8 @@ def detail(request, post_pk):
         'posts' : posts,
         'music' : music,
         'comment_likes' : comment_likes,
+        'post_report_form' : post_report_form,
+        'comment_report_form' : comment_report_form,
     }
 
     return render(request, 'posts/detail.html', context)
@@ -219,6 +245,8 @@ def generate_anonymous_id():
 @login_required
 def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    post_report_form = PostReportForm()
+    comment_report_form = CommentReportForm()
     comment_form = CommentForm()
     comments = post.comments.all().order_by('created_at')
     comment_latest = post.comments.all().order_by('-created_at')
@@ -243,6 +271,8 @@ def anonymous_detail(request, post_pk):
         'posts' : posts,
         'music' : music,
         'comment_likes' : comment_likes,
+        'post_report_form' : post_report_form,
+        'comment_report_form' : comment_report_form,
     }
 
     # Generate or retrieve anonymous ID for the current user
@@ -262,53 +292,56 @@ def update(request, post_pk):
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
-    if request.method == 'POST':
-        selected_tracks = request.POST.getlist('selected_tracks[]')
-        form = PostForm(request.POST, request.FILES, instance=post)
-        form.fields['category'].choices = category_choices
-        if form.is_valid():
-            tags = request.POST.get('tags').split(',')
-            for tag in tags:
-                post.tags.add(tag.strip())
-            form.save()
-        
-            if not selected_tracks:
-                    return redirect('posts:index')
-            else:
-                if music.exists():
-                    for track in music:
-                        if request.user == track.user:
-                            if track.image:  
-                                image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-                                if os.path.isfile(image_path):
-                                    os.remove(image_path)
-                                    music.delete()
+    if request.user == post.user or request.user.is_superuser:
+        if request.method == 'POST':
+            selected_tracks = request.POST.getlist('selected_tracks[]')
+            form = PostForm(request.POST, request.FILES, instance=post)
+            form.fields['category'].choices = category_choices
+            if form.is_valid():
+                tags = request.POST.get('tags').split(',')
+                for tag in tags:
+                    post.tags.add(tag.strip())
+                form.save()
+            
+                if not selected_tracks:
+                        return redirect('posts:index')
+                else:
+                    if music.exists():
+                        for track in music:
+                            if request.user == track.user:
+                                if track.image:  
+                                    image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                                    if os.path.isfile(image_path):
+                                        os.remove(image_path)
+                                        music.delete()
 
-            for track_id in selected_tracks:
-                for track in tracks:
-                    if track_id == track['id']:
-                        # 이미지 URL 가져오기
-                        image_url = track['album']['images'][0]['url']
+                for track_id in selected_tracks:
+                    for track in tracks:
+                        if track_id == track['id']:
+                            # 이미지 URL 가져오기
+                            image_url = track['album']['images'][0]['url']
 
-                        # 이미지 다운로드 및 저장
-                        img_temp = tempfile.TemporaryFile()
-                        img_temp.write(urllib.request.urlopen(image_url).read())
-                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+                            # 이미지 다운로드 및 저장
+                            img_temp = tempfile.TemporaryFile()
+                            img_temp.write(urllib.request.urlopen(image_url).read())
+                            img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
 
-                        # Track 객체 생성 및 저장
-                        new_track = PostTrack()
-                        new_track.post = post
-                        new_track.title = track['name']
-                        new_track.artist = track['artists'][0]['name']
-                        new_track.album = track['album']['name']
-                        new_track.preview_url = track['preview_url']
-                        new_track.user = request.user
-                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+                            # Track 객체 생성 및 저장
+                            new_track = PostTrack()
+                            new_track.post = post
+                            new_track.title = track['name']
+                            new_track.artist = track['artists'][0]['name']
+                            new_track.album = track['album']['name']
+                            new_track.preview_url = track['preview_url']
+                            new_track.user = request.user
+                            new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
 
-            return redirect('posts:detail', post.pk)
+                return redirect('posts:detail', post.pk)
 
+        else:
+            form = PostForm(instance=post)
     else:
-        form = PostForm(instance=post)
+        return redirect('posts:detail', post.pk)
     form.fields['category'].choices = category_choices
     context = {
         'post' : post,
@@ -326,53 +359,56 @@ def anonymous_update(request, post_pk):
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
-    if request.method == 'POST':
-        selected_tracks = request.POST.getlist('selected_tracks[]')
-        form = PostForm(request.POST, request.FILES, instance=post)
-        form.fields['category'].choices = category_choices
-        if form.is_valid():
-            tags = request.POST.get('tags').split(',')
-            for tag in tags:
-                post.tags.add(tag.strip())
-            form.save()
-        
-            if not selected_tracks:
-                    return redirect('posts:anonymous')
-            else:
-                if music.exists():
-                    for track in music:
-                        if request.user == track.user:
-                            if track.image:  
-                                image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
-                                if os.path.isfile(image_path):
-                                    os.remove(image_path)
-                                    music.delete()
+    if request.user == post.user or request.user.is_superuser:
+        if request.method == 'POST':
+            selected_tracks = request.POST.getlist('selected_tracks[]')
+            form = PostForm(request.POST, request.FILES, instance=post)
+            form.fields['category'].choices = category_choices
+            if form.is_valid():
+                tags = request.POST.get('tags').split(',')
+                for tag in tags:
+                    post.tags.add(tag.strip())
+                form.save()
+            
+                if not selected_tracks:
+                        return redirect('posts:anonymous')
+                else:
+                    if music.exists():
+                        for track in music:
+                            if request.user == track.user:
+                                if track.image:  
+                                    image_path = os.path.join(settings.MEDIA_ROOT, str(track.image))
+                                    if os.path.isfile(image_path):
+                                        os.remove(image_path)
+                                        music.delete()
 
-            for track_id in selected_tracks:
-                for track in tracks:
-                    if track_id == track['id']:
-                        # 이미지 URL 가져오기
-                        image_url = track['album']['images'][0]['url']
+                for track_id in selected_tracks:
+                    for track in tracks:
+                        if track_id == track['id']:
+                            # 이미지 URL 가져오기
+                            image_url = track['album']['images'][0]['url']
 
-                        # 이미지 다운로드 및 저장
-                        img_temp = tempfile.TemporaryFile()
-                        img_temp.write(urllib.request.urlopen(image_url).read())
-                        img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
+                            # 이미지 다운로드 및 저장
+                            img_temp = tempfile.TemporaryFile()
+                            img_temp.write(urllib.request.urlopen(image_url).read())
+                            img_temp.seek(0)  # 파일 포인터를 처음으로 되돌림
 
-                        # Track 객체 생성 및 저장
-                        new_track = PostTrack()
-                        new_track.post = post
-                        new_track.title = track['name']
-                        new_track.artist = track['artists'][0]['name']
-                        new_track.album = track['album']['name']
-                        new_track.preview_url = track['preview_url']
-                        new_track.user = request.user
-                        new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
+                            # Track 객체 생성 및 저장
+                            new_track = PostTrack()
+                            new_track.post = post
+                            new_track.title = track['name']
+                            new_track.artist = track['artists'][0]['name']
+                            new_track.album = track['album']['name']
+                            new_track.preview_url = track['preview_url']
+                            new_track.user = request.user
+                            new_track.image.save(f'{track_id}.jpg', ContentFile(img_temp.read()))
 
-            return redirect('posts:anonymous_detail', post.pk)
+                return redirect('posts:anonymous_detail', post.pk)
 
+        else:
+            form = PostForm(instance=post)
     else:
-        form = PostForm(instance=post)
+        return redirect('posts:anonymous_detail', post.pk)
     form.fields['category'].choices = category_choices
     context = {
         'post' : post,
@@ -386,7 +422,7 @@ def anonymous_update(request, post_pk):
 def delete(request,post_pk):
     post = Post.objects.get(pk=post_pk)
     music_queryset = PostTrack.objects.filter(post=post_pk)
-    if request.user == post.user:
+    if request.user == post.user or request.user.is_superuser:
         for music in music_queryset:
             if music.image:  
                 image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
@@ -440,7 +476,29 @@ def anonymous_likes(request, post_pk):
     
     return redirect('posts:anonymous')
 
-
+@login_required
+def post_report(request, post_pk):
+    post = Post.objects.get(pk=post_pk)
+    form = PostReportForm()
+    if request.method == 'POST':
+        form = PostReportForm(request.POST)
+        if form.is_valid():
+            post_report = form.save(commit=False)
+            post_report.post = post
+            post_report.user = request.user
+            post_report.save()
+            # 신고 당한 사람 표시
+            post.user.reported = True
+            post.user.save()
+            post.report = True
+            post.save()
+            return redirect('posts:detail', post_pk)
+            
+    # context = {
+    #     'post_report_form': form,
+    #     'post_pk' : post_pk,
+    # }
+    # return render(request, 'posts/post_report.html', context)
 
 
 def comment_create(request, post_pk):
@@ -515,6 +573,32 @@ def anonymous_comment_delete(request, post_pk, comment_pk):
         comment.delete()
     return redirect('posts:anonymous_detail', post_pk)
 
+@login_required
+def comment_report(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    form = CommentReportForm()
+
+    if request.method == 'POST':
+        form = CommentReportForm(request.POST)
+        if form.is_valid():
+            comment_report = form.save(commit=False)
+            comment_report.comment = comment
+            comment_report.user = request.user
+            comment_report.save()
+            # 신고 당한 사람 표시
+            comment.user.reported = True
+            comment.user.save()
+            comment.report = True
+            comment.save()
+            return redirect('posts:detail', post_pk)
+            
+    # context = {
+    #     'comment_report_form': form,
+    #     'post_pk' : post_pk,
+    #     'comment_pk' : comment_pk,
+    # }
+    # return render(request, 'posts/comment_report.html', context)
+
 # @login_required
 def comment_likes(request, post_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
@@ -584,3 +668,33 @@ def search(query):
     tracks = search(query)
     return tracks
 
+# 포춘쿠키
+from django.utils import timezone
+import random
+
+def fortune_cookie(request):
+    current_date = timezone.now().date()
+
+    # 현재 사용자의 과거 운세가 있는지 확인 후 지우기
+    user = request.user
+    past_fortunes = Fortune.objects.filter(date__lt=current_date, user=user)
+    past_fortunes.delete()
+    # 오늘 날짜와 현재 사용자에 대한 기존 운세가 있는지 확인
+    fortune = Fortune.objects.filter(date=current_date, user=user).first()
+
+    if not fortune:
+        # 새로운 운세 설정
+        fortunes = [
+            "오늘의 키 포인트는 미소입니다.당신은 웃는 얼굴이 매력입니다.",
+            "예상치 못한 시점에 원하는 자리에 도달해 있을거예요. 이미 이만큼 왔는걸요.",
+            "오늘 행운의 색은 파랑색 입니다. 쿨한 모습이 행운을 가져다줍니다.",
+            "감수성이 예민한 사람이군요. 힘들 땐 잠시 멈춰 스스로를 어루만져 주세요.",
+            "이해하기 힘든 사람에게 말을 걸어 보십시오. 생각지 못한 것들을 보게될거예요."
+        ]
+        random_fortune = random.choice(fortunes)
+
+        # Save the new fortune in the database associated with the current user
+        fortune = Fortune.objects.create(user=user, message=random_fortune, date=current_date)
+
+    context = {'fortune': fortune}
+    return redirect('accounts:profile',user.username)

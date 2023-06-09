@@ -3,6 +3,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'posts/css/anonymous.css' %}">
 {% endblock head %}
 
 {% block content %}
@@ -32,9 +33,12 @@
                 </div>
                 <div class="posts--content-wrap">
                   <!-- 카테고리 태그 -->
-                  <div class="posts--category--tag mb-3">
+                  <div class="d-flex">
                     {% for tag in post.tags.all %}
-                      #{{ tag }}
+                      <div class="posts--category--tag mb-3 me-2">
+                        #{{ tag }}
+                      </div>
+
                     {% endfor %}
                   </div>
                   <!-- 게시물 제목 -->
@@ -65,7 +69,6 @@
                       {% endif %}
                     </form>
                     <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
-  
                     <form action="{% url 'posts:likes' post.pk %}" method="POST">
                       {% csrf_token %}
                       {% if user in post.like_users.all  %}

@@ -32,9 +32,11 @@
                 </div>
                 <div class="posts--content-wrap">
                   <!-- 카테고리 태그 -->
-                  <div class="posts--category--tag mb-3">
+                  <div class="d-flex">
                     {% for tag in post.tags.all %}
-                      #{{ tag }}
+                      <div class="posts--category--tag mb-3 me-2">
+                        #{{ tag }}
+                      </div>
                     {% endfor %}
                   </div>
                   <!-- 게시물 제목 -->
@@ -199,7 +201,6 @@
     }
   });
 </script>
-
 {% endblock content %}
 {% block script %}
 <!-- <script>

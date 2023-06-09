@@ -41,6 +41,7 @@ class User(AbstractUser):
     privacy = models.BooleanField(default=False)
     pick = models.CharField(max_length=10, default=3)
     introductions = models.CharField(max_length=255)
+    reported = models.BooleanField(default=False)
 
     # def set_introductions(self, introductions):
     #     self.introductions = ','.join(introductions)
