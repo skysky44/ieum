@@ -25,6 +25,12 @@ def home(request):
 
     return render(request, 'home.html', context)
 
+
+def aboutus(request):
+    print('안녕')
+    return render(request, 'aboutus.html')
+
+
 def index(request):
     # posts = Post.objects.order_by('-pk')
     category_class = Post.objects.filter(category='모임').order_by('-id')
@@ -42,6 +48,7 @@ def index(request):
 
     return render(request, 'posts/index.html', context)
 
+
 def anonymous(request):
     # posts = Post.objects.order_by('-pk')
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')
@@ -57,6 +64,7 @@ def anonymous(request):
 
     }
     return render(request, 'posts/anonymous.html',context)
+
 
 @login_required
 def create(request):
@@ -110,6 +118,7 @@ def create(request):
         'form' : form,
     }
     return render(request, 'posts/create.html', context)
+
 
 @login_required
 def anonymous_create(request):
