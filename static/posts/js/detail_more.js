@@ -13,12 +13,6 @@ document.getElementById("comment-select").addEventListener("change", function ()
 });
 
 
-
-
-
-
-
-
 document.addEventListener("DOMContentLoaded", function() {
   var latestCommentSection = document.getElementById("latest-comments-section");
   var latestLoadMoreBtn = latestCommentSection.querySelector(".load-more-comments");

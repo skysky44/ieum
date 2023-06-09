@@ -28,7 +28,6 @@ def home(request):
 
 
 def aboutus(request):
-    print('안녕')
     return render(request, 'aboutus.html')
 
 
@@ -57,7 +56,7 @@ def index(request):
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
-        'tags': tags,
+        # 'tags': tags,
     }
 
     return render(request, 'posts/index.html', context)
