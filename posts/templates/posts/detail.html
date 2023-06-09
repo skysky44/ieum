@@ -5,18 +5,23 @@
   <!-- <link rel="stylesheet" href="{% static 'base/css/reset.css' %}"> -->
   <link rel="stylesheet" href="{% static 'posts/css/detail.css' %}">
 {% endblock head %}
-
+{% block style %}
+  .comments-hidden {
+    display: none;
+  }
+{% endblock style %}
 {% block content %}
   <article class="detail--container">   
     <section class="detail--wrap">
       <div>
-        <div class="d-flex justify-content-between">
-          <div class="d-flex">
-            {% for tag in tags %}
-              <span class="detail--tag me-2 mb-3">#{{ tag }}</span>
-            {% endfor %}
+        <div class="d-flex justify-content-between mb-1">
+          <div class="d-flex flex-column">
+            <h1>{{ post.title }}</h1>
+            <a href="{% url 'accounts:profile' username=post.user %}">
+              <p><strong>{{ post.user }}</strong></p>
+            </a>
           </div>
-          <div id="detail--like" class="d-flex">
+          <div class="d-flex align-items-center">
             <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
               {% csrf_token %}
               {% if request.user in post.like_users.all %}
@@ -32,66 +37,35 @@
             <span class="ms-1" style="font-size:1.5rem;">{{post.like_users.count}}</span>
           </div>
         </div>
-        <div id="header" class="mb-1">
-          <div class="">
-            <h1>{{ post.title }}</h1>
-            <div>
-              <i class="mt-1" style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
-            </div>
-            <a class="mt-3" href="{% url 'accounts:profile' username=post.user %}">
-              <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
-              <span class="ms-1"><strong>{{ post.user }}</strong></span>
-            </a>
-          </div>
-          <div id="detail--music">
-            {% if not music %}
-            {% else %}
-              <div class="detail--music--box">
-                {% for track in music %}
-                  <div id="music-track">
-                    <img style="width:50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
-                    <span style="max-width:100%; word-wrap: break-word;">{{ track.album }}</span>
-                    <a href="#" class="play-music-profile detail--music--playbtn" data-src="{{ track.preview_url }}" >재생</a>
-                  </div>
-                {% endfor %}
-                <audio class="music-audio mt-3" style="width:100%; height:45px;" controls>
-                  <source src="" type="audio/mp3">
-                </audio>
-              </div>
-            {% endif %}
-          </div>
-        </div>
         <ul>
-          {% comment %} <li class="mb-3">
+          <li class="mb-3">
             <i style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
-          </li> {% endcomment %}
-          {% comment %} <li class="mb-3">
+          </li>
+          <li class="mb-3">
+            <div class="detail--content">{{ post.content|safe }}</div>
+          </li>
+          <li class="detail__map--wrap mb-3">
+            <div id="map" style="width:350px;height:200px;" class="detail__map"></div>
+          </li>
+          <li class="mb-3">
             <div>
               {% for tag in tags %}
               <span class="detail--tag">#{{ tag }}</span>
               {% endfor %}
             </div>
-          </li> {% endcomment %}
-          <div id="detail--main--box">
-            <div class="detail--content">
-              <li class="mb-3 mt-3 me-3 detail--content--box">
-                <div class="detail--content">{{ post.content|safe }}</div>
-              </li>
-            </div>
-            <div class="detail--map">
-              <li class="detail__map--wrap mb-3 mt-3">
-                <div id="map" style="width:auto;height:300px;" class="detail__map"></div>
-              </li>
-            </div>
-          </div>
-          <li class="d-flex mt-3 mb-3">
-            <div style="display:flex; align-self:center;">
-              <button class="me-2">
-                <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
-              </button>
+          </li>
+          <li class="d-flex">
+            <div class="detail__btn--list">
+              <div class="me-2" style="display:flex; align-self:center;">
+                <button class="">
+                  <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+                </button>
+                </div>
+              </div>
               <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
                 <input type="submit" value='삭제' class="ieum--button--nobgc2">
               </form>
+              <!-- Button trigger modal -->
             </div>
           </li>
         </ul>
@@ -101,50 +75,170 @@
     <section class="comments--wrap">
       <ul>
         <li>
-          {% for comment in comments %}
-            <div class="comments__content--wrap">
-              <div>
-                <div class="comments__user--wrap">
-                  <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image" />
-                  <p class="fw-bold ms-2">{{ comment.user }}</p>
-                  <i class="comment--date">{{ comment.created_time }}</i>
-                </div>
-                <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+          {% comment %} 좋아요가 많은 상위 3개의 데이터 {% endcomment %}
+          {% for comment_like in comment_likes %}
+            {% if comment_like.post.pk == post.pk %}
+            <div>
+              <div class="comments__user--wrap">
+                <p class="fw-bold">{{ comment_like.user }}</p>
+                <i class="comment--date">{{ comment_like.created_time }}</i>
               </div>
-              <div class="comments__btn--list">
-                <div class="me-2" style="display:flex; align-self:center;">
-                  <div class="ieum--button1">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">수정</button>
+              <p>{{ comment_like.content }}</p>
+            </div>
+            {% endif %}
+          {% endfor %}
+
+          <select id="comment-select">
+            <option value="latest-comments">최신 댓글</option>
+            <option value="comments">오래된 댓글</option>
+          </select>
+          
+        {% comment %} 최신 댓글 {% endcomment %}
+        <div id="latest-comments-section" class="latest-comments-section">
+          {% for comment in comment_latest %}
+            <div id="comment" class = "latest-comment">
+              {% if comment.user == request.user %}
+                <div class="comments__content--wrap">
+                  <div>
+                    <div class="comments__user--wrap">
+                      <p class="fw-bold">{{ comment.user }}</p>
+                      <i class="comment--date">{{ comment.created_time }}</i>
+                    </div>
+                    <p>{{ comment.content }}</p>
+                  </div>
+                  <div class="comments__btn--list">
+                    <div class="me-2" style="display:flex; align-self:center;">
+                      <div class="ieum--button1">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
+                      </div>
+                    </div>
+                    <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                      <input type="submit" value='삭제' class="ieum--button2">
+                    </form>
+                    <span class="ms-1">❤️{{comment.like_users.count}}</span>
+                    <!-- Button trigger modal -->
                   </div>
                 </div>
-                <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                  <input type="submit" value='삭제' class="ieum--button2">
-                </form>
-              </div>
-            
+              {% else %}
+                <div class="comments__user--wrap">
+                  <p class="fw-bold">{{ comment.user }}</p>
+                  <i class="comment--date">{{ comment.created_time }}</i>
+                </div>
+                <p>{{ comment.content }}</p>
+                <div class =' d-flex'>
+                  <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                    {% csrf_token %}
+                    {% if request.user in comment.like_users.all %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        ❤️
+                      </button>
+                    {% else %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        🤍
+                      </button>
+                    {% endif %}
+                  </form>
+                  <span class="ms-1">{{comment.like_users.count}}</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div id="latest-load-more-btn">
+            <button class="load-more-comments" type="button">더보기</button>
+          </div>
+        </div>
+          
+        {% comment %} 오래된 댓글 {% endcomment %}
+        <div id="comments-section" class="comments-hidden">
+          {% for comment in comments %}
+            <div class="comment old-comment">
+              {% if comment.user == request.user %}
+                <div class="comments__content--wrap">
+                  <div>
+                    <div class="comments__user--wrap">
+                      <p class="fw-bold">{{ comment.user }}</p>
+                      <i class="comment--date">{{ comment.created_time }}</i>
+                    </div>
+                    <p>{{ comment.content }}</p>
+                  </div>
+                  <div class="comments__btn--list">
+                    <div class="me-2" style="display:flex; align-self:center;">
+                      <div class="ieum--button1">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
+                      </div>
+                    </div>
+                    <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                      <input type="submit" value='삭제' class="ieum--button2">
+                    </form>
+                    <span class="ms-1">❤️{{comment.like_users.count}}</span>
+                    <!-- Button trigger modal -->
+                  </div>
+                </div>
+              {% else %}
+                <div class="comments__user--wrap">
+                  <p class="fw-bold">{{ comment.user }}</p>
+                  <i class="comment--date">{{ comment.created_time }}</i>
+                </div>
+                <p>{{ comment.content }}</p>
+                <div class =' d-flex'>
+                  <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                    {% csrf_token %}
+                    {% if request.user in comment.like_users.all %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        ❤️
+                      </button>
+                    {% else %}
+                      <button class="border-0 bg-transparent" type="submit">
+                        🤍
+                      </button>
+                    {% endif %}
+                  </form>
+                  <span class="ms-1">{{comment.like_users.count}}</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div id="old-load-more-btn">
+            <button class="load-more-comments" type="button">더보기</button>
+          </div>
+        </div>
 
-              <!-- Modal -->
-              <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{u_comment_form}}
-                        <div class="modal-footer">
-                          <button type="submit" class="btn btn-primary">수정하기</button>
-                        </div>
-                      </form>
-                    </div>
+        {% comment %} 댓글 수정 모달 {% endcomment %}
+          {% for comment, u_comment_form in comment_forms %}
+            <!-- Modal -->
+            <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'posts:comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {{u_comment_form}}
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">수정하기</button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
           {% endfor %}
+
+          
+          {% comment %} 음악 {% endcomment %}
+          {% for track in music %}
+          <div id="music-track">
+            <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+            <span>{{ track.album }}</span>
+            <a href="#" class="play-music-profile" data-src="{{ track.preview_url }}">재생</a>
+          </div>
+          {% endfor %}
+          <audio class="music-audio" controls>
+            <source src="" type="audio/mp3">
+          </audio>
         </li>
         <li>
           <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
@@ -163,21 +257,15 @@
 
 
 
-    
-    
-    
-    
-   
 
-
-
-
-
-
+  
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
+{% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'posts/js/detail_music.js' %}"></script>
+<script src="{% static 'posts/js/detail_more.js' %}"></script>
 <script>
+
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = {
         center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
@@ -214,6 +302,7 @@ geocoder.addressSearch( "{{ post.address }}", function(result, status) {
         map.setCenter(coords);
     } 
 });    
+
 
 </script>
 {% endblock content %}
