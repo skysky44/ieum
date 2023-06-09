@@ -276,11 +276,18 @@
     </div>
   </div>
 </div>
-{% comment %} {% if request.user.is_authenticated and request.user.username == username %}
-    <div>
-        <a href="{% url 'accounts:logout' %}">로그아웃</a>
-    </div>
-{% endif %} {% endcomment %}
+
+{% if fortunes.message %}
+{% else %}
+  <form action="{% url 'posts:fortune_cookie' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" style="border: none; background: none;">
+      <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
+    </button>
+  </form>
+{% endif %}
+<p>{{ fortunes.message }}</p>
+
 <!-- 신고 당한 게시물과 댓글 표시 -->
 {% comment %} {% if request.user.is_superuser %} {% endcomment %}
 <br><br>

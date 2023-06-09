@@ -12,10 +12,11 @@ import os
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
-from posts.models import Post, PostReport, CommentReport
+from posts.models import Post, PostReport, CommentReport, Fortune
 from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your views here.
@@ -180,7 +181,7 @@ def calculate_distance(address1, address2):
     else:
         # 유효한 좌표를 가져오지 못한 경우, 기본 거리를 0으로 설정
         distance = 0
-    print(distance)
+    # print(distance)
 
     return distance
 
@@ -194,6 +195,17 @@ def profile(request, username):
     music = Track.objects.filter(user_id=user_id)
     post_reports = PostReport.objects.order_by('post_id', 'title')
     comment_reports = CommentReport.objects.order_by('comment_id', 'title')
+    try:
+        fortunes = Fortune.objects.get(user_id=user_id)
+    except ObjectDoesNotExist:
+        fortunes = None
+    # print(fortunes)
+    # for fortune in fortunes:
+    #     fortune_message = fortune.message
+    #     print(fortune_message)
+
+
+
     introductions_list = []
     sign = ["[","]","'",","]
     word = ""
@@ -232,6 +244,7 @@ def profile(request, username):
         'introductions_list': introductions_list,
         'post_reports' : post_reports,
         'comment_reports' : comment_reports,
+        'fortunes' : fortunes,
 
     }
     return render(request, 'accounts/profile.html', context)

@@ -24,6 +24,8 @@ urlpatterns = [
     path('<int:post_pk>/comments/<int:comment_pk>/anonymous_comment_delete/', views.anonymous_comment_delete, name='anonymous_comment_delete'),
     path('<int:post_pk>/comments/<int:comment_pk>/comment_likes/', views.comment_likes, name='comment_likes'),
     path('search/', views.search_spotify, name='search_spotify'),
+    # 포춘쿠키
+    path('fortune_cookie/', views.fortune_cookie, name='fortune_cookie'),
     # path('save_track/', views.save_track, name='save_track'),
     # path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
     
