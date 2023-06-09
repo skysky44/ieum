@@ -64,6 +64,24 @@ def delete(request):
     return redirect('posts:index')
 
 
+from django.core.mail import send_mail
+
+# 회원가입 시 이메일 발송
+def send_verification_email(user_email):
+    subject = '이메일 인증을 완료해주세요.'
+    message = '인증을 위해 아래 링크를 클릭해주세요: https://example.com/verify-email/{email}'
+    send_mail(subject, message.format(email=user_email), 'admin@example.com', [user_email])
+
+
+# 이메일 인증 관련
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from .tokens import account_activation_token
+
+
 def signup(request):
     # my_sentence = []
     if request.user.is_authenticated:
@@ -74,7 +92,19 @@ def signup(request):
         # print(form)
         if form.is_valid():
             user = form.save(commit=False)
+            user.is_active = False 
             user.save()
+            current_site = get_current_site(request) 
+            message = render_to_string('accounts/activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            mail_title = "계정 활성화 확인 이메일"
+            mail_to = request.POST["email"]
+            email = EmailMessage(mail_title, message, to=[mail_to])
+            email.send()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
             return redirect('posts:index')
@@ -85,6 +115,32 @@ def signup(request):
         'form': form,
     }
     return render(request, 'accounts/signup.html', context)
+
+
+# 이메일 인증
+
+def verify_email(request, email):
+    user = User.objects.get(email=email)
+    user.is_email_verified = True
+    user.save()
+    return redirect('accounts:login')
+
+# 계정 활성화 함수(토큰을 통해 인증)
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExsit):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        auth.login(request, user)
+        return redirect("home")
+    else:
+        return render(request, 'home.html', {'error' : '계정 활성화 오류'})
+    return 
+
 
 # 중복 아이디 체크
 

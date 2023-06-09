@@ -18,4 +18,7 @@ urlpatterns = [
     # 중복 아이디, 이메일 체크
     path('check-username/', views.check_username, name='check_username'),
     path('check-email/', views.check_email, name='check_email'),
+    
+    # 이메일 본인 인증
+    path('verify-email/<str:email>/', views.verify_email, name='verify-email'),
 ]
