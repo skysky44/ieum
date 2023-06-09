@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm, PostReportForm, CommentReportForm
-from .models import Post, Comment
+from .models import Post, Comment, Fortune
 from paints.models import Paint
 from .models import PostTrack
 import os
@@ -610,3 +610,33 @@ def search(query):
     tracks = search(query)
     return tracks
 
+# 포춘쿠키
+from django.utils import timezone
+import random
+
+def fortune_cookie(request):
+    current_date = timezone.now().date()
+
+    # 현재 사용자의 과거 운세가 있는지 확인 후 지우기
+    user = request.user
+    past_fortunes = Fortune.objects.filter(date__lt=current_date, user=user)
+    past_fortunes.delete()
+    # 오늘 날짜와 현재 사용자에 대한 기존 운세가 있는지 확인
+    fortune = Fortune.objects.filter(date=current_date, user=user).first()
+
+    if not fortune:
+        # 새로운 운세 설정
+        fortunes = [
+            "오늘의 키 포인트는 미소입니다.당신은 웃는 얼굴이 매력입니다.",
+            "예상치 못한 시점에 원하는 자리에 도달해 있을거예요. 이미 이만큼 왔는걸요.",
+            "오늘 행운의 색은 파랑색 입니다. 쿨한 모습이 행운을 가져다줍니다.",
+            "감수성이 예민한 사람이군요. 힘들 땐 잠시 멈춰 스스로를 어루만져 주세요.",
+            "이해하기 힘든 사람에게 말을 걸어 보십시오. 생각지 못한 것들을 보게될거예요."
+        ]
+        random_fortune = random.choice(fortunes)
+
+        # Save the new fortune in the database associated with the current user
+        fortune = Fortune.objects.create(user=user, message=random_fortune, date=current_date)
+
+    context = {'fortune': fortune}
+    return redirect('accounts:profile',user.username)

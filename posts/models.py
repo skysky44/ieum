@@ -116,3 +116,8 @@ class PostTrack(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Fortune(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.TextField()
+    date = models.DateField(auto_now_add=True)
