@@ -46,7 +46,7 @@ def index(request):
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 5
+    per_page = 3
     
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
