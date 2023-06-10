@@ -28,9 +28,7 @@
               <div class="d-flex">
                 <!-- 게시물 내용 -->
                 <div class="posts--img-wrap">
-                  {% for image_url in post.image_urls %}
-                    <img style='width:150px; height:150px;' src="{{ image_url }}" alt="Image">
-                  {% endfor %}
+                    {{ post.content|safe }}
                 </div>
                 <div class="posts--content-wrap">
                   <!-- 카테고리 태그 -->

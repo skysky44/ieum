@@ -30,12 +30,6 @@ def home(request):
 def aboutus(request):
     return render(request, 'aboutus.html')
 
-from bs4 import BeautifulSoup
-def extract_image_urls(content):
-    soup = BeautifulSoup(content, 'html.parser')
-    image_tags = soup.find_all('img')
-    image_urls = [tag['src'] for tag in image_tags]
-    return image_urls
 
 def index(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')
@@ -59,15 +53,11 @@ def index(request):
 
     total_pages = paginator.num_pages
 
-    for post in page_obj:
-        post.image_urls = extract_image_urls(post.content)
-
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
-        'tags': tags,
-        'post.image_urls' : post.image_urls,
+        # 'tags': tags,
     }
 
     return render(request, 'posts/index.html', context)
@@ -216,7 +206,7 @@ def anonymous_create(request):
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     comment_form = CommentForm()
-    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
+    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
     comment_latest = post.comments.all().order_by('-created_at')
     comment_forms = []
@@ -260,7 +250,7 @@ def anonymous_detail(request, post_pk):
     comment_form = CommentForm()
     comments = post.comments.all().order_by('created_at')
     comment_latest = post.comments.all().order_by('-created_at')
-    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
+    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')).order_by('-num_likes')[:3]
     comment_forms = []
     for comment in comments:
         u_comment_form = (

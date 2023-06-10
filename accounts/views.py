@@ -222,7 +222,7 @@ def profile(request, username):
     #     if introduction == ",":
     #             introductions_list.append(word)
     #             word = ""
-
+             
         
         # if introduction not in sign:
         #     word += introduction
