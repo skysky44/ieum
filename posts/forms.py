@@ -128,7 +128,6 @@ class PostReportForm(forms.ModelForm):
         label='허위 신고자에게는  불이익이 발생할 수 있습니다. 신고 내용을 신중하게 생각하셔서, 정확하고 상세하게 기입해 주십시오.',
         widget=forms.Textarea(
             attrs={
-              
             }
         )
     )
