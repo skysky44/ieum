@@ -209,12 +209,23 @@ def profile(request, username):
     introductions_list = []
     sign = ["[","]","'",","]
     word = ""
-    for introduction in person.introductions:
-        if introduction == ",":
-                introductions_list.append(word)
-                word = ""
-        if introduction not in sign:
-            word += introduction
+    len_word = len(person.introductions)
+    for i in range(len_word):
+        if person.introductions[i] == "," or i == len_word - 1:
+            introductions_list.append(word)
+            word = ""
+        if person.introductions[i] not in sign:
+            word += person.introductions[i]
+            
+
+    # for introduction in person.introductions:
+    #     if introduction == ",":
+    #             introductions_list.append(word)
+    #             word = ""
+             
+        
+        # if introduction not in sign:
+        #     word += introduction
             
     if request.method == 'GET':
         query = request.GET.get('q')

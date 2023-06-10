@@ -14,7 +14,7 @@
       <p class="mt-3" style="color:#bdbdbd; font-size:.8rem;">{{ message.timestamp }}</p>
       <p class="mt-3 view--content--box">{{ message.content|linebreaksbr }}</p>
       <div class="d-flex mt-4">
-        <a href="{% url 'my_messages:delete_message' message.id %}" class="view--btn1">삭제</a>
+        <a href="{% url 'my_messages:delete_message' message.id %}" class="view--btn1" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
         <a href="{% url 'my_messages:received_messages' %}" class="view--btn1">받은 쪽지함으로 돌아가기</a>
       </div>
     </div>

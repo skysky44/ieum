@@ -152,7 +152,7 @@
     border-radius: 5px;
 }
 .profile--music--result {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 400px);
     overflow-x: hidden;
     overflow-y: auto;
 }
