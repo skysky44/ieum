@@ -11,7 +11,7 @@
   <a href="{% url 'posts:create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
 </div>
 <form>
-  <select id="section-dropdown">
+  <select id="section-dropdown" class="form-select mt-3" style="width:250px;">
     <option value="recent" {% if section == 'recent' %}selected{% endif %}>최신글</option>
     <option value="popular" {% if section == 'popular' %}selected{% endif %}>좋아요가 가장 많은 순</option>
     <option value="oldest" {% if section == 'oldest' %}selected{% endif %}>가장 오래된 글</option>
@@ -96,7 +96,7 @@
   <ul class="pagination justify-content-center">
     {% for page_number in category_class.paginator.page_range %}
       <li class="page-item {% if category_class.number == page_number %}active{% endif %}">
-        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        <a class="page-link" style="color:black;" href="?page={{ page_number }}">{{ page_number }}</a>
       </li>
     {% endfor %}
   </ul>
@@ -105,14 +105,17 @@
 
 <script type="text/javascript" src="/static/posts/js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{% comment %} <script src="{% static 'posts/js/index_section.js' %}"></script> {% endcomment %}
+
 <script>
   $(document).ready(function() {
+    // 페이지 로드 시 URL 매개변수 가져오기
+    var urlParams = new URLSearchParams(window.location.search);
+    var currentPage = parseInt(urlParams.get('page')) || 1;
+  
     // 드롭다운 선택 이벤트 리스너
     $('#section-dropdown').on('change', function() {
       var selectedSection = $(this).val();
-      var currentPage = 1; // 첫 페이지로 설정
-      var url = '{% url 'posts:index' %}';
+      var url = '{% url 'posts:index' %}?page=' + currentPage; // URL에 현재 페이지 정보 추가
       // AJAX 요청 전송
       sendAjaxRequest(url, selectedSection, currentPage);
     });
@@ -122,7 +125,7 @@
       event.preventDefault();
       var selectedPage = $(this).attr('href').split('=')[1];
       var selectedSection = $('#section-dropdown').val();
-      var url = '{% url 'posts:index' %}';
+      var url = '{% url 'posts:index' %}?page=' + selectedPage; // URL에 선택된 페이지 정보 추가
       // AJAX 요청 전송
       sendAjaxRequest(url, selectedSection, selectedPage);
     });
@@ -130,7 +133,7 @@
     // 첫 페이지 클릭 이벤트 리스너
     $(document).on('click', '.first-page', function() {
       var selectedSection = $('#section-dropdown').val();
-      var url = '{% url 'posts:index' %}';
+      var url = '{% url 'posts:index' %}?page=1'; // URL에 1페이지 정보 추가
       // AJAX 요청 전송
       sendAjaxRequest(url, selectedSection, 1);
     });
@@ -182,6 +185,9 @@
       if (currentPage > 1) {
         paginationContainer.append('<li class="page-item first-page"><a class="page-link" href="?page=1">처음</a></li>');
         paginationContainer.append('<li class="page-item previous-page"><a class="page-link" href="?page=' + (currentPage - 1) + '">이전</a></li>');
+      } else {
+        paginationContainer.append('<li class="page-item first-page disabled"><a class="page-link" href="#">처음</a></li>');
+        paginationContainer.append('<li class="page-item previous-page disabled"><a class="page-link" href="#">이전</a></li>');
       }
   
       // 페이지 버튼
@@ -197,9 +203,16 @@
       if (currentPage < total_pages) {
         paginationContainer.append('<li class="page-item next-page"><a class="page-link" href="?page=' + (currentPage + 1) + '">다음</a></li>');
         paginationContainer.append('<li class="page-item last-page"><a class="page-link" href="?page=' + total_pages + '">마지막</a></li>');
+      } else {
+        paginationContainer.append('<li class="page-item next-page disabled"><a class="page-link" href="#">다음</a></li>');
+        paginationContainer.append('<li class="page-item last-page disabled"><a class="page-link" href="#">마지막</a></li>');
       }
     }
+  
+    // 페이지 로드 시 페이지네이션 업데이트
+    updatePagination();
   });
+  
 </script>
 {% endblock content %}
 {% block script %}

@@ -8,3 +8,20 @@
     border: 1px solid #DEECA1 !important;
     color: black;
 }
+.pagination .page-item.active .page-link {
+    color: rgb(59, 59, 59);
+    background-color: #DEECA1;
+    border: 1px solid #DEECA1;
+  }
+  .pagination .page-item.disabled .page-link {
+    color: rgba(33, 37, 41, 0.75);
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+  }
+  .pagination .page-link {
+    color: rgb(59, 59, 59);
+    background-color: #fff;
+  }
+  .pagination .page-link:hover {
+    background-color: #f8f9fa;
+  }
