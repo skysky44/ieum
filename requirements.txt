@@ -9,6 +9,7 @@ autobahn==23.1.2
 Automat==22.10.0
 backcall==0.2.0
 backoff==1.11.1
+beautifulsoup4==4.12.2
 certifi==2023.5.7
 cffi==1.15.1
 channels==4.0.0
@@ -77,6 +78,7 @@ ruamel.yaml==0.17.21
 ruamel.yaml.clib==0.2.7
 service-identity==21.1.0
 six==1.16.0
+soupsieve==2.4.1
 spotify==0.10.2
 spotify-client==1.9.1
 sqlparse==0.4.4
