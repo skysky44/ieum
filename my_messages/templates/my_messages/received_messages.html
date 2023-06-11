@@ -35,13 +35,13 @@
         {% for message in received_messages %}
           <tr>
             <td style="text-align: center;  width: 200px;">
-              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.sender }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=1">{{ message.sender }}</a>
             </td>
             <td style="padding-left: 70px; width: 400px;">
-              <a href="{% url 'my_messages:view_message' message.id %}" class="received_messages--content">{{ message.content }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=1" class="received_messages--content">{{ message.content }}</a>
             </td>
             <td style="text-align: center; width: 300px;">
-              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.timestamp }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=1">{{ message.timestamp }}</a>
             </td>
           </tr>
         {% endfor %}
