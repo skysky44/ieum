@@ -59,7 +59,7 @@ def index(request):
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 3
+    per_page = 6
     
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
@@ -94,17 +94,23 @@ def anonymous(request):
     elif section == 'oldest':
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
-
+        
+    tags = Post.tags.all()
     per_page = 3
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 
     total_pages = paginator.num_pages
 
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
+
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
+        'tags': tags,
+        'post.image_urls' : post.image_urls,
     }
     return render(request, 'posts/anonymous.html', context)
 
