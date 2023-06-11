@@ -9,19 +9,24 @@ import base64
 import uuid
 
 # Create your views here.
+@login_required
 def index(request):
     paints = Paint.objects.order_by('-pk')
     page = request.GET.get('page', '1')
-    per_page = 6
+    per_page = 10
     paginator = Paginator(paints, per_page)
     page_obj = paginator.get_page(page)
     POSITIONS = [
-        {'top': '20%', 'left': '8%'},
-        {'top': '45%', 'left': '9%'},
-        {'top': '6%', 'left': '28%'},
-        {'top': '26%', 'left': '40%'},
-        {'top': '32%', 'left': '80%'},
-        {'top': '10%', 'left': '50%'},
+        {'top': '10px', 'left': '200px'},
+        {'top': '10px', 'left': '320px'},
+        {'top': '100px', 'left': '30px'},
+        {'top': '150px', 'left': '150px'},
+        {'top': '160px', 'left': '360px'},
+        {'top': '200px', 'left': '500px'},
+        {'top': '270px', 'left': '30px'},
+        {'top': '270px', 'left': '210px'},
+        {'top': '400px', 'left': '84px'},
+        {'top': '350px', 'left': '500px'},
     ]
     paint_positions = list(zip(page_obj, POSITIONS))
     context = {
@@ -31,17 +36,8 @@ def index(request):
     return render(request, 'paints/index.html', context)
 
 
-# def likes(request, paint_pk):
-#     paint_instance = Paint.objects.get(pk=paint_pk)
-#     if paint_instance.like_users.filter(pk=request.user.pk).exists():
-#         paint_instance.like_users.remove(request.user)
-#     else:
-#         paint_instance.like_users.add(request.user)
-
-#     return redirect('paints:index')
-
-
 @csrf_exempt
+@login_required
 def create(request):
     if request.method == 'POST':
         image_data = request.POST['image']
@@ -66,6 +62,7 @@ def detail(request, paint_pk):
 
 
 @csrf_exempt
+@login_required
 def update(request, paint_pk):
      
     paint = Paint.objects.get(pk=paint_pk)

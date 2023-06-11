@@ -10,9 +10,9 @@
 {% endblock style %}  
 
 {% block content %}
-<article class="paints--container" style="background-image: url('{% static "paints/image/ground_02.png" %}');">
+<article class="paints--container">
   <div id="tree-container" class="tree--container">
-    <img class="tree--image" src="{% static 'paints/image/ieum_tree_01.png' %}" alt="Tree Image" draggable="false">
+    <img class="tree--image" src="{% static 'paints/image/ieum_tree_03.png' %}" alt="Tree Image" draggable="false">
     <ul class="paints--list">
       {% for paint, position in paint_positions %}
         {% if paint.image %}
@@ -53,22 +53,30 @@
     <ul class="page--previous">
       {% if paints.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ paints.previous_page_number }}"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="이전페이지"></a>
+          <a class="page-link" href="?page={{ paints.previous_page_number }}">
+            <img class="previous--stone" src="{% static 'paints/image/stone_02.png' %}" alt="stone" title="이전페이지">
+          </a>
         </li>
       {% else %}
         <li class="page-item disabled">
-          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="이전페이지"></a>
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#">
+            <img class="previous--stone" src="{% static 'paints/image/stone_02.png' %}" alt="stone" title="이전페이지">
+          </a>
         </li>
       {% endif %}
     </ul>
     <ul class="page--next">
       {% if paints.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ paints.next_page_number }}"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="다음페이지"></a>
+          <a class="page-link" href="?page={{ paints.next_page_number }}">
+            <img class="next--stone" src="{% static 'paints/image/stone_03.png' %}" alt="stone" title="다음페이지">
+          </a>
         </li>
       {% else %}
         <li class="page-item disabled">
-          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><img src="{% static 'paints/image/stone_01_nosdw.png' %}" alt="stone" title="다음페이지"></a>
+          <a class="page-link" tabindex="-1" aria-disabled="true" href="#">
+            <img class="next--stone" src="{% static 'paints/image/stone_03.png' %}" alt="stone" title="다음페이지">
+          </a>
         </li>
       {% endif %}
     </ul>
@@ -80,7 +88,15 @@
   </div>
   <div class="big--content--wrap">
     <div class="big--content">
-      <img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paint.png' %}" alt="paint--image">
+      <img class="paint--big--userpaint" src="#" alt="paint--image">
+      <h2>그림</h2>
+      <ul class="sub--image--list">
+        {% for paint in paints %}
+          <li class="sub--image--wrap">
+            <img class="sub--image" src="{{ paint.image.url }}" alt="paint--image">
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </article>
@@ -118,13 +134,9 @@
       let newLeft = e.clientX - treeRect.left - offsetX;
       let newTop = e.clientY - treeRect.top - offsetY;
   
-      // 픽셀 단위를 퍼센트 단위로 변환
-      let newLeftPercent = (newLeft / treeRect.width) * 100;
-      let newTopPercent = (newTop / treeRect.height) * 100;
-  
-      // 위치를 설정할 때는 퍼센트 단위를 사용
-      movingFruitImage.style.left = newLeftPercent + '%';
-      movingFruitImage.style.top = newTopPercent + '%';
+      // 위치를 설정할 때는 픽셀 단위를 사용
+      movingFruitImage.style.left = newLeft + 'px';
+      movingFruitImage.style.top = newTop + 'px';
     }
   });
   
@@ -134,28 +146,34 @@
   });
 
   let originalSrc = document.querySelector('.paint--big--userpaint').src;
+  let imgElement = document.querySelector('.paint--big--userpaint');
+
+  // paint--big--userpaint 요소를 초기에 숨김
+  imgElement.style.display = 'none';
 
   document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
-      if (event.target.classList.contains('paint--userpaint')) {
-          let imgElement = document.querySelector('.paint--big--userpaint');
-          let imgSrc = event.target.src;
-          imgElement.style.opacity = '0';
-          setTimeout(function() {
-              imgElement.src = imgSrc;
-              imgElement.style.opacity = '1';
-          }, 500);
-      }
+    if (event.target.classList.contains('paint--userpaint')) {
+      let imgSrc = event.target.src;
+      imgElement.style.opacity = '0';
+      imgElement.style.display = 'block'; // 마우스가 올라갔을 때 표시
+      setTimeout(function() {
+        imgElement.src = imgSrc;
+        imgElement.style.opacity = '1';
+        imgElement.style.background = 'white';
+      }, 500);
+    }
   });
 
   document.querySelector('.paints--list').addEventListener('mouseout', function(event) {
-      if (event.target.classList.contains('paint--userpaint')) {
-          let imgElement = document.querySelector('.paint--big--userpaint');
-          imgElement.style.opacity = '0';
-          setTimeout(function() {
-              imgElement.src = originalSrc;
-              imgElement.style.opacity = '1';
-          }, 500);
-      }
+    if (event.target.classList.contains('paint--userpaint')) {
+      imgElement.style.opacity = '0';
+      imgElement.style.background = '';
+      setTimeout(function() {
+        imgElement.src = originalSrc;
+        imgElement.style.opacity = '1';
+        imgElement.style.display = 'none'; // 마우스가 벗어날 때 숨김
+      }, 200);
+    }
   });
 
   const forms = document.querySelectorAll('[id^="paints-form"]')  // select all forms
@@ -192,7 +210,7 @@
     })
   })
 
-  </script>
+</script>
 {% endblock content %}
 
 {% block script %}{% endblock script %}

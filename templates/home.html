@@ -35,34 +35,85 @@
 {% endblock aside %}
 
 {% block content %}
-<article class="home__posts--container">
-  <div class="home__posts--wrap">
-    <section class="home__posts--index">
-      <h1 class="font--gangwon">이 길을 따라, 공감 이음</h1>
-      <ul>
-        {% for ieum in category_class %}
-          <li>
-            {{ ieum.user }}
-            {{ ieum.title }}
+<article class="posts--container">
+  <div class="posts--wrap">
+    <section class="posts--article--container">
+      <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
+      <ul class="posts--list">
+        {% for post in category_class %}
+          <li class="post--wrap">
+            <div>
+            {% comment %} {% for post in category_class %} {% endcomment %}
+              {% if post.image_urls %}
+                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+              {% endif %}
+            {% comment %} {% endfor %} {% endcomment %}
+            </div>
+            <div class="post--text--list">
+              <ul class="post--tag--list">
+                {% for tag in post.tags.all %}
+                  {% if forloop.counter <= 3 %}
+                    <li class="post--tag">
+                      ﹟{{ tag }}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+              <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+              <div class="post--user--wrap">
+                <p>{{ post.user }}</p>
+                <p class="post--time"><i>{{ post.created_time }}</i></p>
+              </div>
+            </div>
+            <!-- 카테고리 태그 -->
+
+            <!--
+            {% for post in category_class %}
+              {% for img_url in post.image_urls %}
+                <img class="posts_image" src="{{ img_url }}" alt="">
+              {% endfor %}
+            {% endfor %}
+             -->
           </li>
         {% endfor %}
       </ul>
-      <div class="">
-        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기</a>
+      <div class="posts--etc--wrap">
+        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
       </div>
     </section>
-    <section class="home__posts--anonymous'">
-      <h1 class="font--gangwon">털어놔요, 고민 이음</h1>
-      <ul>
-        {% for anonymous in category_anonymous %}
-          <li>
-            {{ anonymous.user }}
-            {{ anonymous.title }}
+    <section class="posts--article--container">
+      <h1 class="font--gangwon posts--title">털어놔요, 고민 이음</h1>
+      <ul class="posts--list">
+        {% for post in category_anonymous %}
+          <li class="post--wrap">
+            <div>
+            {% comment %} {% for post in category_class %} {% endcomment %}
+              {% if post.image_urls %}
+                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+              {% endif %}
+            {% comment %} {% endfor %} {% endcomment %}
+            </div>
+            <div class="post--text--list">
+              <ul class="post--tag--list">
+                {% for tag in post.tags.all %}
+                  {% if forloop.counter <= 3 %}
+                    <li class="post--tag">
+                      ﹟{{ tag }}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+              <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+              <div class="post--user--wrap">
+                <p>{{ post.user }}</p>
+                <p class="post--time"><i>{{ post.created_time }}</i></p>
+              </div>
+            </div>
           </li>
         {% endfor %}
       </ul>
-      <div class="">
-        <a class="home__etc--button" href="{% url 'posts:anonymous' %}">더보기</a>
+      <div class="posts--etc--wrap">
+        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
       </div>
     </section>
   </div>
