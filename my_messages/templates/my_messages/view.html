@@ -22,7 +22,6 @@
       <h3 class="text-center">답장하기</h3>
       <form method="post" class="mt-3" style="width: 400px;">
         {% csrf_token %}
-        {% comment %} {{ form.as_p }} {% endcomment %}
         <div>
           <p>보낼 사람 : </p>
           <div class='d-none'>{{ form.receiver }}</div>
