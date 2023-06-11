@@ -6,12 +6,21 @@
 {% endblock head %}
 
 {% block content %}
-  <article>
-    <div class="title--wrap">
-      <h2>{{ user }} 님 로그인 했구먼유 </h2>
-      <a href="{% url 'posts:create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
-    </div>
-    <section>
+<div class="title--wrap">
+  <h2>{{ user }} 님 로그인 했구먼유 </h2>
+  <a href="{% url 'posts:create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
+</div>
+<form>
+  <select id="section-dropdown" class="form-select mt-3" style="width:250px;">
+    <option value="recent" {% if section == 'recent' %}selected{% endif %}>최신글</option>
+    <option value="popular" {% if section == 'popular' %}selected{% endif %}>좋아요가 가장 많은 순</option>
+    <option value="oldest" {% if section == 'oldest' %}selected{% endif %}>가장 오래된 글</option>
+  </select>
+</form>
+<article>
+  
+  <div id="section-posts">
+    <div>
       <ul>
         {% for post in category_class  %}
           <li class="posts--wrap">
@@ -35,6 +44,30 @@
                   <!-- 게시물 작성한 시간? -->
                   <p class="mt-3" style="color:#656565;">{{ post.created_time }}</p>
                   <div class="d-flex">
+                    {% comment %} <!-- 좋아요 버튼 -->
+                    <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
+                    <!-- 좋아요 수 -->
+                    <p id="like-cnt">0</p> {% endcomment %}
+  
+                    <!-- 좋아요 버튼 -->
+                    {% comment %} <form class="like-forms" data-post-id="{{ post.pk }}">
+                      {% csrf_token %}
+                      {% if user in post.like_users.all %}
+                        <span class="me-2">
+                          <button class="like-btn" type="submit">
+                            <i class="bi bi-heart"></i>
+                          </button>
+                        </span>
+                      {% else %}
+                        <span class="me-2">
+                          <button class="like-btn" type="submit">
+                            <i class="bi bi-heart-fill"></i>
+                          </button>
+                        </span>
+                      {% endif %}
+                    </form>
+                    <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
+  
                     <form action="{% url 'posts:likes' post.pk %}" method="POST">
                       {% csrf_token %}
                       {% if user in post.like_users.all  %}
@@ -55,45 +88,133 @@
           </li>
         {% endfor %}
       </ul>
-    </section>
+    </div>
+  </div>
 
-    <!-- 페이지네이션 -->
-    <ul class="pagination justify-content-center">
-      {% if category_class.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ category_class.previous_page_number }}"><i class="bi bi-caret-left" style="color:black;"></i></a>
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color:black;"></i></a>
-        </li>
-      {% endif %}
-      {% for page_number in category_class.paginator.page_range %}
-        {% if page_number >= category_class.number|add:-5 and page_number <= category_class.number|add:5 %}
-          {% if page_number == category_class.number %}
-            <li class="page-item active" aria-current="page">
-              <a class="page-link posts--pagination1" href="?page={{ page_number }}">{{ page_number }}</a>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link posts--pagination2" href="?page={{ page_number }}">{{ page_number }}</a>
-            </li>
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-      {% if category_class.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ category_class.next_page_number }}"><i class="bi bi-caret-right" style="color:black;"></i></a>
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right" style="color:black;"></i></a>
-        </li>
-      {% endif %}
-    </ul>
-  </article>
+<!-- 페이지네이션 -->
+{% if category_class.paginator.num_pages > 1 %}
+  <ul class="pagination justify-content-center">
+    {% for page_number in category_class.paginator.page_range %}
+      <li class="page-item {% if category_class.number == page_number %}active{% endif %}">
+        <a class="page-link" style="color:black;" href="?page={{ page_number }}">{{ page_number }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+</article>
+
+<script type="text/javascript" src="/static/posts/js/index.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // 페이지 로드 시 URL 매개변수 가져오기
+    var urlParams = new URLSearchParams(window.location.search);
+    var currentPage = parseInt(urlParams.get('page')) || 1;
+  
+    // 드롭다운 선택 이벤트 리스너
+    $('#section-dropdown').on('change', function() {
+      var selectedSection = $(this).val();
+      var url = '{% url 'posts:index' %}?page=' + currentPage; // URL에 현재 페이지 정보 추가
+      // AJAX 요청 전송
+      sendAjaxRequest(url, selectedSection, currentPage);
+    });
+  
+    // 페이지 번호 클릭 이벤트 리스너
+    $(document).on('click', '.page-link', function(event) {
+      event.preventDefault();
+      var selectedPage = $(this).attr('href').split('=')[1];
+      var selectedSection = $('#section-dropdown').val();
+      var url = '{% url 'posts:index' %}?page=' + selectedPage; // URL에 선택된 페이지 정보 추가
+      // AJAX 요청 전송
+      sendAjaxRequest(url, selectedSection, selectedPage);
+    });
+  
+    // 첫 페이지 클릭 이벤트 리스너
+    $(document).on('click', '.first-page', function() {
+      var selectedSection = $('#section-dropdown').val();
+      var url = '{% url 'posts:index' %}?page=1'; // URL에 1페이지 정보 추가
+      // AJAX 요청 전송
+      sendAjaxRequest(url, selectedSection, 1);
+    });
+  
+    // AJAX 요청 전송 함수
+    function sendAjaxRequest(url, section, page) {
+      $.ajax({
+        url: url,
+        method: 'GET',
+        data: { section: section, page: page },
+        success: function(response) {
+          // 서버로부터 받은 HTML을 section-posts 영역에 대체
+          $('#section-posts').html($(response).find('#section-posts').html());
+          // 선택된 섹션을 유지하기 위해 드롭다운 값을 설정
+          $('#section-dropdown').val(section);
+          // 현재 페이지 데이터 속성 업데이트
+          $('#section-posts').data('current-page', page);
+          updatePagination(); // 페이지네이션 업데이트
+        }
+      });
+    }
+  
+    // 페이지네이션 업데이트 함수
+    function updatePagination() {
+      var currentPage = parseInt($('#section-posts').data('current-page')) || 1;
+      var total_pages = parseInt('{{ total_pages }}') || 1;
+      var pageLinks = $('.page-link');
+      pageLinks.parent('.page-item').removeClass('active');
+  
+      // 현재 페이지 버튼에 active 클래스 추가
+      pageLinks.each(function() {
+        var pageNumber = $(this).attr('href').split('=')[1];
+        if (pageNumber == currentPage) {
+          $(this).parent('.page-item').addClass('active');
+        }
+      });
+  
+      // 페이지 범위 설정
+      var pageRange = 5; // 출력할 페이지 범위 크기
+      var startPage = Math.max(1, currentPage - Math.floor(pageRange / 2));
+      var endPage = Math.min(total_pages, startPage + pageRange - 1);
+      startPage = Math.max(1, endPage - pageRange + 1);
+  
+      // 페이지 버튼 업데이트
+      var paginationContainer = $('.pagination');
+      paginationContainer.empty();
+  
+      // 첫 페이지와 이전 페이지 버튼
+      if (currentPage > 1) {
+        paginationContainer.append('<li class="page-item first-page"><a class="page-link" href="?page=1">처음</a></li>');
+        paginationContainer.append('<li class="page-item previous-page"><a class="page-link" href="?page=' + (currentPage - 1) + '">이전</a></li>');
+      } else {
+        paginationContainer.append('<li class="page-item first-page disabled"><a class="page-link" href="#">처음</a></li>');
+        paginationContainer.append('<li class="page-item previous-page disabled"><a class="page-link" href="#">이전</a></li>');
+      }
+  
+      // 페이지 버튼
+      for (var i = startPage; i <= endPage; i++) {
+        if (i == currentPage) {
+          paginationContainer.append('<li class="page-item active"><a class="page-link" href="?page=' + i + '">' + i + '</a></li>');
+        } else {
+          paginationContainer.append('<li class="page-item"><a class="page-link" href="?page=' + i + '">' + i + '</a></li>');
+        }
+      }
+  
+      // 다음 페이지와 마지막 페이지 버튼
+      if (currentPage < total_pages) {
+        paginationContainer.append('<li class="page-item next-page"><a class="page-link" href="?page=' + (currentPage + 1) + '">다음</a></li>');
+        paginationContainer.append('<li class="page-item last-page"><a class="page-link" href="?page=' + total_pages + '">마지막</a></li>');
+      } else {
+        paginationContainer.append('<li class="page-item next-page disabled"><a class="page-link" href="#">다음</a></li>');
+        paginationContainer.append('<li class="page-item last-page disabled"><a class="page-link" href="#">마지막</a></li>');
+      }
+    }
+  
+    // 페이지 로드 시 페이지네이션 업데이트
+    updatePagination();
+  });
+  
+</script>
 {% endblock content %}
-
 {% block script %}
 <!-- <script>
   const children = document.querySelectorAll('.post--content--wrap > p > img');
@@ -112,5 +233,4 @@
   image.style.transform = `rotate(${rotateValue}turn)`;
   });
 </script> -->
-  <script type="text/javascript" src="/static/posts/js/index.js"></script>
 {% endblock script %}

@@ -14,7 +14,7 @@ def compose_message(request):
             message = form.save(commit=False)
             message.sender = request.user
             message.save()
-            return redirect('my_messages:received_messages')
+            return redirect('my_messages:sent_messages')
     else:
         form = ComposeMessageForm(user=request.user)
     return render(request, 'my_messages/compose.html', {'form': form})

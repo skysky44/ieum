@@ -64,29 +64,32 @@ def detail(request, paint_pk):
 @csrf_exempt
 @login_required
 def update(request, paint_pk):
+     
     paint = Paint.objects.get(pk=paint_pk)
+    if request.user == paint.user:
+        if request.method == 'POST':
+            image_data = request.POST['image']
+            format, imgstr = image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
-    if request.method == 'POST':
-        image_data = request.POST['image']
-        format, imgstr = image_data.split(';base64,')
-        ext = format.split('/')[-1]
-        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            # 기존 이미지 삭제
+            if paint.image:
+                paint.image.delete()
 
-        # 기존 이미지 삭제
-        if paint.image:
-            paint.image.delete()
+            # 새로운 이미지 저장
+            paint.image.save(f"{uuid.uuid4()}.png", data)
+            paint.save()
 
-        # 새로운 이미지 저장
-        paint.image.save(f"{uuid.uuid4()}.png", data)
-        paint.save()
-
-        return JsonResponse({'status': 'success'})
+            return JsonResponse({'status': 'success'})
+        else:
+            context = {
+                'paint': paint, 
+                'paint_pk': paint_pk
+                }
+            return render(request, 'paints/update.html', context)
     else:
-        context = {
-            'paint': paint, 
-            'paint_pk': paint_pk
-            }
-        return render(request, 'paints/update.html', context)
+        return redirect('paints:index')
 
 
 
