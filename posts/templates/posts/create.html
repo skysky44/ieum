@@ -4,6 +4,17 @@
   <link rel="stylesheet" href="{% static 'posts/css/create.css' %}">
 {% endblock head %}
 
+{% block style %}
+.detail--music--playbtn {
+  text-align: center;
+  padding: 1px 6px;
+  background: #FFF7D3;
+  border-radius: 5px;
+  max-width: 50px;
+  height: 25px;
+}
+{% endblock style %}
+
 {% block content %}
   <div class="container" style="width:835px;">
     <form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
