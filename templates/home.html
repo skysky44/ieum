@@ -43,11 +43,9 @@
         {% for post in category_class %}
           <li class="post--wrap">
             <div>
-            {% comment %} {% for post in category_class %} {% endcomment %}
               {% if post.image_urls %}
                 <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
               {% endif %}
-            {% comment %} {% endfor %} {% endcomment %}
             </div>
             <div class="post--text--list">
               <ul class="post--tag--list">
@@ -59,7 +57,9 @@
                   {% endif %}
                 {% endfor %}
               </ul>
-              <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+              <div class="post--title--wrap">
+                <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
+              </div>
               <div class="post--user--wrap">
                 <p>{{ post.user }}</p>
                 <p class="post--time"><i>{{ post.created_time }}</i></p>
@@ -87,11 +87,9 @@
         {% for post in category_anonymous %}
           <li class="post--wrap">
             <div>
-            {% comment %} {% for post in category_class %} {% endcomment %}
               {% if post.image_urls %}
                 <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
               {% endif %}
-            {% comment %} {% endfor %} {% endcomment %}
             </div>
             <div class="post--text--list">
               <ul class="post--tag--list">

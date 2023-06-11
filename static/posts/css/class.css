@@ -1,3 +1,4 @@
+
 aside.base--item {
   text-align: center;
   background-color: #FFF6EA;
@@ -8,8 +9,11 @@ aside.base--item {
 .main--title {
   margin-bottom: 1rem;
 }
+.main--title--icon {
+  color: #ffdcae;
+}
 
-
+/* index */
 .post--tag {
   background-color: #FFF6EA;
 }
@@ -40,4 +44,25 @@ aside.base--item {
 }
 .pagination .page-link:hover {
   background-color: #f8f9fa;
+}
+
+
+/* create */
+.create--lable {
+  background-color: #FFF6EA;
+}
+.create--content {
+  border-bottom: 1px solid #ffdcae;
+}
+
+.create--music--result::-webkit-scrollbar-thumb {
+  background-color: #ffdcae;
+}
+.create--music--search--btn, .create--btn1, .create--btn2  {
+  border: 1px solid #ffdcae;
+  background: #ffdcae;
+}
+.create--music--search--btn:hover, .create--btn1:hover, .create--btn2:hover {
+  border: 1px solid #ffdcae;
+  background-color: #FFF6EA;
 }

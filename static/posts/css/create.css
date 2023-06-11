@@ -1,59 +1,82 @@
+.create--menu {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 1.2rem;
+  margin-bottom: 10px;
+}
+.create--lable {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.django-ckeditor-widget {
+    width: 100% !important;
+}
 
-.create--content {
-    border-bottom: 1px solid #d0df8d;
+.create--music--container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.create--result--wrap {
+  width: 100%;
+}
+.create--adio--search--wrap {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: flex-end; */
+  align-items: flex-end;
+  gap: 1rem;
+  width: 100%;
 }
 .create--music--search--wrap {
-    display: flex;
-    margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 0.5rem;
+  width: 100%;
 }
 .create--music--search--box {
-    max-width: 300px;
+  width: 100%;
 }
 .create--music--search--btn {
-    padding: 1px 6px;
-    background: #DEECA1;
-    border-radius: 5px;
-    margin-left: 10px;
-}
-.create--music--search--btn:hover {
-    background-color: #d0df8d;
+  width: 100%;
+  padding: 1px 6px;
+  border: 1px solid transparent; 
+  border-radius: 5px;
 }
 .create--music--result {
-    max-width: 600px;
-    max-height: calc(100vh - 400px);
-    overflow-x: hidden;
-    overflow-y: auto;
+  max-width: 100%;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .create--music--result::-webkit-scrollbar {
-    width: 4px;
+  width: 1.5rem;
 }
 .create--music--result::-webkit-scrollbar-thumb {
-    height: 30%;
-    background: #DEECA1;
-    border-radius: 10px;
+  height: 30%;
+  border-radius: 10px;
 }
 .create--music--result::-webkit-scrollbar-track {
-    background: rgba(33, 122, 244, .1);
+  background: rgba(33, 122, 244, .1);
+}
+.create--btn--wrap {
+  display: flex;
+  gap: 1rem;
 }
 .create--btn1 {
-    padding: 1px 6px;
-    background: #DEECA1;
-    border-radius: 5px;
-    margin-left: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 400px;
-    height: 35px;
+  width: 100%;
+  padding: 0.6rem 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .create--btn2 {
-    padding: 1px 6px;
-    background: #DEECA1;
-    border-radius: 5px;
-    margin-left: 40px;
-    width: 400px;
-    height: 35px;
-}
-.create--btn1:hover, .create--btn2:hover {
-    background-color: #d0df8d;
+  width: 100%;
+  padding: 0.6rem 0;
+  border-radius: 5px;
 }
