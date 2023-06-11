@@ -75,7 +75,9 @@
     
   }
 }
-
+aside.base--item {
+  background-color: #E6F3E6;
+}
 .posts--article--container {
   margin: 2rem 0;
 }

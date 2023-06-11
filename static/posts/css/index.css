@@ -1,3 +1,4 @@
+
 .title--wrap {
   display: flex;
   justify-content: space-between;
@@ -64,38 +65,18 @@
   justify-content: center;
   align-items: center;
 }
-.posts--category--tag {
-  box-sizing: border-box;
-  /* border: 1px solid black; */
-  background: #DEECA1;
-  border-radius: 16px;
-  padding: 3px 9px;
-  letter-spacing: -.4px;
+.post--tag--list {
+  display: flex;
 }
-.posts--pagination1 {
-  background: #DEECA1 !important;
-  border: 1px solid #DEECA1 !important;
-  color: black;
+.post--tag {
+  border-radius: 15px;
+  padding: 1px 10px;
+  margin-right: 5px;
 }
-.posts--pagination2 {
-  background: white !important;
-  border: 1px solid #DEECA1 !important;
-  color: black;
+.post--user--wrap {
+  display: flex;
+  gap: 0.5rem;
 }
-.pagination .page-item.active .page-link {
-  color: rgb(59, 59, 59);
-  background-color: #DEECA1;
-  border: 1px solid #DEECA1;
-}
-.pagination .page-item.disabled .page-link {
-  color: rgba(33, 37, 41, 0.75);
-  background-color: #e9ecef;
-  border: 1px solid #dee2e6;
-}
-.pagination .page-link {
-  color: rgb(59, 59, 59);
-  background-color: #fff;
-}
-.pagination .page-link:hover {
-  background-color: #f8f9fa;
+.post--like {
+  display: flex;
 }

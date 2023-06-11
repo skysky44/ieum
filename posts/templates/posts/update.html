@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/class.css' %}">
   <link rel="stylesheet" href="{% static 'posts/css/update.css' %}">
 {% endblock head %}
+
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="main--title">공감 이음</h1>
+  <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+</article>
+{% endblock aside %}
+
 {% block content %}
   <div class="d-flex justify-content-center">
     <form action="{% url 'posts:update' post.pk %}" method ='POST' enctype="multipart/form-data">

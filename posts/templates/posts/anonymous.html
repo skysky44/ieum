@@ -2,9 +2,16 @@
 {% load static %}
 
 {% block head %}
-  <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
   <link rel="stylesheet" href="{% static 'posts/css/anonymous.css' %}">
+  <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
 {% endblock head %}
+
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="main--title">고민 이음</h1>
+  <p>비밀스런 공간에서 고민을 나누고, 소중한 위로를 서로에게 선물해봐요.</p>
+</article>
+{% endblock aside %}
 
 {% block content %}
 <div class="title--wrap">
