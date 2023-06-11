@@ -2,7 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm,  PasswordChangeForm
 from django.contrib.auth import get_user_model
 from .models import User
+from balances.models import Result
 import datetime
+
+# 나의 취향 단어 db에서 불러오기
+result_words = Result.objects.values_list('word', flat=True)
+
+# for i in result_words:
+#     print(i)
 SENTENCE_CHOICES = [('특별함 보다 소소한 행복을 추구해요.', "특별함 보다 소소한 행복을 추구해요."),
         ('미래보다는 매 순간 최선을 다하는 것이 더 중요해요.', "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."),
         ('내가 좋아하는 걸로 삶을 채워가고 싶어요.', "내가 좋아하는 걸로 삶을 채워가고 싶어요."),
@@ -133,6 +140,7 @@ class CustomUserCreationForm(UserCreationForm):
     #     ),
 
     # )
+    
 
     password = None
 
@@ -203,6 +211,12 @@ class CustomUserChangeForm(UserChangeForm):
             }
         ),
     )
+
+    introductions = forms.MultipleChoiceField(
+        choices=SENTENCE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     password = None
 
     introductions = forms.MultipleChoiceField(
@@ -212,7 +226,9 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
-        fields = ('email', 'first_name', 'region', 'privacy', 'birthday', 'image','introductions')
+
+        fields = ('email', 'first_name', 'region', 'privacy', 'birthday', 'image', 'introductions')
+
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -269,3 +285,15 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         ),
         help_text='',
     )
+
+
+class ResultWordForm(forms.ModelForm):
+    words = forms.MultipleChoiceField(
+        choices=SENTENCE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+
+    class Meta(UserChangeForm.Meta):
+        model = get_user_model()
+        
