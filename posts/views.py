@@ -12,6 +12,7 @@ import urllib.request
 import tempfile
 import requests
 from django.db.models import Count
+from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
@@ -237,10 +238,12 @@ def detail(request, post_pk):
 
     return render(request, 'posts/detail.html', context)
 
+
 import uuid
 
 def generate_anonymous_id():
     return str(uuid.uuid4())[:6]
+
 
 @login_required
 def anonymous_detail(request, post_pk):
@@ -284,6 +287,7 @@ def anonymous_detail(request, post_pk):
     
     return render(request, 'posts/anonymous_detail.html', context)
 
+
 @login_required
 def update(request, post_pk):
     category_choices = [
@@ -304,7 +308,7 @@ def update(request, post_pk):
                 form.save()
             
                 if not selected_tracks:
-                        return redirect('posts:index')
+                        return redirect('posts:detail', post_pk)
                 else:
                     if music.exists():
                         for track in music:
@@ -371,7 +375,7 @@ def anonymous_update(request, post_pk):
                 form.save()
             
                 if not selected_tracks:
-                        return redirect('posts:anonymous')
+                        return redirect('posts:anonymous_detail', post.pk)
                 else:
                     if music.exists():
                         for track in music:
@@ -432,6 +436,7 @@ def delete(request,post_pk):
         post.delete()
     return redirect('posts:index')
 
+
 @login_required
 def anonymous_delete(request,post_pk):
     post = Post.objects.get(pk=post_pk)
@@ -462,6 +467,7 @@ def likes(request, post_pk):
     
     return redirect('posts:index')
 
+
 def anonymous_likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
@@ -475,6 +481,7 @@ def anonymous_likes(request, post_pk):
         return redirect(referer)
     
     return redirect('posts:anonymous')
+
 
 @login_required
 def post_report(request, post_pk):
@@ -501,6 +508,25 @@ def post_report(request, post_pk):
     # return render(request, 'posts/post_report.html', context)
 
 
+@login_required
+def anonymous_post_report(request, post_pk):
+    post = Post.objects.get(pk=post_pk)
+    form = PostReportForm()
+    if request.method == 'POST':
+        form = PostReportForm(request.POST)
+        if form.is_valid():
+            post_report = form.save(commit=False)
+            post_report.post = post
+            post_report.user = request.user
+            post_report.save()
+            # 신고 당한 사람 표시
+            post.user.reported = True
+            post.user.save()
+            post.report = True
+            post.save()
+            return redirect('posts:anonymous_detail', post_pk)
+
+
 def comment_create(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if request.method == 'POST':
@@ -512,6 +538,7 @@ def comment_create(request, post_pk):
             comment.user = request.user
             comment.save()
             return redirect('posts:detail', post.pk)
+
         
 def anonymous_comment_create(request, post_pk):
     post = Post.objects.get(pk=post_pk)
@@ -591,6 +618,26 @@ def comment_report(request, post_pk, comment_pk):
             comment.report = True
             comment.save()
             return redirect('posts:detail', post_pk)
+        
+
+@login_required
+def anonymous_comment_report(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    form = CommentReportForm()
+
+    if request.method == 'POST':
+        form = CommentReportForm(request.POST)
+        if form.is_valid():
+            comment_report = form.save(commit=False)
+            comment_report.comment = comment
+            comment_report.user = request.user
+            comment_report.save()
+            # 신고 당한 사람 표시
+            comment.user.reported = True
+            comment.user.save()
+            comment.report = True
+            comment.save()
+            return redirect('posts:anonymous_detail', post_pk)
             
     # context = {
     #     'comment_report_form': form,
@@ -600,13 +647,33 @@ def comment_report(request, post_pk, comment_pk):
     # return render(request, 'posts/comment_report.html', context)
 
 # @login_required
+# def comment_likes(request, post_pk, comment_pk):
+#     comment = Comment.objects.get(pk=comment_pk)
+#     if comment.like_users.filter(pk=request.user.pk).exists():
+#         comment.like_users.remove(request.user)
+#     else:
+#         comment.like_users.add(request.user)
+#     return redirect('posts:detail', post_pk)
+
+
 def comment_likes(request, post_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
     if comment.like_users.filter(pk=request.user.pk).exists():
         comment.like_users.remove(request.user)
+        liked = False
     else:
         comment.like_users.add(request.user)
-    return redirect('posts:detail', post_pk)
+        liked = True
+    
+    like_count = comment.like_users.count()
+    
+    response_data = {
+        'liked': liked,
+        'like_count': like_count,
+    }
+    
+    return JsonResponse(response_data)
+
 
 def anonymous_comment_likes(request, post_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
