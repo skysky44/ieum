@@ -28,8 +28,11 @@
               <span class="detail--tag me-2 mb-3">#{{ tag }}</span>
             {% endfor %}
           </div>
-
-          <div id="detail--like" class="d-flex">
+          <div id="detail--like" class="d-flex" style="align-items: baseline;">
+            <!-- 게시물 신고 모달 버튼 -->
+            <button type="button" class="me-3" data-bs-toggle="modal" data-bs-target="#PostReportModal">
+              <i class="bi bi-bell" style="color:crimson; font-size:1.5rem;"></i>
+            </button>
             <form action="{% url 'posts:anonymous_likes' post.pk %}" method ='POST'>
               {% csrf_token %}
               {% if request.user in post.like_users.all %}
@@ -46,12 +49,8 @@
           </div>
         </div>
         <div id="header" class="mb-1">
-          <div>
+          <div class="">
             <h1>{{ post.title }}</h1>
-            <!-- 게시물 신고 모달 버튼 -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PostReportModal">
-              신고
-            </button>
             <!-- 게시물 신고 모달 -->
             <div class="modal fade" id="PostReportModal" tabindex="-1" aria-labelledby="PostReportModalLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -61,10 +60,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <form action="{% url 'posts:post_report' post.pk %}"  method ='POST'>
+                    <form action="{% url 'posts:anonymous_post_report' post.pk %}"  method ='POST'>
                       {% csrf_token %}
                       {{ post_report_form }}
-                      <input type="submit" value="신고하기">
+                      <div class="modal-footer">
+                        <button type="submit" class="comment--update--btn">신고하기</button>
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -73,7 +74,9 @@
             <div>
               <i class="mt-1" style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
             </div>
-            <p><strong>익명</strong></p>
+            <div class="mt-2">
+              <p><strong>익명</strong></p>
+            </div>
           </div>
           <div id="detail--music">
             {% if not music %}
@@ -107,15 +110,19 @@
             </div>
           </div>
           <li class="d-flex mt-3 mb-3">
-            <div style="display:flex; align-self:center;">
-              <button class="me-2">
-                <a href="{% url 'posts:anonymous_update' post.pk %}" class="ieum--button--nobgc1">수정</a>
-              </button>
+            {% if request.user == post.user %}
+              <div style="display:flex; align-self:center;">
+                <button class="me-2">
+                  <a href="{% url 'posts:anonymous' %}" class="ieum--button--nobgc1">뒤로가기</a>
+                </button>
+                <button class="me-2">
+                  <a href="{% url 'posts:anonymous_update' post.pk %}" class="ieum--button--nobgc2">수정</a>
+                </button>
+                <form action="{% url 'posts:anonymous_delete' post.pk %}" style="display:flex; align-self:center;">
+                  <input type="submit" value='삭제' class="ieum--button--nobgc3">
+                </form>
               </div>
-              <form action="{% url 'posts:anonymous_delete' post.pk %}" style="display:flex; align-self:center;">
-                <input type="submit" value='삭제' class="ieum--button--nobgc2">
-              </form>
-            </div>
+            {% endif %}
           </li>
         </ul>
       </div>
@@ -124,202 +131,229 @@
     <section class="comments--wrap">
       <ul>
         <li>
-          {% comment %} 좋아요가 많은 상위 3개의 데이터 {% endcomment %}
-          {% for comment_like in comment_likes %}
-            {% if comment_like.post.pk == post.pk %}
-            <div>
-              <div class="comments__user--wrap">
-                <p class="fw-bold">익명</p>
-                <i class="comment--date">{{ comment_like.created_time }}</i>
+          <div>
+            <h4 class="font--gangwon">
+              인기 댓글순 <i class="bi bi-chat-heart" style="color:crimson;"></i>
+            </h4>
+            {% comment %} 좋아요가 많은 상위 3개의 데이터 {% endcomment %}
+            {% for comment_like in comment_likes %}
+              <div class="comments__content--wrap mt-2">
+                {% if comment_like.post.pk == post.pk %}
+                  <div>
+                    <div class="comments__user--wrap">
+                      <p class="fw-bold">익명</p>
+                      <i class="comment--date">{{ comment_like.created_time }}</i>
+                    </div>
+                    <p class="mt-2" style="word-wrap: break-word;">{{ comment_like.content|linebreaksbr }}</p>
+                  </div>
+                  <!-- 인기 댓글 수정, 삭제 -->
+                  {% if request.user == comment_like.user %}
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment_like.like_users.count}}</span>
+                      </span>
+                      <div class="me-2" style="display:flex; align-self:center;">
+                        <div class="ieum--button1">
+                          <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment_like.pk}}">수정</button>
+                        </div>
+                      </div>
+                      <form action="{% url 'posts:anonymous_comment_delete' post.pk comment_like.pk %}" style="display:flex; align-self:center;">
+                        <input type="submit" value='삭제' class="ieum--button2">
+                      </form>
+                    </div>
+                  {% else %}
+                    <span class="me-3" style="display: flex; align-items: center;">
+                      ❤️<span class="ms-1">{{comment_like.like_users.count}}</span>
+                    </span>
+                  {% endif %}
+                {% endif %}
               </div>
-              <p>{{ comment_like.content }}</p>
-            </div>
-            {% endif %}
-          {% endfor %}
+            {% endfor %}
+          </div>
+        </li>
 
-          <select id="comment-select">
+        <hr>
+
+        <li>
+          <select id="comment-select" class="form-select" style="width:150px;">
             <option value="latest-comments">최신 댓글</option>
             <option value="comments">오래된 댓글</option>
           </select>
-          
-        {% comment %} 최신 댓글 {% endcomment %}
-        <div id="latest-comments-section" class="latest-comments-section">
-          {% for comment in comment_latest %}
-            <div id="comment" class = "latest-comment">
-              {% if comment.user == request.user %}
+
+          {% comment %} 최신 댓글 {% endcomment %}
+          <div id="latest-comments-section" class="latest-comments-section">
+            <h4 class="font--gangwon mt-3">최신 댓글순</h4>
+            {% for comment in comment_latest %}
+              <div id="comment" class = "latest-comment">
                 <div class="comments__content--wrap">
-                  <div>
-                    <div class="comments__user--wrap">
-                      <p class="fw-bold">익명</p>
-                      <i class="comment--date">{{ comment.created_time }}</i>
-                    </div>
-                    <p>{{ comment.content }}</p>
-                  </div>
-                  <div class="comments__btn--list">
-                    <div class="me-2" style="display:flex; align-self:center;">
-                      <div class="ieum--button1">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
+                  {% if comment.user == request.user %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <p class="fw-bold">익명</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
                       </div>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
                     </div>
-                    <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                      <input type="submit" value='삭제' class="ieum--button2">
-                    </form>
-                    <span class="ms-1">❤️{{comment.like_users.count}}</span>
-                    <!-- Button trigger modal -->
-                  </div>
-                </div>
-              {% else %}
-                <div class="comments__user--wrap">
-                  <p class="fw-bold">익명</p>
-                  <i class="comment--date">{{ comment.created_time }}</i>
-                </div>
-                <p>{{ comment.content }}</p>
-                <div class =' d-flex'>
-                  <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                    {% csrf_token %}
-                    {% if request.user in comment.like_users.all %}
-                      <button class="border-0 bg-transparent" type="submit">
-                        ❤️
-                      </button>
-                    {% else %}
-                      <button class="border-0 bg-transparent" type="submit">
-                        🤍
-                      </button>
-                    {% endif %}
-                  </form>
-                  <span class="ms-1">{{comment.like_users.count}}</span>
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-          <div id="latest-load-more-btn">
-            <button class="load-more-comments" type="button">더보기</button>
-          </div>
-        </div>
-          
-        {% comment %} 오래된 댓글 {% endcomment %}
-        <div id="comments-section" class="comments-hidden">
-          {% for comment in comments %}
-            <div class="comment old-comment">
-              {% if comment.user == request.user %}
-                <div class="comments__content--wrap">
-                  <div>
-                    <div class="comments__user--wrap">
-                      <p class="fw-bold">익명</p>
-                      <i class="comment--date">{{ comment.created_time }}</i>
-                    </div>
-                    <p>{{ comment.content }}</p>
-                  </div>
-                  <div class="comments__btn--list">
-                    <div class="me-2" style="display:flex; align-self:center;">
-                      <div class="ieum--button1">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
-                      </div>
-                    </div>
-                    <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                      <input type="submit" value='삭제' class="ieum--button2">
-                    </form>
-                    <span class="ms-1">❤️{{comment.like_users.count}}</span>
-                    <!-- Button trigger modal -->
-                  </div>
-                </div>
-              {% else %}
-                <div class="comments__user--wrap">
-                  <p class="fw-bold">익명</p>
-                  <i class="comment--date">{{ comment.created_time }}</i>
-                </div>
-                <p>{{ comment.content }}</p>
-                <div class =' d-flex'>
-                  <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                    {% csrf_token %}
-                    {% if request.user in comment.like_users.all %}
-                      <button class="border-0 bg-transparent" type="submit">
-                        ❤️
-                      </button>
-                    {% else %}
-                      <button class="border-0 bg-transparent" type="submit">
-                        🤍
-                      </button>
-                    {% endif %}
-                  </form>
-                  <span class="ms-1">{{comment.like_users.count}}</span>
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-          <div id="old-load-more-btn">
-            <button class="load-more-comments" type="button">더보기</button>
-          </div>
-        </div>
-          {% for comment, u_comment_form in comment_forms %}
-            {% if comment.user == request.user %}
-              <div class="comments__content--wrap">
-                <div>
-                  <div class="comments__user--wrap">
-                    {% if comment.user.username == post.user.username %}
-                      <p>익명(글쓴이): {{ comment.content|linebreaksbr }}</p>
-                    {% else %}
-                      <p>익명 : {{ comment.content|linebreaksbr }}</p>
-                    {% endif %}
-                    <i class="comment--date">{{ comment.created_time }}</i>
-                  </div>
-                </div>
-                <div class="comments__btn--list">
-                  <div class="me-2" style="display:flex; align-self:center;">
-                    <div class="ieum--button1">
-                      <a type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</a>
-                    </div>
-                  </div>
-                  <form action="{% url 'posts:anonymous_comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
-                    <input type="submit" value='삭제' class="ieum--button2">
-                  </form>
-                  <!-- 댓글 신고 모달 버튼 -->
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}">
-                    신고
-                  </button>
-                  <!-- 댓글 신고 모달 -->
-                  <div class="modal fade" id="CommentReportModal-{{comment.pk}}" tabindex="-1" aria-labelledby="CommentReportModalLabel-{{comment.pk}}" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h1 class="modal-title fs-5" id="CommentReportModalLabel-{{comment.pk}}">신고하기</h1>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <form action="{% url 'posts:comment_report' post.pk comment.pk %}"  method ='POST'>
-                            {% csrf_token %}
-                            {{ comment_report_form }}
-                            <input type="submit" value="신고하기">
-                          </form>
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment.like_users.count}}</span>
+                      </span>
+                      <div class="me-2" style="display:flex; align-self:center;">
+                        <div class="ieum--button1">
+                          <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
                         </div>
                       </div>
+                      <form action="{% url 'posts:anonymous_comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                        <input type="submit" value='삭제' class="ieum--button2">
+                      </form>
                     </div>
-                  </div>
-                </div>
-              
-                <!-- Modal -->
-                <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">익명 댓글 수정</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  {% else %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <p class="fw-bold">익명</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
                       </div>
-                      <div class="modal-body">
-                        <form action="{% url 'posts:anonymous_comment_update' post.pk comment.pk %}" method="POST">
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="comments__btn--list2">
+                      <div class="me-1" style="display:flex; align-self:center;">
+                        <form action="{% url 'posts:anonymous_comment_likes' post.pk comment.pk %}" method="POST">
                           {% csrf_token %}
-                          {{u_comment_form.as_p}}<!-- 수정 내용을 입력하는 필드 -->
-                          <div class="modal-footer">
-                            <button type="submit" class="comment--update--btn">수정하기</button>
-                          </div>
+                          {% if request.user in comment.like_users.all %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              ❤️
+                            </button>
+                          {% else %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              🤍
+                            </button>
+                          {% endif %}
                         </form>
+                        <span class="ms-1">{{comment.like_users.count}}</span>
                       </div>
+                      <!-- 댓글 신고 모달 버튼 -->
+                      <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
+                        <i class="bi bi-bell" style="color:crimson; font-size:1.2rem;"></i>
+                      </button>
                     </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+            <div id="latest-load-more-btn" class="mb-2" style="text-align: center;">
+              <button class="load-more-comments btn" type="button"><i>더보기</i></button>
+            </div>
+          </div>
+
+          {% comment %} 댓글 수정 모달 {% endcomment %}
+          {% for comment, u_comment_form in comment_forms %}
+            {% comment %} 최신, 오래된 댓글 신고 모달 {% endcomment %}
+            <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">익명 댓글 수정</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'posts:anonymous_comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {{u_comment_form}}
+                      <div class="modal-footer">
+                        <button type="submit" class="comment--update--btn">수정하기</button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
-            {% endif %}
+            </div>
+            {% comment %} 댓글 신고 모달 {% endcomment %}
+            <div class="modal fade" id="CommentReportModal-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="CommentReportModalLabel-{{comment.pk}}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="CommentReportModalLabel-{{comment.pk}}">익명 댓글 신고</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'posts:anonymous_comment_report' post.pk comment.pk %}"  method ='POST'>
+                      {% csrf_token %}
+                      {{ comment_report_form }}
+                      <div class="modal-footer">
+                        <button type="submit" class="comment--update--btn">신고하기</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           {% endfor %}
+        
+
+          {% comment %} 오래된 댓글 {% endcomment %}
+          <div id="comments-section" class="comments-hidden">
+            <h4 class="font--gangwon mt-3">오래된 댓글순</h4>
+            {% for comment in comments %}
+              <div class="comment old-comment">
+                <div class="comments__content--wrap">
+                  {% if comment.user == request.user %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <p class="fw-bold">익명</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
+                      </div>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment.like_users.count}}</span>
+                      </span>
+                      <div class="me-2" style="display:flex; align-self:center;">
+                        <div class="ieum--button1">
+                          <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
+                        </div>
+                      </div>
+                      <form action="{% url 'posts:anonymous_comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
+                        <input type="submit" value='삭제' class="ieum--button2">
+                      </form>
+                    </div>
+                  {% else %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <p class="fw-bold">익명</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
+                      </div>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="comments__btn--list2">
+                      <div class="me-1" style="display:flex; align-self:center;">
+                        <form action="{% url 'posts:anonymous_comment_likes' post.pk comment.pk %}" method="POST">
+                          {% csrf_token %}
+                          {% if request.user in comment.like_users.all %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              ❤️
+                            </button>
+                          {% else %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              🤍
+                            </button>
+                          {% endif %}
+                        </form>
+                        <span class="ms-1">{{comment.like_users.count}}</span>
+                      </div>
+                      {% comment %} 댓글 신고 모달 버튼 {% endcomment %}
+                      <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
+                        <i class="bi bi-bell" style="color:crimson; font-size:1.2rem;"></i>
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+              <div id="old-load-more-btn" class="mb-2" style="text-align: center;">
+                <button class="load-more-comments btn" type="button"><i>더보기</i></button>
+              </div>
+          </div>
         </li>
         <li>
           <form action="{% url 'posts:anonymous_comment_create' post.pk %}" method='POST'>
@@ -338,11 +372,15 @@
 
 
 
+
+  
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
+{% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'posts/js/detail_music.js' %}"></script>
-<script src="{% static 'posts/js/detail_more.js' %}"></script>
+{% comment %} <script src="{% static 'posts/js/detail_more.js' %}"></script> {% endcomment %}
 <script>
+
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = {
         center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
@@ -379,6 +417,77 @@ geocoder.addressSearch( "{{ post.address }}", function(result, status) {
         map.setCenter(coords);
     } 
 });    
+
+// 셀렉트 변경 시 처리
+document.getElementById("comment-select").addEventListener("change", function () {
+  var selectedOption = this.value;
+
+  // 선택한 옵션에 따라 댓글 섹션 변경
+  if (selectedOption === "comments") {
+    document.getElementById("comments-section").classList.remove("comments-hidden");
+    document.getElementById("latest-comments-section").classList.add("comments-hidden");
+  } else if (selectedOption === "latest-comments") {
+    document.getElementById("comments-section").classList.add("comments-hidden");
+    document.getElementById("latest-comments-section").classList.remove("comments-hidden");
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  var latestCommentSection = document.getElementById("latest-comments-section");
+  var latestLoadMoreBtn = latestCommentSection.querySelector(".load-more-comments");
+  var latestComments = latestCommentSection.getElementsByClassName("latest-comment");
+  var latestCommentsToShow = 5;
+  var latestCommentsLoaded = latestCommentsToShow;
+  var oldCommentSection = document.getElementById("comments-section");
+  var oldLoadMoreBtn = oldCommentSection.querySelector(".load-more-comments");
+  var oldComments = oldCommentSection.getElementsByClassName("old-comment");
+  var oldCommentsToShow = 5;
+  var oldCommentsLoaded = oldCommentsToShow;
+
+  // 초기에 댓글을 숨김
+  hideComments(latestComments, latestCommentsToShow);
+  hideComments(oldComments, oldCommentsToShow);
+
+  // 기본적으로 5개의 댓글을 보여줌
+  showMoreComments(latestComments, 0, latestCommentsToShow);
+  showMoreComments(oldComments, 0, oldCommentsToShow);
+
+  // 최신 댓글 더보기 버튼 클릭 시 추가 댓글 로드
+  latestLoadMoreBtn.addEventListener("click", function() {
+    showMoreComments(latestComments, latestCommentsLoaded, latestCommentsToShow);
+    latestCommentsLoaded += latestCommentsToShow;
+
+    if (latestCommentsLoaded >= latestComments.length) {
+      latestLoadMoreBtn.style.display = "none";
+    }
+  });
+
+  // 오래된 댓글 더보기 버튼 클릭 시 추가 댓글 로드
+  oldLoadMoreBtn.addEventListener("click", function() {
+    showMoreComments(oldComments, oldCommentsLoaded, oldCommentsToShow);
+    oldCommentsLoaded += oldCommentsToShow;
+
+    if (oldCommentsLoaded >= oldComments.length) {
+      oldLoadMoreBtn.style.display = "none";
+    }
+  });
+
+  // 댓글 숨김 및 추가 노출 함수
+  function hideComments(comments, commentsToShow) {
+    for (var i = commentsToShow; i < comments.length; i++) {
+      comments[i].style.display = "none";
+    }
+  }
+
+  function showMoreComments(comments, commentsLoaded, commentsToShow) {
+    for (var i = commentsLoaded; i < commentsLoaded + commentsToShow; i++) {
+      if (i < comments.length) {
+        comments[i].style.display = "block";
+      }
+    }
+  }
+});
 
 </script>
 {% endblock content %}

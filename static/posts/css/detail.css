@@ -106,7 +106,11 @@
   color: #555;
   margin: 5px 0 0 5px;
 }
-.comments__btn--list {
+.comments__btn--list1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.comments__btn--list2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -116,7 +120,12 @@
     flex-direction: column;
   }
 
-  .comments__btn--list {
+  .comments__btn--list1 {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .comments__btn--list2 {
     display: flex;
     flex-wrap: wrap;
     margin-top: 10px;
@@ -184,18 +193,26 @@
 .ieum--button--nobgc1 {
   /* border-bottom: 1px solid #000; */
   /* border: 1px solid; */
-  padding: 1px 6px;
-  background: #FFF7D3;
+  padding: 2px 6px;
+  background: #DEECA1;
   border-radius: 5px;
 }
 .ieum--button--nobgc1:hover {
-  background-color: #ffe570;
+  background-color: #d0df8d;
 }
 .ieum--button--nobgc2 {
+  padding: 2px 6px;
+  background: #FFF7D3;
+  border-radius: 5px;
+}
+.ieum--button--nobgc2:hover {
+  background-color: #ffe570;
+}
+.ieum--button--nobgc3 {
   border: none;
   background: #CE996A;
   border-radius: 5px;
 }
-.ieum--button--nobgc2:hover {
+.ieum--button--nobgc3:hover {
   background-color: #cc7f3b;
 }

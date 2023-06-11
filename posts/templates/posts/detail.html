@@ -23,14 +23,17 @@
   <article class="detail--container">   
     <section class="detail--wrap">
       <div>
-        <div class="d-flex justify-content-between mb-1">
-          <div class="d-flex flex-column">
-            <h1>{{ post.title }}</h1>
-            <a href="{% url 'accounts:profile' username=post.user %}">
-              <p><strong>{{ post.user }}</strong></p>
-            </a>
+        <div class="d-flex justify-content-between">
+          <div class="d-flex">
+            {% for tag in tags %}
+              <span class="detail--tag me-2 mb-3">#{{ tag }}</span>
+            {% endfor %}
           </div>
-          <div class="d-flex align-items-center">
+          <div id="detail--like" class="d-flex" style="align-items: baseline;">
+            <!-- 게시물 신고 모달 버튼 -->
+            <button type="button" class="me-3" data-bs-toggle="modal" data-bs-target="#PostReportModal">
+              <i class="bi bi-bell" style="color:crimson; font-size:1.5rem;"></i>
+            </button>
             <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
               {% csrf_token %}
               {% if request.user in post.like_users.all %}
@@ -49,10 +52,6 @@
         <div id="header" class="mb-1">
           <div class="">
             <h1>{{ post.title }}</h1>
-            <!-- 게시물 신고 모달 버튼 -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PostReportModal">
-              신고
-            </button>
             <!-- 게시물 신고 모달 -->
             <div class="modal fade" id="PostReportModal" tabindex="-1" aria-labelledby="PostReportModalLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -65,7 +64,9 @@
                     <form action="{% url 'posts:post_report' post.pk %}"  method ='POST'>
                       {% csrf_token %}
                       {{ post_report_form }}
-                      <input type="submit" value="신고하기">
+                      <div class="modal-footer">
+                        <button type="submit" class="comment--update--btn">신고하기</button>
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -74,10 +75,12 @@
             <div>
               <i class="mt-1" style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
             </div>
-            <a class="mt-3" href="{% url 'accounts:profile' username=post.user %}">
-              <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
-              <span class="ms-1"><strong>{{ post.user }}</strong></span>
-            </a>
+            <div class="mt-2">
+              <a class="" href="{% url 'accounts:profile' username=post.user %}">
+                <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
+                <span class="ms-1"><strong>{{ post.user }}</strong></span>
+              </a>
+            </div>
           </div>
           <div id="detail--music">
             {% if not music %}
@@ -98,35 +101,32 @@
           </div>
         </div>
         <ul>
-          <li class="mb-3">
-            <i style="color:#bdbdbd; font-size:.8rem;">{{ post.created_at }}</i>
-          </li>
-          <li class="mb-3">
-            <div class="detail--content">{{ post.content|safe }}</div>
-          </li>
-          <li class="detail__map--wrap mb-3">
-            <div id="map" style="width:350px;height:200px;" class="detail__map"></div>
-          </li>
-          <li class="mb-3">
-            <div>
-              {% for tag in tags %}
-              <span class="detail--tag">#{{ tag }}</span>
-              {% endfor %}
+          <div id="detail--main--box">
+            <div class="detail--content">
+              <li class="mb-3 mt-3 me-3 detail--content--box">
+                <div class="detail--content">{{ post.content|safe }}</div>
+              </li>
             </div>
-          </li>
-          <li class="d-flex">
-            <div class="detail__btn--list">
-              <div class="me-2" style="display:flex; align-self:center;">
-                <button class="">
-                  <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc1">수정</a>
+            <div class="detail--map">
+              <li class="detail__map--wrap mb-3 mt-3">
+                <div id="map" style="width:auto;height:300px;" class="detail__map"></div>
+              </li>
+            </div>
+          </div>
+          <li class="d-flex mt-3 mb-3">
+            {% if request.user == post.user %}
+              <div style="display:flex; align-self:center;">
+                <button class="me-2">
+                  <a href="{% url 'posts:index' %}" class="ieum--button--nobgc1">뒤로가기</a>
                 </button>
-                </div>
+                <button class="me-2">
+                  <a href="{% url 'posts:update' post.pk %}" class="ieum--button--nobgc2">수정</a>
+                </button>
+                <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
+                  <input type="submit" value='삭제' class="ieum--button--nobgc3">
+                </form>
               </div>
-              <form action="{% url 'posts:delete' post.pk %}" style="display:flex; align-self:center;">
-                <input type="submit" value='삭제' class="ieum--button--nobgc2">
-              </form>
-              <!-- Button trigger modal -->
-            </div>
+            {% endif %}
           </li>
         </ul>
       </div>
@@ -135,39 +135,75 @@
     <section class="comments--wrap">
       <ul>
         <li>
-          {% comment %} 좋아요가 많은 상위 3개의 데이터 {% endcomment %}
-          {% for comment_like in comment_likes %}
-            {% if comment_like.post.pk == post.pk %}
-            <div>
-              <div class="comments__user--wrap">
-                <p class="fw-bold">{{ comment_like.user }}</p>
-                <i class="comment--date">{{ comment_like.created_time }}</i>
+          <div>
+            <h4 class="font--gangwon">
+              인기 댓글순 <i class="bi bi-chat-heart" style="color:crimson;"></i>
+            </h4>
+            {% comment %} 좋아요가 많은 상위 3개의 데이터 {% endcomment %}
+            {% for comment_like in comment_likes %}
+              <div class="comments__content--wrap mt-2">
+                {% if comment_like.post.pk == post.pk %}
+                  <div>
+                    <div class="comments__user--wrap">
+                      <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment_like.user.image %}{{ comment_like.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                      <p class="fw-bold ms-2">{{ comment_like.user }}</p>
+                      <i class="comment--date">{{ comment_like.created_time }}</i>
+                    </div>
+                    <p class="mt-2" style="word-wrap: break-word;">{{ comment_like.content|linebreaksbr }}</p>
+                  </div>
+                  <!-- 인기 댓글 수정, 삭제 -->
+                  {% if request.user == comment_like.user %}
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment_like.like_users.count}}</span>
+                      </span>
+                      <div class="me-2" style="display:flex; align-self:center;">
+                        <div class="ieum--button1">
+                          <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment_like.pk}}">수정</button>
+                        </div>
+                      </div>
+                      <form action="{% url 'posts:comment_delete' post.pk comment_like.pk %}" style="display:flex; align-self:center;">
+                        <input type="submit" value='삭제' class="ieum--button2">
+                      </form>
+                    </div>
+                  {% else %}
+                    <span class="me-3" style="display: flex; align-items: center;">
+                      ❤️<span class="ms-1">{{comment_like.like_users.count}}</span>
+                    </span>
+                  {% endif %}
+                {% endif %}
               </div>
-              <p>{{ comment_like.content }}</p>
-            </div>
-            {% endif %}
-          {% endfor %}
+            {% endfor %}
+          </div>
+        </li>
 
-          <select id="comment-select">
+        <hr>
+
+        <li>
+          <select id="comment-select" class="form-select" style="width:150px;">
             <option value="latest-comments">최신 댓글</option>
             <option value="comments">오래된 댓글</option>
           </select>
-        </li> 
-        <li>
+
           {% comment %} 최신 댓글 {% endcomment %}
           <div id="latest-comments-section" class="latest-comments-section">
+            <h4 class="font--gangwon mt-3">최신 댓글순</h4>
             {% for comment in comment_latest %}
               <div id="comment" class = "latest-comment">
-                {% if comment.user == request.user %}
-                  <div class="comments__content--wrap">
+                <div class="comments__content--wrap">
+                  {% if comment.user == request.user %}
                     <div>
                       <div class="comments__user--wrap">
-                        <p class="fw-bold">{{ comment.user }}</p>
-                        <i class="comment--date">{{ comment.created_time }}</i>
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                        <p class="fw-bold ms-2">{{ comment.user }}</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
                       </div>
-                      <p>{{ comment.content }}</p>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
                     </div>
-                    <div class="comments__btn--list">
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment.like_users.count}}</span>
+                      </span>
                       <div class="me-2" style="display:flex; align-self:center;">
                         <div class="ieum--button1">
                           <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -176,46 +212,60 @@
                       <form action="{% url 'posts:comment_delete' post.pk comment.pk %}" style="display:flex; align-self:center;">
                         <input type="submit" value='삭제' class="ieum--button2">
                       </form>
-                      <span class="ms-1">❤️{{comment.like_users.count}}</span>
-                      <!-- Button trigger modal -->
                     </div>
-                  </div>
-                {% else %}
-                  <div class="comments__user--wrap">
-                    <p class="fw-bold">{{ comment.user }}</p>
-                    <i class="comment--date">{{ comment.created_time }}</i>
-                  </div>
-                  <p>{{ comment.content }}</p>
-                  <div class =' d-flex'>
-                    <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                      {% csrf_token %}
-                      {% if request.user in comment.like_users.all %}
-                        <button class="border-0 bg-transparent" type="submit">
-                          ❤️
-                        </button>
-                      {% else %}
-                        <button class="border-0 bg-transparent" type="submit">
-                          🤍
-                        </button>
-                      {% endif %}
-                    </form>
-                    <!-- 댓글 신고 모달 버튼 -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}">
-                      신고
-                    </button>
-                    <span class="ms-1">{{comment.like_users.count}}</span>
-                  </div>
-                {% endif %}
+                  {% else %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                        <p class="fw-bold ms-2">{{ comment.user }}</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
+                      </div>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="comments__btn--list2">
+                      <div class="me-1" style="display:flex; align-self:center;">
+                        {% comment %} <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                          {% csrf_token %}
+                          {% if request.user in comment.like_users.all %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              ❤️
+                            </button>
+                          {% else %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              🤍
+                            </button>
+                          {% endif %}
+                        </form>
+                        <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
+                        <form id="comment-like-form-{{ comment.pk }}" action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                          {% csrf_token %}
+                          <button class="border-0 bg-transparent comment-like-button" type="submit" data-url="{% url 'posts:comment_likes' post.pk comment.pk %}">
+                            {% if request.user in comment.like_users.all %}
+                              ❤️
+                            {% else %}
+                              🤍
+                            {% endif %}
+                          </button>
+                        </form>
+                        <span id="like_count_{{ comment.pk }}" class="ms-1">{{ comment.like_users.count }}</span>
+                      </div>
+                      <!-- 댓글 신고 모달 버튼 -->
+                      <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
+                        <i class="bi bi-bell" style="color:crimson; font-size:1.2rem;"></i>
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
               </div>
             {% endfor %}
-            <div id="latest-load-more-btn">
-              <button class="load-more-comments" type="button">더보기</button>
+            <div id="latest-load-more-btn" class="mb-2" style="text-align: center;">
+              <button class="load-more-comments btn" type="button"><i>더보기</i></button>
             </div>
           </div>
 
           {% comment %} 댓글 수정 모달 {% endcomment %}
           {% for comment, u_comment_form in comment_forms %}
-            <!-- Modal -->
+            {% comment %} 최신, 오래된 댓글 신고 모달 {% endcomment %}
             <div class="modal fade" id="edit-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -232,24 +282,24 @@
                       </div>
                     </form>
                   </div>
-                  <span class="ms-1">❤️{{comment.like_users.count}}</span>
-                  <!-- Button trigger modal -->
                 </div>
               </div>
             </div>
             {% comment %} 댓글 신고 모달 {% endcomment %}
-            <div class="modal fade" id="CommentReportModal-{{comment.pk}}" tabindex="-1" aria-labelledby="CommentReportModalLabel-{{comment.pk}}" aria-hidden="true">
+            <div class="modal fade" id="CommentReportModal-{{comment.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="CommentReportModalLabel-{{comment.pk}}" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="CommentReportModalLabel-{{comment.pk}}">신고하기</h1>
+                    <h1 class="modal-title fs-5" id="CommentReportModalLabel-{{comment.pk}}">댓글 신고</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     <form action="{% url 'posts:comment_report' post.pk comment.pk %}"  method ='POST'>
                       {% csrf_token %}
                       {{ comment_report_form }}
-                      <input type="submit" value="신고하기">
+                      <div class="modal-footer">
+                        <button type="submit" class="comment--update--btn">신고하기</button>
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -260,18 +310,23 @@
 
           {% comment %} 오래된 댓글 {% endcomment %}
           <div id="comments-section" class="comments-hidden">
+            <h4 class="font--gangwon mt-3">오래된 댓글순</h4>
             {% for comment in comments %}
               <div class="comment old-comment">
-                {% if comment.user == request.user %}
-                  <div class="comments__content--wrap">
+                <div class="comments__content--wrap">
+                  {% if comment.user == request.user %}
                     <div>
                       <div class="comments__user--wrap">
-                        <p class="fw-bold">{{ comment.user }}</p>
-                        <i class="comment--date">{{ comment.created_time }}</i>
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                        <p class="fw-bold ms-2">{{ comment.user }}</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
                       </div>
                       <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
                     </div>
-                    <div class="comments__btn--list">
+                    <div class="comments__btn--list1">
+                      <span style="display: flex; align-items: center;">
+                        ❤️<span class="ms-1">{{comment.like_users.count}}</span>
+                      </span>
                       <div class="me-2" style="display:flex; align-self:center;">
                         <div class="ieum--button1">
                           <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -281,38 +336,54 @@
                         <input type="submit" value='삭제' class="ieum--button2">
                       </form>
                     </div>
-                  </div>
-                {% else %}
-                  <div class="comments__user--wrap">
-                    <p class="fw-bold">{{ comment.user }}</p>
-                    <i class="comment--date">{{ comment.created_time }}</i>
-                  </div>
-                    <p>{{ comment.content }}</p>
-                  <div class =' d-flex'>
-                    <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                      {% csrf_token %}
-                      {% if request.user in comment.like_users.all %}
-                        <button class="border-0 bg-transparent" type="submit">
-                          ❤️
-                        </button>
-                      {% else %}
-                        <button class="border-0 bg-transparent" type="submit">
-                          🤍
-                        </button>
-                      {% endif %}
-                    </form>
-                    {% comment %} 댓글 신고 모달 버튼 {% endcomment %}
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}">
-                      신고
-                    </button>
-                      <span class="ms-1">{{comment.like_users.count}}</span>
-                  </div>
-                {% endif %}
+                  {% else %}
+                    <div>
+                      <div class="comments__user--wrap">
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                        <p class="fw-bold ms-2">{{ comment.user }}</p>
+                        <i class="comment--date ms-2">{{ comment.created_time }}</i>
+                      </div>
+                      <p class="mt-2" style="word-wrap: break-word;">{{ comment.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="comments__btn--list2">
+                      <div class="me-1" style="display:flex; align-self:center;">
+                        {% comment %} <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                          {% csrf_token %}
+                          {% if request.user in comment.like_users.all %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              ❤️
+                            </button>
+                          {% else %}
+                            <button class="border-0 bg-transparent" type="submit">
+                              🤍
+                            </button>
+                          {% endif %}
+                        </form>
+                        <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
+                        <form id="comment-like-form-{{ comment.pk }}" action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                          {% csrf_token %}
+                          <button class="border-0 bg-transparent comment-like-button-old" type="button" data-url="{% url 'posts:comment_likes' post.pk comment.pk %}" data-comment-id="{{ comment.pk }}">
+                            {% if request.user in comment.like_users.all %}
+                              ❤️
+                            {% else %}
+                              🤍
+                            {% endif %}
+                          </button>
+                        </form>
+                        <span id="like_count_old_{{ comment.pk }}" class="ms-1">{{ comment.like_users.count }}</span>                        
+                      </div>
+                      {% comment %} 댓글 신고 모달 버튼 {% endcomment %}
+                      <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
+                        <i class="bi bi-bell" style="color:crimson; font-size:1.2rem;"></i>
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
               </div>
             {% endfor %}
-              <div id="old-load-more-btn">
-                <button class="load-more-comments" type="button">더보기</button>
-              </div>
+            <div id="old-load-more-btn" class="mb-2" style="text-align: center;">
+              <button class="load-more-comments btn" type="button"><i>더보기</i></button>
+            </div>
           </div>
         </li>
         <li>
@@ -449,5 +520,72 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+$(document).ready(function() {
+  var csrftoken = "{{ csrf_token }}"; // CSRF 토큰을 직접 설정
+
+  // 최신 댓글에 대한 버튼 클릭 이벤트 처리
+  $('.comment-like-button').on('click', function(event) {
+    event.preventDefault();
+  
+    var button = $(this);
+    var form = button.closest('form');
+    var url = form.attr('action');
+    var commentPk = form.attr('id').split('-')[3]; // comment pk 추출
+    var likeCountSpan = $('#like_count_' + commentPk); // 좋아요 개수 표시하는 span 요소
+  
+    $.ajax({
+      url: url,
+      method: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrftoken
+      },
+      success: function(response) {
+        if (response.liked) {
+          button.text('❤️');
+        } else {
+          button.text('🤍');
+        }
+      
+        likeCountSpan.text(response.like_count); // 좋아요 개수 업데이트
+        console.log(response.like_count)
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  });
+  
+  // 오래된 댓글에 대한 버튼 클릭 이벤트 처리
+  $('.comment-like-button-old').on('click', function(event) {
+    event.preventDefault();
+  
+    var button = $(this);
+    var form = button.closest('form');
+    var url = form.attr('action');
+    var commentPk = form.attr('id').split('-')[3]; // comment pk 추출
+    var likeCountSpan = $('#like_count_old_' + commentPk); // 좋아요 개수 표시하는 span 요소
+  
+    $.ajax({
+      url: url,
+      method: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrftoken
+      },
+      success: function(response) {
+        if (response.liked) {
+          button.text('❤️');
+        } else {
+          button.text('🤍');
+        }
+      
+        likeCountSpan.text(response.like_count); // 좋아요 개수 업데이트
+        console.log(response.like_count)
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  });
+});
 </script>
 {% endblock content %}
