@@ -29,7 +29,7 @@ CLIENT_ID = os.getenv('client_id')
 CLIENT_SECRET = os.getenv('client_secret')
 KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
 
-SECRET_KEY = 'django-insecure-m-0!*yv=-wb#wq)80ix=3mk&xagc8ufs!l(^1!oqhxve@pa82y'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

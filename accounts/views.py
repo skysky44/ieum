@@ -17,7 +17,8 @@ from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
 from django.core.exceptions import ObjectDoesNotExist
-
+from balances.models import Result
+from datetime import date
 
 # Create your views here.
 def login(request):
@@ -185,6 +186,14 @@ def calculate_distance(address1, address2):
 
     return distance
 
+# def balance(word_dict):
+#     word_list = []
+#     for key, value in word_dict.items():
+#         if value == '졸려':
+#             word_list.append('졸려')
+#             word_list = word_list + ["잠 오는 봄", "낮잠", "지루해", "집순이"]
+
+
 
 
 def profile(request, username):
@@ -195,17 +204,19 @@ def profile(request, username):
     music = Track.objects.filter(user_id=user_id)
     post_reports = PostReport.objects.order_by('post_id', 'title')
     comment_reports = CommentReport.objects.order_by('comment_id', 'title')
+    balance_result = Result.objects.get(user_id=user_id)
+    word_list = []
+    # for key, value in balance_result.word.items():
+    #     if value == '졸려':
+    #         word_list.append('졸려')
+    #         word_list = word_list + ["잠 오는 봄", "낮잠", "지루해", "집순이"]
+    
     try:
         fortunes = Fortune.objects.get(user_id=user_id)
     except ObjectDoesNotExist:
         fortunes = None
-    # print(fortunes)
-    # for fortune in fortunes:
-    #     fortune_message = fortune.message
-    #     print(fortune_message)
 
-
-
+    # 자기소개 표시
     introductions_list = []
     sign = ["[","]","'",","]
     word = ""
@@ -245,6 +256,9 @@ def profile(request, username):
         'post_reports' : post_reports,
         'comment_reports' : comment_reports,
         'fortunes' : fortunes,
+        'balance_result' : balance_result,
+        # 'word_list' : word_list,
+        'fortune_today' : date.today(),
 
     }
     return render(request, 'accounts/profile.html', context)

@@ -42,6 +42,7 @@ class User(AbstractUser):
     pick = models.CharField(max_length=10, default=3)
     introductions = models.CharField(max_length=255)
     reported = models.BooleanField(default=False)
+    words = models.CharField(null=True, blank=True, max_length=255)
 
     # def set_introductions(self, introductions):
     #     self.introductions = ','.join(introductions)
