@@ -16,7 +16,13 @@ def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
-    
+
+    # image_urls를 리스트로 변환
+    for post in category_class:
+        post.image_urls = post.image_urls.split(',')
+    for post in category_anonymous:
+        post.image_urls = post.image_urls.split(',')
+
     context = {
         'paints': paints,
         'category_class' : category_class,
