@@ -25,7 +25,8 @@
         {% comment %} {{ form.as_p }} {% endcomment %}
         <div>
           <p>보낼 사람 : </p>
-          {{ form.receiver }}
+          <div class='d-none'>{{ form.receiver }}</div>
+          {{ message.sender }}
         </div>
         <div class="mt-3">
           <p>내용 : </p>
@@ -38,4 +39,7 @@
       </form>
     </div>
   </div>
+
+  <script>
+  </script>
 {% endblock %}

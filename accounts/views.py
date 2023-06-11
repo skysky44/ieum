@@ -72,7 +72,6 @@ def signup(request):
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, files=request.FILES)
-        # print(form)
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
@@ -181,7 +180,6 @@ def calculate_distance(address1, address2):
     else:
         # 유효한 좌표를 가져오지 못한 경우, 기본 거리를 0으로 설정
         distance = 0
-    # print(distance)
 
     return distance
 
