@@ -277,7 +277,7 @@
         </form>
         <div id="search-results" class="mb-3">
         </div>
-        <audio id="audio-player" controls>
+        <audio class ='d-none' id="audio-player" controls>
           <source src="" type="audio/mp3">
         </audio>
       </div>
@@ -290,10 +290,12 @@
   </div>
 </div>
 
+
 <!-- 포춘쿠키 메세지 -->
 {% if fortunes.date == fortune_today %}
 {% else %}
   <span>아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
+
   <form action="{% url 'posts:fortune_cookie' %}" method="post">
     {% csrf_token %}
     <button type="submit" style="border: none; background: none;">

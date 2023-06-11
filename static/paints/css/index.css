@@ -1,6 +1,15 @@
-
+aside.base--item {
+  text-align: center;
+  background-color: rgb(219, 245, 255);
+}
+.main--title--wrap {
+  padding : 5rem 0;
+}
+.main--title {
+  margin-bottom: 1rem;
+}
 .paints--container {
-  display: grid;
+  /* display: grid;
   grid-template-columns: 1fr 400px;
   grid-gap: 1rem;
   align-items: flex-end; 
@@ -8,15 +17,15 @@
   height: 70vh; 
   background-repeat: no-repeat; 
   background-position: bottom; 
-  background-size: contain;
+  background-size: contain; */
 }
 .tree--container {
   position: relative;
 }
 .tree--image {
-  width: 100%; 
-  height: 70vh; 
-  padding-bottom: 3rem;
+  width: 650px;
+  /* width: 100%;  */
+  /* height: 70vh;  */
 }
 .hallabong-wrap {
   position: absolute; 
@@ -65,46 +74,65 @@
 
 .page--previous {
   position: absolute;  
-  bottom: 2rem;
-  left: 32%;
+  bottom: 0;
+  left: 260px;
   transform: translateX(-50%); 
+}
+.previous--stone{
+  width: 50px;
+  height: 50px;
 }
 .page--next {
   position: absolute; 
-  bottom: 2rem;
-  right: 40%;
+  bottom: 0;
+  left: 350px;
   transform: translateX(50%); 
+}
+.next--stone {
+  width: 70px;
+  height: 70px;
 }
 .paint--harbang--container {
   position: absolute;
-  right: 2rem;
-  bottom: -2rem;
-  width: 80px;
+  bottom: 0;
 }
 .paint--harbang--wrap {
 }
 .paint--harbang {
-  width: 100%;
-  margin-bottom: 7rem;
+  width: 70px;
 }
 .big--content--wrap {
   display: flex;
   justify-content: center; 
-  align-items: center;
+  align-items: flex-end;
   height: 100%;
   border-radius: 10px;
 }
 .big--content {
+  position: absolute;
+  right: 400px;
   width: 400px;
   height: 400px;
   border-radius: 10px;
-  border: 10px solid #DEECA1;
+  border: 5px solid  rgb(219, 245, 255);
   box-sizing: border-box;
   background-color: #fff;
-  box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.2);
+  /* box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.2); */
 }
 .paint--big--userpaint {
+  position: absolute;
   width: 100%;
   transition: opacity 0.3s;
   opacity: 1;
+  /* background-color: #fff; */
+}
+
+.sub--image--list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  overflow: hidden;
+}
+.sub--image {
+  width: 90px;
 }

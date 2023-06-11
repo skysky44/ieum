@@ -124,7 +124,7 @@ class CustomUserCreationForm(UserCreationForm):
             }
         ),
     )
-    
+
     introductions = forms.MultipleChoiceField(
         choices=SENTENCE_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -147,7 +147,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
         fields = ('username', 'first_name', 'birthday', 'email',
-                  'image', 'password1', 'password2', 'region', 'privacy', 'introductions')
+                'image', 'password1', 'password2', 'region', 'privacy', 'introductions')
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -219,9 +219,16 @@ class CustomUserChangeForm(UserChangeForm):
 
     password = None
 
+    introductions = forms.MultipleChoiceField(
+        choices=SENTENCE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
+
         fields = ('email', 'first_name', 'region', 'privacy', 'birthday', 'image', 'introductions')
+
 
 
 class CustomAuthenticationForm(AuthenticationForm):

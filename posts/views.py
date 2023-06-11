@@ -11,12 +11,20 @@ from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
 import requests
+from django.db.models import Count
+from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
-    
+
+    # image_urls를 리스트로 변환
+    for post in category_class:
+        post.image_urls = post.image_urls.split(',')
+    for post in category_anonymous:
+        post.image_urls = post.image_urls.split(',')
+
     context = {
         'paints': paints,
         'category_class' : category_class,
@@ -27,43 +35,84 @@ def home(request):
 
 
 def aboutus(request):
-    print('안녕')
     return render(request, 'aboutus.html')
 
+from bs4 import BeautifulSoup
+def extract_image_urls(content):
+    soup = BeautifulSoup(content, 'html.parser')
+    image_tags = soup.find_all('img')
+    image_urls = [tag['src'] for tag in image_tags]
+    return image_urls
 
 def index(request):
-    # posts = Post.objects.order_by('-pk')
     category_class = Post.objects.filter(category='모임').order_by('-id')
     page = request.GET.get('page', '1')
+    section = request.GET.get('section', None)
+
+    if section == 'popular':
+        # 좋아요가 가장 많은 순으로 분류
+        category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')
+    elif section == 'recent':
+        # 최근 작성글 순으로 분류
+        category_class = category_class.order_by('-created_at')
+    elif section == 'oldest':
+        # 가장 오래된 글 순으로 분류
+        category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 5
+    per_page = 6
+    
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
-    
+
+    total_pages = paginator.num_pages
+
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
+
     context = {
+        'category_class': page_obj,
+        'section': section,
+        'total_pages': total_pages,
         'tags': tags,
-        # 'posts': page_obj,
-        'category_class' : page_obj,
+        'post.image_urls' : post.image_urls,
     }
 
     return render(request, 'posts/index.html', context)
 
 
 def anonymous(request):
-    # posts = Post.objects.order_by('-pk')
-    category_anonymous = Post.objects.filter(category='익명').order_by('-id')
-    per_page = 5
-    paginator = Paginator(category_anonymous, per_page)
+    category_class = Post.objects.filter(category='익명').order_by('-id')
     page = request.GET.get('page', '1')
-    page_obj = paginator.get_page(page)
-    tags = Post.tags.all()
-    context ={
-        'category_anonymous' : page_obj,
-        'tags' : tags,
-        # 'posts' : page_obj
+    section = request.GET.get('section', None)
 
+    if section == 'popular':
+        # 좋아요가 가장 많은 순으로 분류
+        category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')
+    elif section == 'recent':
+        # 최근 작성글 순으로 분류
+        category_class = category_class.order_by('-created_at')
+    elif section == 'oldest':
+        # 가장 오래된 글 순으로 분류
+        category_class = category_class.order_by('created_at')
+        
+    tags = Post.tags.all()
+    per_page = 3
+    paginator = Paginator(category_class, per_page)
+    page_obj = paginator.get_page(page)
+
+    total_pages = paginator.num_pages
+
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
+
+    context = {
+        'category_class': page_obj,
+        'section': section,
+        'total_pages': total_pages,
+        'tags': tags,
+        'post.image_urls' : post.image_urls,
     }
-    return render(request, 'posts/anonymous.html',context)
+    return render(request, 'posts/anonymous.html', context)
 
 
 @login_required
@@ -180,16 +229,18 @@ def anonymous_create(request):
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     comment_form = CommentForm()
-    comments = post.comments.all()
+    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
+    comments = post.comments.all().order_by('created_at')
+    comment_latest = post.comments.all().order_by('-created_at')
     comment_forms = []
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
     for comment in comments:
         u_comment_form = (
             comment,
-            CommentForm(instance=comment)
+            CommentForm(instance=comment),
         )
-        comment_forms.append(u_comment_form) 
+        comment_forms.append(u_comment_form)
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
@@ -198,19 +249,23 @@ def detail(request, post_pk):
         'comment_forms': comment_forms,
         'comment_form': comment_form,
         'comments' : comments,
+        'comment_latest': comment_latest,
         'tags' : tags,
         'posts' : posts,
         'music' : music,
+        'comment_likes' : comment_likes,
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
     }
 
     return render(request, 'posts/detail.html', context)
 
+
 import uuid
 
 def generate_anonymous_id():
     return str(uuid.uuid4())[:6]
+
 
 @login_required
 def anonymous_detail(request, post_pk):
@@ -218,7 +273,9 @@ def anonymous_detail(request, post_pk):
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
     comment_form = CommentForm()
-    comments = post.comments.all()
+    comments = post.comments.all().order_by('created_at')
+    comment_latest = post.comments.all().order_by('-created_at')
+    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comment_forms = []
     for comment in comments:
         u_comment_form = (
@@ -233,10 +290,12 @@ def anonymous_detail(request, post_pk):
         'post' : post,
         'comment_forms': comment_forms,
         'comment_form': comment_form,
+        'comment_latest' : comment_latest,
         'comments' : comments,
         'tags' : tags,
         'posts' : posts,
         'music' : music,
+        'comment_likes' : comment_likes,
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
     }
@@ -249,25 +308,6 @@ def anonymous_detail(request, post_pk):
     context['anonymous_id'] = anonymous_id
     
     return render(request, 'posts/anonymous_detail.html', context)
-
-# @login_required
-# def anonymous_detail(request, post_pk):
-#     post = Post.objects.get(pk=post_pk)
-#     comment_form = CommentForm()
-#     comments = post.comments.all()
-#     tags = post.tags.all()
-#     posts = Post.objects.all().order_by('like_users')
-#     music = PostTrack.objects.filter(post=post_pk)
-#     context ={
-#         'post' : post,
-#         'comment_form':comment_form,
-#         'comments' : comments,
-#         'tags' : tags,
-#         'posts' : posts,
-#         'music' : music,
-#     }
-
-#     return render(request, 'posts/anonymous_detail.html', context)
 
 
 @login_required
@@ -290,7 +330,7 @@ def update(request, post_pk):
                 form.save()
             
                 if not selected_tracks:
-                        return redirect('posts:index')
+                        return redirect('posts:detail', post_pk)
                 else:
                     if music.exists():
                         for track in music:
@@ -357,7 +397,7 @@ def anonymous_update(request, post_pk):
                 form.save()
             
                 if not selected_tracks:
-                        return redirect('posts:anonymous')
+                        return redirect('posts:anonymous_detail', post.pk)
                 else:
                     if music.exists():
                         for track in music:
@@ -419,6 +459,21 @@ def delete(request,post_pk):
     return redirect('posts:index')
 
 
+@login_required
+def anonymous_delete(request,post_pk):
+    post = Post.objects.get(pk=post_pk)
+    music_queryset = PostTrack.objects.filter(post=post_pk)
+    if request.user == post.user:
+        for music in music_queryset:
+            if music.image:  
+                image_path = os.path.join(settings.MEDIA_ROOT, str(music.image))
+                if os.path.isfile(image_path):
+                    os.remove(image_path)
+
+        post.delete()
+    return redirect('posts:anonymous')
+
+
 
 def likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
@@ -434,11 +489,26 @@ def likes(request, post_pk):
     
     return redirect('posts:index')
 
+
+def anonymous_likes(request, post_pk):
+    post = Post.objects.get(pk=post_pk)
+    if post.like_users.filter(pk=request.user.pk).exists():
+        post.like_users.remove(request.user)
+    else:
+        post.like_users.add(request.user)
+
+    # 이전 페이지로 리디렉션
+    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    if referer:
+        return redirect(referer)
+    
+    return redirect('posts:anonymous')
+
+
 @login_required
 def post_report(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     form = PostReportForm()
-
     if request.method == 'POST':
         form = PostReportForm(request.POST)
         if form.is_valid():
@@ -460,6 +530,25 @@ def post_report(request, post_pk):
     # return render(request, 'posts/post_report.html', context)
 
 
+@login_required
+def anonymous_post_report(request, post_pk):
+    post = Post.objects.get(pk=post_pk)
+    form = PostReportForm()
+    if request.method == 'POST':
+        form = PostReportForm(request.POST)
+        if form.is_valid():
+            post_report = form.save(commit=False)
+            post_report.post = post
+            post_report.user = request.user
+            post_report.save()
+            # 신고 당한 사람 표시
+            post.user.reported = True
+            post.user.save()
+            post.report = True
+            post.save()
+            return redirect('posts:anonymous_detail', post_pk)
+
+
 def comment_create(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if request.method == 'POST':
@@ -471,6 +560,7 @@ def comment_create(request, post_pk):
             comment.user = request.user
             comment.save()
             return redirect('posts:detail', post.pk)
+
         
 def anonymous_comment_create(request, post_pk):
     post = Post.objects.get(pk=post_pk)
@@ -550,6 +640,26 @@ def comment_report(request, post_pk, comment_pk):
             comment.report = True
             comment.save()
             return redirect('posts:detail', post_pk)
+        
+
+@login_required
+def anonymous_comment_report(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    form = CommentReportForm()
+
+    if request.method == 'POST':
+        form = CommentReportForm(request.POST)
+        if form.is_valid():
+            comment_report = form.save(commit=False)
+            comment_report.comment = comment
+            comment_report.user = request.user
+            comment_report.save()
+            # 신고 당한 사람 표시
+            comment.user.reported = True
+            comment.user.save()
+            comment.report = True
+            comment.save()
+            return redirect('posts:anonymous_detail', post_pk)
             
     # context = {
     #     'comment_report_form': form,
@@ -559,13 +669,41 @@ def comment_report(request, post_pk, comment_pk):
     # return render(request, 'posts/comment_report.html', context)
 
 # @login_required
+# def comment_likes(request, post_pk, comment_pk):
+#     comment = Comment.objects.get(pk=comment_pk)
+#     if comment.like_users.filter(pk=request.user.pk).exists():
+#         comment.like_users.remove(request.user)
+#     else:
+#         comment.like_users.add(request.user)
+#     return redirect('posts:detail', post_pk)
+
+
 def comment_likes(request, post_pk, comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+    if comment.like_users.filter(pk=request.user.pk).exists():
+        comment.like_users.remove(request.user)
+        liked = False
+    else:
+        comment.like_users.add(request.user)
+        liked = True
+    
+    like_count = comment.like_users.count()
+    
+    response_data = {
+        'liked': liked,
+        'like_count': like_count,
+    }
+    
+    return JsonResponse(response_data)
+
+
+def anonymous_comment_likes(request, post_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
     if comment.like_users.filter(pk=request.user.pk).exists():
         comment.like_users.remove(request.user)
     else:
         comment.like_users.add(request.user)
-    return redirect('posts:detail', post_pk)
+    return redirect('posts:anonymous_detail', post_pk)
 
 
 tracks = {}

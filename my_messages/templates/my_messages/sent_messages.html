@@ -23,17 +23,17 @@
         {% for message in sent_messages %}
           <tr>
             <td style="text-align: center;  width: 200px;">
-              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.receiver }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=2">{{ message.receiver }}</a>
             </td>
             <td style="text-align: center;  width: 200px;">
-              <a href="{% url 'my_messages:view_message' message.id %}">{{ message.timestamp }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=2">{{ message.timestamp }}</a>
             </td>
             <td style="text-align: center;  width: 200px;">
               {% if message.is_read %}
                 읽음
               {% else %}
                 {% if not message.is_read %}
-                  <a href="{% url 'my_messages:delete_message' message.id %}" class="sent_messages--delete--btn">전송 취소</a>
+                  <a href="{% url 'my_messages:delete_message' message.id %}?param=2" class="sent_messages--delete--btn">전송 취소</a>
                 {% endif %}
               {% endif %}
             </td>

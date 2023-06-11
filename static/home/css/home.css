@@ -75,24 +75,75 @@
     
   }
 }
-
-.home__posts--container {
+aside.base--item {
+  background-color: #E6F3E6;
 }
-.home__posts--wrap {
-  grid-area: posts;
-}
-.home__posts--index {
-
+.posts--article--container {
+  margin: 2rem 0;
 }
 
-.home__posts--anonymous {
-  /* background-color: #E6F3E6; */
+
+.posts--title {
+  text-align: center;
+  margin-bottom: 1.2rem;
 }
+.posts--list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1.2rem;
+}
+.post--wrap {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 1rem;
+  border-radius: 10px;
+  background-color: #eee;
+  padding: 1rem;
+}
+.posts_image {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+}
+.post--text--list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.post--tag--list {
+  display: flex;
+}
+.post--tag {
+  border-radius: 15px;
+  background-color: #fff;
+  padding: 1px 10px;
+  margin-right: 5px;
+}
+.post--title {
+}
+.post--user--wrap {
+  display: flex;
+  gap: 0.5rem;
+}
+.post--time {
+  font-size: 14px;
+}
+.posts--etc--wrap {
+  text-align: center;
+  margin: 2rem 0 5rem;
+}
+
+
+
+.posts--anonymous {
+}
+
+
 
 /* 버튼 디자인 */
 .home__etc--button {
   font-size: 0.8rem;
-  border-radius: 5px;
-  background-color: #ddd;
-  padding: 2px 5px;
+  border-radius: 20px;
+  background-color: #efefef;
+  padding: 1rem 2rem;
 }

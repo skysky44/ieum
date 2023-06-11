@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/anonymous.css' %}">
   <link rel="stylesheet" href="{% static 'posts/css/create.css' %}">
 {% endblock head %}
 
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-signal"></i></span> 고민 이음</h1>
+  <p>비밀스런 공간에서 고민을 나누고, 소중한 위로를 서로에게 선물해봐요.</p>
+</article>
+{% endblock aside %}
+
 {% block content %}
-  <div class="container" style="width:835px;">
+  <article>
     <form action="{% url 'posts:anonymous_create' %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.media }}
-      <div class="mb-3">
-        <strong>분류 : </strong>
+      <div class="create--menu">
+        <p class="create--lable">분류</p>
         <div class="create--content">
           {{ form.category }}
         </div>
       </div>
-      <div class="mb-3">
-        <strong>제목 : </strong>
+      <div class="create--menu">
+        <p class="create--lable">제목</p>
         <div class="create--content">
           {{ form.title }}
         </div>
@@ -26,47 +34,50 @@
         {{ image_form }}
       </div>
       {% endcomment %}
-      <div class="mb-3">
-        <strong>주소 : </strong>
+      <div class="create--menu">
+        <p class="create--lable">주소</p>
         <div class="create--content">
           {{ form.address }}
         </div>
       </div>
-      <div class="mb-3">
-        <strong>태그 : </strong>
+      <div class="create--menu">
+        <p class="create--lable">태그</p>
         <div class="create--content">
           {{ form.tags }}
         </div>
       </div>
-      <div class="mb-3">
-        <strong>내용 : </strong>
+      <div class="create--menu">
+        <p class="create--lable">내용</p>
         <div>
           {{ form.content }}
         </div>
       </div>
 
-      <div>
-        <div class="create--music--search--wrap">
-          <input id="search-input" class="form-control create--music--search--box" type="text" name="q" placeholder="검색어를 입력하세요">
-          <button id="search-button" class="create--music--search--btn" type="button">검색</button>
+      <!-- 음악 -->
+      <div class="create--music--container">
+        <div class="create--result--wrap">
+          <div id="search-results" class="create--music--result">
+            {% include 'posts/search_results.html' %}
+          </div>
         </div>
-
-        <div id="search-results" class="create--music--result">
-          {% include 'posts/search_results.html' %}
+        <div class="create--adio--search--wrap">
+          <audio class="main-audio" controls>
+            <source src="" type="audio/mp3">
+          </audio>
+          <div class="create--music--search--wrap">
+            <input id="search-input" class="form-control create--music--search--box" type="text" name="q" placeholder="노래 제목을 입력하세요">
+            <button id="search-button" class="create--music--search--btn" type="button">검색</button>
+          </div>
         </div>
-
-        <audio class="main-audio mt-3" controls>
-          <source src="" type="audio/mp3">
-        </audio>
       </div>
 
 
-      <div class="d-flex justify-content-center mt-3">
+      <div class="create--btn--wrap">
         <a href="{% url 'posts:index' %}" class="create--btn1">취소</a>
         <button class="create--btn2" type="submit">등록</button>
       </div>
     </form>
-  </div>
+  </article>
 
 
 

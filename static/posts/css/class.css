@@ -1,0 +1,68 @@
+
+aside.base--item {
+  text-align: center;
+  background-color: #FFF6EA;
+}
+.main--title--wrap {
+  padding : 5rem 0;
+}
+.main--title {
+  margin-bottom: 1rem;
+}
+.main--title--icon {
+  color: #ffdcae;
+}
+
+/* index */
+.post--tag {
+  background-color: #FFF6EA;
+}
+
+.posts--pagination1 {
+  background: #FFF6EA !important;
+  border: 1px solid #FFF6EA !important;
+  color: black;
+}
+.posts--pagination2 {
+  background: white !important;
+  border: 1px solid #FFF6EA !important;
+  color: black;
+}
+.pagination .page-item.active .page-link {
+  color: rgb(59, 59, 59);
+  background-color: #FFF6EA;
+  border: 1px solid #aeaeae;
+}
+.pagination .page-item.disabled .page-link {
+  color: rgba(33, 37, 41, 0.75);
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+}
+.pagination .page-link {
+  color: rgb(59, 59, 59);
+  background-color: #fff;
+}
+.pagination .page-link:hover {
+  background-color: #f8f9fa;
+}
+
+
+/* create */
+.create--lable {
+  background-color: #FFF6EA;
+}
+.create--content {
+  border-bottom: 1px solid #ffdcae;
+}
+
+.create--music--result::-webkit-scrollbar-thumb {
+  background-color: #ffdcae;
+}
+.create--music--search--btn, .create--btn1, .create--btn2  {
+  border: 1px solid #ffdcae;
+  background: #ffdcae;
+}
+.create--music--search--btn:hover, .create--btn1:hover, .create--btn2:hover {
+  border: 1px solid #ffdcae;
+  background-color: #FFF6EA;
+}

@@ -14,7 +14,7 @@ def compose_message(request):
             message = form.save(commit=False)
             message.sender = request.user
             message.save()
-            return redirect('my_messages:received_messages')
+            return redirect('my_messages:sent_messages')
     else:
         form = ComposeMessageForm(user=request.user)
     return render(request, 'my_messages/compose.html', {'form': form})
@@ -42,7 +42,10 @@ def sent_messages(request):
 
 
 def view_message(request, message_id):
+    param = request.GET.get('param')
     message = get_object_or_404(Message, id=message_id)
+
+
     if request.user == message.receiver:
         message.is_read = True
         User.my_is_read = True
@@ -62,7 +65,11 @@ def view_message(request, message_id):
         }
         form = ComposeMessageForm(initial=initial_data)
     
-    return render(request, 'my_messages/view.html', {'message': message, 'form': form})
+    if param == '1':
+        return render(request, 'my_messages/received_view.html', {'message': message, 'form': form})
+
+    elif param == '2':
+        return render(request, 'my_messages/sent_view.html', {'message': message, 'form': form})
 
 
 def mark_as_read(request, message_id):
