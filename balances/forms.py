@@ -11,6 +11,7 @@ class QuestionForm(forms.ModelForm):
         label='Q',
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
                 
                 
             }
@@ -21,6 +22,7 @@ class QuestionForm(forms.ModelForm):
         label='A1',
         widget=forms.Textarea(
             attrs={
+                'class': 'form-control',
                 
             }
         )
@@ -30,6 +32,7 @@ class QuestionForm(forms.ModelForm):
         label='A2',
         widget=forms.Textarea(
             attrs={
+                'class': 'form-control',
                 
             }
         )
@@ -40,6 +43,7 @@ class QuestionForm(forms.ModelForm):
         label='word1',
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
                 
             }
         )
@@ -51,6 +55,7 @@ class QuestionForm(forms.ModelForm):
         label='word2',
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
                 
             }
         )
@@ -61,6 +66,7 @@ class QuestionForm(forms.ModelForm):
         required=False,
         widget=forms.ClearableFileInput(
         attrs={
+                'class': 'form-control',
             }
         )
     )
@@ -70,6 +76,7 @@ class QuestionForm(forms.ModelForm):
         required=False,
         widget=forms.ClearableFileInput(
         attrs={
+                'class': 'form-control',
             }
         )
     )

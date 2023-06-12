@@ -1,15 +1,37 @@
 {% extends 'base.html' %}
-{% block content %}
-<a href="{% url 'balances:create' %}">밸런스 게임 만들기</a>
-<h2>balances index</h2>
-<a href=""></a>
+{% load static %}
 
-{% for question in questions %}
-  <div>
-    <a href="{% url 'balances:detail' question.pk %}">
-      {{ question.title }}
-    </a>
-  </div>
-{% endfor %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'balances/css/balance.css' %}">
+{% endblock head %}  
+
+{% block title %}밸런스게임 - {% endblock title %}
+
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-controller"></i></span> 밸런스 게임</h1>
+  <p>자신의 성향을 간단한 게임을 통해 알아가 보세요!</p>
+</article>
+{% endblock aside %}
+
+{% block content %}
+<article>
+  <a class="balance-btn" href="{% url 'balances:create' %}">민지님, 밸런스 게임을 생성하세요!</a>
+  <a href=""></a>
+  <section class="balances--wrap">
+    <h4 style="text-align:center;"><i class="bi bi-joystick" ></i> 게임 목록</h4>
+    <div class="balance--list">
+      {% for question in questions %}
+        <div class="balance--wrap">
+          <a class="balance--link" href="{% url 'balances:detail' question.pk %}">
+            <span class="balance--pk">{{ question.pk }}</span>
+            <span class="balance--title">{{ question.title }}</span>
+          </a>
+          <a class="balance--sm-btn" href="{% url 'balances:update' question.pk %}">수정</a>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</article>
 
 {% endblock content %}
