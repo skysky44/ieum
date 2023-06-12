@@ -34,7 +34,7 @@
             <button type="button" class="me-3" data-bs-toggle="modal" data-bs-target="#PostReportModal">
               <i class="bi bi-bell" style="color:crimson; font-size:1.5rem;"></i>
             </button>
-            <form action="{% url 'posts:likes' post.pk %}" method ='POST'>
+            <form class="like-form" data-post-id="{{ post.pk }}">
               {% csrf_token %}
               {% if request.user in post.like_users.all %}
                 <button class="border-0 bg-transparent" type="submit" value="좋아요">
@@ -46,7 +46,7 @@
                   </button>
               {% endif %}
             </form>
-            <span class="ms-1" style="font-size:1.5rem;">{{post.like_users.count}}</span>
+            <span id="like-count" class="ms-1" style="font-size:1.5rem;">{{post.like_users.count}}</span>
           </div>
         </div>
         <div id="header" class="mb-1">
@@ -237,17 +237,18 @@
                           {% endif %}
                         </form>
                         <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
-                        <form id="comment-like-form-{{ comment.pk }}" action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                        <form id="comment-like-form-{{ comment.pk }}" data-post-id="{{post.pk}}" data-comment-id="{{comment.pk}}" class="l_form">
                           {% csrf_token %}
-                          <button class="border-0 bg-transparent comment-like-button" type="submit" data-url="{% url 'posts:comment_likes' post.pk comment.pk %}">
+                          <button id="comment-heart" class="border-0 bg-transparent comment-like-button" type="submit" >
                             {% if request.user in comment.like_users.all %}
                               ❤️
                             {% else %}
                               🤍
                             {% endif %}
                           </button>
+                          <span id="comment-like-count" class="ms-1">{{ comment.like_users.count }}</span>
                         </form>
-                        <span id="like_count_{{ comment.pk }}" class="ms-1">{{ comment.like_users.count }}</span>
+                        
                       </div>
                       <!-- 댓글 신고 모달 버튼 -->
                       <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
@@ -360,17 +361,17 @@
                           {% endif %}
                         </form>
                         <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
-                        <form id="comment-like-form-{{ comment.pk }}" action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
+                        <form id="comment-like-o-form-{{ comment.pk }}" data-post-id="{{post.pk}}" data-comment-id="{{comment.pk}}" class="o_form">
                           {% csrf_token %}
-                          <button class="border-0 bg-transparent comment-like-button-old" type="button" data-url="{% url 'posts:comment_likes' post.pk comment.pk %}" data-comment-id="{{ comment.pk }}">
+                          <button id="comment-heart-2" class="border-0 bg-transparent comment-like-button" type="submit" >
                             {% if request.user in comment.like_users.all %}
                               ❤️
                             {% else %}
                               🤍
                             {% endif %}
                           </button>
-                        </form>
-                        <span id="like_count_old_{{ comment.pk }}" class="ms-1">{{ comment.like_users.count }}</span>                        
+                          <span id="comment-like-count-2" class="ms-1">{{ comment.like_users.count }}</span>
+                        </form>            
                       </div>
                       {% comment %} 댓글 신고 모달 버튼 {% endcomment %}
                       <button type="button" class="comments__btn--list ms-2" data-bs-toggle="modal" data-bs-target="#CommentReportModal-{{comment.pk}}" style="display:flex; align-self:center;">
@@ -387,7 +388,7 @@
           </div>
         </li>
         <li>
-          <form action="{% url 'posts:comment_create' post.pk %}" method='POST'>
+          <form id="comment-form" action="{% url 'posts:comment_create' post.pk %}" method='POST'>
             {% csrf_token %}
             <div class="comment__create--list">
               <div class="create--list__item1 comment__create--textarea--wrap">{{ comment_form.content }}</div>
@@ -409,7 +410,11 @@
 {% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'posts/js/detail_music.js' %}"></script>
-{% comment %} <script src="{% static 'posts/js/detail_more.js' %}"></script> {% endcomment %}
+<script src="{% static 'posts/js/detail_ajax.js' %}"></script>
+<script src="{% static 'posts/js/detail_more.js' %}"></script>
+<script src="{% static 'posts/js/detail_comment_create_ajax.js' %}"></script>
+<script src="{% static 'posts/js/detail_likes_ajax.js' %}"></script>
+<script src="{% static 'posts/js/detail_comment_likes_ajax.js' %}"></script>
 <script>
 
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
@@ -449,143 +454,6 @@ geocoder.addressSearch( "{{ post.address }}", function(result, status) {
     } 
 });    
 
-// 셀렉트 변경 시 처리
-document.getElementById("comment-select").addEventListener("change", function () {
-  var selectedOption = this.value;
 
-  // 선택한 옵션에 따라 댓글 섹션 변경
-  if (selectedOption === "comments") {
-    document.getElementById("comments-section").classList.remove("comments-hidden");
-    document.getElementById("latest-comments-section").classList.add("comments-hidden");
-  } else if (selectedOption === "latest-comments") {
-    document.getElementById("comments-section").classList.add("comments-hidden");
-    document.getElementById("latest-comments-section").classList.remove("comments-hidden");
-  }
-});
-
-
-document.addEventListener("DOMContentLoaded", function() {
-  var latestCommentSection = document.getElementById("latest-comments-section");
-  var latestLoadMoreBtn = latestCommentSection.querySelector(".load-more-comments");
-  var latestComments = latestCommentSection.getElementsByClassName("latest-comment");
-  var latestCommentsToShow = 5;
-  var latestCommentsLoaded = latestCommentsToShow;
-  var oldCommentSection = document.getElementById("comments-section");
-  var oldLoadMoreBtn = oldCommentSection.querySelector(".load-more-comments");
-  var oldComments = oldCommentSection.getElementsByClassName("old-comment");
-  var oldCommentsToShow = 5;
-  var oldCommentsLoaded = oldCommentsToShow;
-
-  // 초기에 댓글을 숨김
-  hideComments(latestComments, latestCommentsToShow);
-  hideComments(oldComments, oldCommentsToShow);
-
-  // 기본적으로 5개의 댓글을 보여줌
-  showMoreComments(latestComments, 0, latestCommentsToShow);
-  showMoreComments(oldComments, 0, oldCommentsToShow);
-
-  // 최신 댓글 더보기 버튼 클릭 시 추가 댓글 로드
-  latestLoadMoreBtn.addEventListener("click", function() {
-    showMoreComments(latestComments, latestCommentsLoaded, latestCommentsToShow);
-    latestCommentsLoaded += latestCommentsToShow;
-
-    if (latestCommentsLoaded >= latestComments.length) {
-      latestLoadMoreBtn.style.display = "none";
-    }
-  });
-
-  // 오래된 댓글 더보기 버튼 클릭 시 추가 댓글 로드
-  oldLoadMoreBtn.addEventListener("click", function() {
-    showMoreComments(oldComments, oldCommentsLoaded, oldCommentsToShow);
-    oldCommentsLoaded += oldCommentsToShow;
-
-    if (oldCommentsLoaded >= oldComments.length) {
-      oldLoadMoreBtn.style.display = "none";
-    }
-  });
-
-  // 댓글 숨김 및 추가 노출 함수
-  function hideComments(comments, commentsToShow) {
-    for (var i = commentsToShow; i < comments.length; i++) {
-      comments[i].style.display = "none";
-    }
-  }
-
-  function showMoreComments(comments, commentsLoaded, commentsToShow) {
-    for (var i = commentsLoaded; i < commentsLoaded + commentsToShow; i++) {
-      if (i < comments.length) {
-        comments[i].style.display = "block";
-      }
-    }
-  }
-});
-
-$(document).ready(function() {
-  var csrftoken = "{{ csrf_token }}"; // CSRF 토큰을 직접 설정
-
-  // 최신 댓글에 대한 버튼 클릭 이벤트 처리
-  $('.comment-like-button').on('click', function(event) {
-    event.preventDefault();
-  
-    var button = $(this);
-    var form = button.closest('form');
-    var url = form.attr('action');
-    var commentPk = form.attr('id').split('-')[3]; // comment pk 추출
-    var likeCountSpan = $('#like_count_' + commentPk); // 좋아요 개수 표시하는 span 요소
-  
-    $.ajax({
-      url: url,
-      method: 'POST',
-      data: {
-        csrfmiddlewaretoken: csrftoken
-      },
-      success: function(response) {
-        if (response.liked) {
-          button.text('❤️');
-        } else {
-          button.text('🤍');
-        }
-      
-        likeCountSpan.text(response.like_count); // 좋아요 개수 업데이트
-        console.log(response.like_count)
-      },
-      error: function(xhr, status, error) {
-        console.log(error);
-      }
-    });
-  });
-  
-  // 오래된 댓글에 대한 버튼 클릭 이벤트 처리
-  $('.comment-like-button-old').on('click', function(event) {
-    event.preventDefault();
-  
-    var button = $(this);
-    var form = button.closest('form');
-    var url = form.attr('action');
-    var commentPk = form.attr('id').split('-')[3]; // comment pk 추출
-    var likeCountSpan = $('#like_count_old_' + commentPk); // 좋아요 개수 표시하는 span 요소
-  
-    $.ajax({
-      url: url,
-      method: 'POST',
-      data: {
-        csrfmiddlewaretoken: csrftoken
-      },
-      success: function(response) {
-        if (response.liked) {
-          button.text('❤️');
-        } else {
-          button.text('🤍');
-        }
-      
-        likeCountSpan.text(response.like_count); // 좋아요 개수 업데이트
-        console.log(response.like_count)
-      },
-      error: function(xhr, status, error) {
-        console.log(error);
-      }
-    });
-  });
-});
 </script>
 {% endblock content %}

@@ -74,7 +74,7 @@ def index(request):
         'section': section,
         'total_pages': total_pages,
         'tags': tags,
-        'post.image_urls' : post.image_urls,
+        'post_image_urls': [post.image_urls for post in page_obj],
     }
 
     return render(request, 'posts/index.html', context)
@@ -473,15 +473,22 @@ def likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
         post.like_users.remove(request.user)
+        is_liked = False
     else:
         post.like_users.add(request.user)
+        is_liked = True
 
-    # 이전 페이지로 리디렉션
-    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
-    if referer:
-        return redirect(referer)
+    # # 이전 페이지로 리디렉션
+    # referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    # if referer:
+    #     return redirect(referer)
+
+    context = {
+        'is_liked': is_liked,
+        'like_count': post.like_users.count(),
+    }
     
-    return redirect('posts:index')
+    return JsonResponse(context)
 
 
 def anonymous_likes(request, post_pk):
@@ -553,7 +560,9 @@ def comment_create(request, post_pk):
             comment.category = post.category  # 혹은 다른 문자열 값
             comment.user = request.user
             comment.save()
-            return redirect('posts:detail', post.pk)
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
 
         
 def anonymous_comment_create(request, post_pk):
