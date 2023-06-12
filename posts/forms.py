@@ -4,7 +4,7 @@ from taggit.forms import TagField, TagWidget
 from ckeditor.widgets import CKEditorWidget
 
 class PostForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorWidget(config_name='default'))
+    # content = forms.CharField(widget=CKEditorWidget(config_name='default'))
     category = forms.ChoiceField(
         label='카테고리',
         widget=forms.Select(
@@ -42,7 +42,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '제목을 입력해주세요',
-                    'style': 'width:400px;'
                 }
             ),
 
@@ -57,7 +56,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '주소',
-                    'style': 'width:350px;'
                 }
             ),
         }

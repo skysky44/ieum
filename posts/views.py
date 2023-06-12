@@ -19,11 +19,11 @@ def home(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
 
-    # # image_urls를 리스트로 변환
-    # for post in category_class:
-    #     post.image_urls = post.image_urls.split(',')
-    # for post in category_anonymous:
-    #     post.image_urls = post.image_urls.split(',')
+    # image_urls를 리스트로 변환
+    for post in category_class:
+        post.image_urls = post.image_urls.split(',')
+    for post in category_anonymous:
+        post.image_urls = post.image_urls.split(',')
 
     context = {
         'paints': paints,
@@ -66,15 +66,15 @@ def index(request):
 
     total_pages = paginator.num_pages
 
-    # for post in page_obj:
-    #     post.image_urls = extract_image_urls(post.content)
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
         'tags': tags,
-        # 'post_image_urls' : post.image_urls,
+        'post.image_urls': [post.image_urls for post in page_obj],
     }
 
     return render(request, 'posts/index.html', context)
@@ -102,8 +102,8 @@ def anonymous(request):
 
     total_pages = paginator.num_pages
 
-    # for post in page_obj:
-    #     post.image_urls = extract_image_urls(post.content)
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
