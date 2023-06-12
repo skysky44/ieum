@@ -10,11 +10,12 @@
   <input type="text" id="room-name-input" placeholder="Enter room name">
   <button onclick="createChatRoom()">Create Room</button>
   
-
-  {% for room in rooms  %}
-    <a href="{% url 'chat:room' room %}">{{ room }}</a>
-    <a href="{% url 'chat:room_delete' room %}">X</a>
-  {% endfor %}
+  <div>
+    {% for room in rooms  %}
+      <a href="{% url 'chat:room' room %}">{{ room }}</a>
+      <a href="{% url 'chat:room_delete' room %}">X</a>
+    {% endfor %}
+  </div>
 {% endblock content %}
 
 {% block script %}

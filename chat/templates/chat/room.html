@@ -13,21 +13,28 @@
         </div>
     {% endfor %}
   </div>
-  <form id="chat-form" data-room-name="{{ room_name }}">
-      <input type="text" id="chat-message" autocomplete="off">
-      <button type="submit">Send</button>
-      
-  </form>
+  <div>
+    <form id="chat-form" data-room-name="{{ room_name }}">
+        <input type="text" id="chat-message" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <a href="{% url 'chat:index' %}">뒤로가기</a>
 {% endblock content %}
 
 {% block script %}
   <script>
     // WebSocket 연결을 설정합니다.
     const roomName = '{{ room_name }}';  // 채팅방 이름을 여기에 입력하세요.
-    console.log(roomName)
-    
+    let loc = window.location;
+    let wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+      wsStart = 'wss://';
+    }    
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host +
+    
+    wsStart + window.location.host +
         '/ws/chat/' + roomName + '/'
     );
     console.log(chatSocket)
