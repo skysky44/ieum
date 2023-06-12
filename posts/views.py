@@ -102,7 +102,8 @@ def index(request):
         'total_pages': total_pages,
         'tags': tags,
         'post_image_urls': [post.image_urls for post in page_obj],
-
+    }
+    
     return render(request, 'posts/index.html', context)
 
 
