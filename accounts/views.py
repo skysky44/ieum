@@ -80,6 +80,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
+from django.contrib import auth
 
 
 def signup(request):
@@ -103,6 +104,7 @@ def signup(request):
             })
             mail_title = "계정 활성화 확인 이메일"
             mail_to = request.POST["email"]
+            print(mail_to)
             email = EmailMessage(mail_title, message, to=[mail_to])
             email.send()
             auth_login(request, user)

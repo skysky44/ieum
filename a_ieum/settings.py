@@ -61,6 +61,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit_templatetags2',
+
+    'django.contrib.sites', # 여러사이트들 동시에 운영할수있음. 지금프로젝트는 1번사이트라고 설정(밑에서)
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 
@@ -167,9 +172,30 @@ CKEDITOR_IMAGE_BACKEND = "pillow"
 
 
 #  이메일 인증
+
+# AUTH_USER_MODEL = 'accounts.User'
+# SITE_ID=1
+
+# AUTHENTICATION_BACKENDS = {
+#     # Needed to login by username in Django admin, regardless of `allauth`
+#     'django.contrib.auth.backends.ModelBackend',
+
+#     # `allauth` specific authentication methods, such as login by e-mail
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# }
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email' # 유저네임은 말고 email로만 인증 할것임
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory' #none, optional(default, 보내긴하는데 인증하지않아도), mandatory(이메일인증받지않으면 로그인할수없다)
+# ACCOUNT_CONFIRM_EMIAL_ON_GET = True
+
+
 EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
 EMAIL_PORT = '587' 			 # 서버 포트
 EMAIL_HOST_USER = 'ajh5251@gmail.com' 	 # 우리가 사용할 Gmail
 EMAIL_HOST_PASSWORD = 'zqdhdgosxdwopkgg'		 # 우리가 사용할 Gmail p
 EMAIL_USE_TLS = True			 # TLS 보안 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정
+

@@ -37,4 +37,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('upload/', login_required(views_ckeditor.upload), name='ckeditor_upload'),
     path('browse/', never_cache(login_required(views_ckeditor.browse)), name='ckeditor_browse'),
+    #이메일 인증
+    # path('',include('allauth.urls')),
+
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

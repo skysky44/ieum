@@ -20,5 +20,8 @@ urlpatterns = [
     path('check-email/', views.check_email, name='check_email'),
     
     # 이메일 본인 인증
+    path('activate/<str:uidb64>/<str:token>/', views.activate, name="activate"),
     path('verify-email/<str:email>/', views.verify_email, name='verify-email'),
+
+
 ]
