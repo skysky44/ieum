@@ -24,8 +24,13 @@ from datetime import date
 def login(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
+
+    
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
+        if request.user.is_active == 0:
+            return redirect('posts:index')
+        
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('posts:index')
@@ -36,6 +41,8 @@ def login(request):
         'form': form,
     }
     return render(request, 'accounts/login.html', context)
+
+
 
 @login_required
 def logout(request):
@@ -66,6 +73,37 @@ def delete(request):
     return redirect('posts:index')
 
 
+# def signup(request):
+#     # my_sentence = []
+#     if request.user.is_authenticated:
+#         return redirect('posts:index')
+# 
+#     if request.method == 'POST':
+#         form = CustomUserCreationForm(request.POST, files=request.FILES)
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             user.save()
+#             auth_login(request, user)
+#             # my_sentence = request.POST.getlist('tag')
+#             return redirect('posts:index')
+#     else:
+#         form = CustomUserCreationForm()
+#         # my_sentence = request.POST.getlist('tag')
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'accounts/signup.html', context)
+
+# 이메일 인증 관련
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from .tokens import account_activation_token
+from django.contrib import auth
+
+
 def signup(request):
     # my_sentence = []
     if request.user.is_authenticated:
@@ -73,9 +111,23 @@ def signup(request):
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, files=request.FILES)
+        # print(form)
         if form.is_valid():
             user = form.save(commit=False)
+            user.is_active = False 
             user.save()
+            current_site = get_current_site(request) 
+            message = render_to_string('accounts/activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            mail_title = "계정 활성화 확인 이메일"
+            mail_to = request.POST["email"]
+            print(mail_to)
+            email = EmailMessage(mail_title, message, to=[mail_to])
+            email.send()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
             return redirect('posts:index')
@@ -86,6 +138,27 @@ def signup(request):
         'form': form,
     }
     return render(request, 'accounts/signup.html', context)
+
+# 계정 활성화 함수(토큰을 통해 인증)
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExsit):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        auth.login(request, user)
+        return redirect("home")
+    else:
+        context = {
+            'error' : '계정 활성화 오류'
+        }
+
+        return render(request, 'accounts/email_error.html', context)
+    return 
+
 
 @login_required
 def change_password(request):
