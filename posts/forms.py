@@ -1,15 +1,16 @@
 from django import forms
 from .models import Post, Comment, PostReport, CommentReport
 from taggit.forms import TagField, TagWidget
+from ckeditor.widgets import CKEditorWidget
 
 class PostForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget(config_name='default'))
     category = forms.ChoiceField(
         label='카테고리',
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
                 'placeholder' : '분류',
-                'style': 'width:400px;'
             }
         )
     )
@@ -18,7 +19,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control', 
                     'placeholder': '콤마로 구분하여 입력해주세요',
-                    'style': 'width:400px;'
                 }
             ),        
         }

@@ -19,11 +19,11 @@ def home(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
 
-    # image_urls를 리스트로 변환
-    for post in category_class:
-        post.image_urls = post.image_urls.split(',')
-    for post in category_anonymous:
-        post.image_urls = post.image_urls.split(',')
+    # # image_urls를 리스트로 변환
+    # for post in category_class:
+    #     post.image_urls = post.image_urls.split(',')
+    # for post in category_anonymous:
+    #     post.image_urls = post.image_urls.split(',')
 
     context = {
         'paints': paints,
@@ -59,22 +59,22 @@ def index(request):
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 3
+    per_page = 6
     
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 
     total_pages = paginator.num_pages
 
-    for post in page_obj:
-        post.image_urls = extract_image_urls(post.content)
+    # for post in page_obj:
+    #     post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
         'tags': tags,
-        'post.image_urls' : post.image_urls,
+        # 'post_image_urls' : post.image_urls,
     }
 
     return render(request, 'posts/index.html', context)
@@ -94,17 +94,23 @@ def anonymous(request):
     elif section == 'oldest':
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
-
+        
+    tags = Post.tags.all()
     per_page = 3
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 
     total_pages = paginator.num_pages
 
+    # for post in page_obj:
+    #     post.image_urls = extract_image_urls(post.content)
+
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
+        'tags': tags,
+        # 'post.image_urls' : post.image_urls,
     }
     return render(request, 'posts/anonymous.html', context)
 

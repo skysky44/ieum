@@ -8,78 +8,55 @@
 
 {% block aside %}
 <article class="main--title--wrap">
-  <h1 class="main--title">공감 이음</h1>
+  <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span> 공감 이음</h1>
   <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
 </article>
 {% endblock aside %}
 
 {% block content %}
 <div class="title--wrap">
-  <h2>{{ user }} 님 로그인 했구먼유 </h2>
+  <form>
+    <select id="section-dropdown" class="form-select" style="width:250px;">
+      <option value="recent" {% if section == 'recent' %}selected{% endif %}>최신글</option>
+      <option value="popular" {% if section == 'popular' %}selected{% endif %}>좋아요가 가장 많은 순</option>
+      <option value="oldest" {% if section == 'oldest' %}selected{% endif %}>가장 오래된 글</option>
+    </select>
+  </form>
   <a href="{% url 'posts:create' %}"><i class="bi bi-pencil-square" style="font-size:1.8rem;"></i></a>
 </div>
-<form>
-  <select id="section-dropdown" class="form-select mt-3" style="width:250px;">
-    <option value="recent" {% if section == 'recent' %}selected{% endif %}>최신글</option>
-    <option value="popular" {% if section == 'popular' %}selected{% endif %}>좋아요가 가장 많은 순</option>
-    <option value="oldest" {% if section == 'oldest' %}selected{% endif %}>가장 오래된 글</option>
-  </select>
-</form>
 <article>
   
   <div id="section-posts">
     <div>
-      <ul>
+      <ul class="posts--list">
         {% for post in category_class  %}
-          <li class="posts--wrap">
-            <a href="{% url 'posts:detail' post.pk %}">
-              <div class="d-flex">
-                <!-- 게시물 내용 -->
-                <div class="posts--img-wrap">
+        
+          <li class="post--container">
+              <div class="post--wrap">
+                <!-- 게시물 이미지 -->
+                <div class="post--img--wrap">
                   {% for image_url in post.image_urls %}
-                    <img style='width:150px; height:150px;' src="{{ image_url }}" alt="Image">
+                    <img class="post--img" src="{{ image_url }}" alt="Image">
+                  {% empty %}
+                    <img class="post--img" src="no-image.png" alt="No Image">
                   {% endfor %}
                 </div>
-                <div class="posts--content-wrap">
-                  <!-- 카테고리 태그 -->
-                  <ul class="post--tag--list">
+                <div class="post--content--wrap">
+                  <div><ul class="post--tag--list">
                     {% for tag in post.tags.all %}
                       <li class="post--tag">
                         ﹟{{ tag }}
                       </li>
                     {% endfor %}
-                  </ul>
-                  <!-- 게시물 제목 -->
-                  <p style="font-size:24px;">{{ post.title }}</p>
-                  <!-- 게시물 작성한 시간? -->
-                  <div class="post--user--wrap">
-                    <p>{{ post.user }}</p>
+                  </ul></div>
+                  <div><h3><a href="{% url 'posts:detail' post.pk %}">{{ post.title }}</a></h3></div>
+                  <div class="post--etc--wrap">
+                    <a class="user--wrap" href="{% url 'accounts:profile' username=post.user %}">
+                      <img class="user--image" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
+                      <p class="">{{ post.user }}</p>
+                    </a>
                     <p class="post--time"><i>{{ post.created_time }}</i></p>
                     <div class="post--like">
-                      {% comment %} <!-- 좋아요 버튼 -->
-                      <span class="me-2"><button id="like-btn"><i class="bi bi-heart-fill"></i></button></span>
-                      <!-- 좋아요 수 -->
-                      <p id="like-cnt">0</p> {% endcomment %}
-    
-                      <!-- 좋아요 버튼 -->
-                      {% comment %} <form class="like-forms" data-post-id="{{ post.pk }}">
-                        {% csrf_token %}
-                        {% if user in post.like_users.all %}
-                          <span class="me-2">
-                            <button class="like-btn" type="submit">
-                              <i class="bi bi-heart"></i>
-                            </button>
-                          </span>
-                        {% else %}
-                          <span class="me-2">
-                            <button class="like-btn" type="submit">
-                              <i class="bi bi-heart-fill"></i>
-                            </button>
-                          </span>
-                        {% endif %}
-                      </form>
-                      <span class="like-count">{{post.like_users.count}}</span> {% endcomment %}
-    
                       <form action="{% url 'posts:likes' post.pk %}" method="POST">
                         {% csrf_token %}
                         {% if user in post.like_users.all  %}
@@ -97,7 +74,6 @@
                   </div>
                 </div>
               </div>
-            </a>
           </li>
         {% endfor %}
       </ul>
