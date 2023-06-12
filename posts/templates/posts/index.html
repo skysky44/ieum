@@ -205,21 +205,4 @@
 </script>
 {% endblock content %}
 {% block script %}
-<!-- <script>
-  const children = document.querySelectorAll('.post--content--wrap > p > img');
-  let leftValue = 0;
-
-  
-  children.forEach((image, index) => {
-  let rotateValue;
-  if (index % 2 === 0) {
-    // 짝수 번째 이미지의 경우
-    rotateValue = -(Math.abs((index + 1) * 0.01));
-  } else {
-    // 홀수 번째 이미지의 경우
-    rotateValue = (index + 1) * 0.01;
-  }
-  image.style.transform = `rotate(${rotateValue}turn)`;
-  });
-</script> -->
 {% endblock script %}
