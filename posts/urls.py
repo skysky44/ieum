@@ -34,5 +34,6 @@ urlpatterns = [
     # path('save_track/', views.save_track, name='save_track'),
     # path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
     
+    path('main_search/', views.main_search, name='main_search'),
     # 저는 이만 밥먹으러 가겠습니다 -미영-
 ]

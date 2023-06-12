@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}검색 {% endblock title %}
+
+
+{% block content %}
+
+<h2>{{ query }}에 대한 검색 결과</h2>
+
+<div>
+  {% if meeting_posts %}
+      <h3>공감 이음:</h3>
+      {% for post in meeting_posts %}
+          <h2>제목: {{ post.title }}</h2>
+          <p> 내용: {{ post.content|safe }}</p>
+      {% empty %}
+          <p>검색 결과 없습니다.</p>
+      {% endfor %}
+  {% endif %}
+</div>
+<div>
+  {% if anonymous_posts %}
+      <h3>고민 이음:</h3>
+      {% for post in anonymous_posts %}
+          <h2>제목: {{ post.title }}</h2>
+          <p>내용: {{ post.content|safe }}</p>
+      {% empty %}
+          <p>검색 결과 없습니다.</p>
+      {% endfor %}
+  {% endif %}
+  
+  {% if not meeting_posts and not anonymous_posts %}
+      <p>검색 결과 없습니다.</p>
+  {% endif %}
+</div>
+
+{% endblock content %}
+
+
+
