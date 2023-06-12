@@ -83,8 +83,8 @@
           <div class="header--item3">
             <!-- 네 정환님 검색 하신다구요? 네 -->
             <!-- 검색 넣으실때 아래는 다지우고 넣으셔도 됩니다 정환님 데헷 -->
-            <form method="GET" action="#">
-              <input class="form-control" type="text" name="query" placeholder="검색어를 입력하세요">
+            <form method="GET" action="{% url 'posts:main_search' %}">
+              <input class="form-control" type="text" name="query" value= "{{ query }}"" placeholder="검색어를 입력하세요">
             </form>
             <!-- 여기까지에요 흐흐흐 -->
           </div>
