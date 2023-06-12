@@ -11,7 +11,6 @@ class PostForm(forms.ModelForm):
             attrs={
                 'class': 'form-control',
                 'placeholder' : '분류',
-                'style': 'width:400px;'
             }
         )
     )
@@ -20,7 +19,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control', 
                     'placeholder': '콤마로 구분하여 입력해주세요',
-                    'style': 'width:400px;'
                 }
             ),        
         }
