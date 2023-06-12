@@ -1,18 +1,95 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}회원가입{% endblock title %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
+{% endblock head %}  
+
+{% block title %}회원가입 - {% endblock title %}
 
 {% block style %}
 {% endblock style %}  
 
-{% block content %}
-  <form action="{% url 'accounts:signup' %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
+{% block aside %}
+<article class="main--title--wrap font--gangwon">
+  <h1 class="main--title"><span class="main--title--icon"><i class="bi bi-door-open"></i></span>회원가입</h1>
+  <h2>오늘, 이음에 대한 설명을 적어주세요.</h2>
+</article>
+{% endblock aside %}
 
-    <input type="submit" value="회원가입">
+{% block content %}
+<article class="signup--container">
+  <form class="signup--form" action="{% url 'accounts:signup' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="signup--form--list">
+      <div class="signup--form1">
+        <div class="signup--menu">
+          <p class="signup--lable">아이디</p>
+          <div class="create--content">
+            {{ form.username }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">이름</p>
+          <div class="create--content">
+            {{ form.first_name }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">생일</p>
+          <div class="create--content">
+            {{ form.birthday }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">이메일</p>
+          <div class="create--content">
+            {{ form.email }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">프로필이미지</p>
+          <div class="create--content">
+            {{ form.image }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">비밀번호</p>
+          <div class="create--content">
+            {{ form.password1 }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">비밀번호 확인</p>
+          <div class="create--content">
+            {{ form.password2 }}
+          </div>
+        </div>
+        <div class="signup--menu">
+          <p class="signup--lable">지역</p>
+          <div class="sign--region--wrap">
+            <div>{{ form.region }}</div>
+            <div>
+              지역 공개
+              {{ form.privacy }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="signup--form2">
+        <div class="signup--introductions--list">
+          <p class="signup--lable introductions--lable">나를 표현하는 문장을 선택해주세요.</p>
+          <div class="signup--introductions--content">
+            {{ form.introductions }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="signup--wrap">
+      <input class="signup--input--button" type="submit" value="회원가입">
+    </div>
   </form>
+</article>
 {% endblock content %}
 
 {% block script %}

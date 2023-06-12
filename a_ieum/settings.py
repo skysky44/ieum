@@ -164,8 +164,8 @@ AUTH_USER_MODEL = 'accounts.User'
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_CONFIGS = {
-    'default': {
-        'width': '100%',
-    },
-}
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'width': '100%',
+#     },
+# }

@@ -238,7 +238,6 @@ class CustomAuthenticationForm(AuthenticationForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '아이디',
-                'style':'width: 350px;',
             }
         ),
     )
@@ -248,7 +247,6 @@ class CustomAuthenticationForm(AuthenticationForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '비밀번호',
-                'style':'width: 350px;',
             }
         ),
     )
