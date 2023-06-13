@@ -28,8 +28,8 @@ def login(request):
     
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
-        if request.user.is_active == 0:
-            return redirect('posts:index')
+        # if request.user.is_active == 0:
+        #     return redirect('posts:index')
         
         if form.is_valid():
             auth_login(request, form.get_user())

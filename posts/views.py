@@ -271,6 +271,11 @@ def detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+
+    # 조회수
+    post.views += 1
+    post.save()
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,
