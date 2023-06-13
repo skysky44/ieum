@@ -104,6 +104,10 @@
     const checkEmailButton = document.getElementById('check-email');
     const emailResult = document.getElementById('email-result');
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    const signupButton = document.querySelector('.signup--input--button');
+
+    // 초기 회원가입 버튼 비활성화
+    signupButton.disabled = true;
 
     checkUsernameButton.addEventListener('click', function () {
       const usernameInput = document.getElementById('id_username');
@@ -119,8 +123,10 @@
             const response = JSON.parse(xhr.responseText);
             if (response.available) {
               usernameResult.textContent = '사용 가능한 아이디입니다.';
+              checkSignupButtonState();
             } else {
               usernameResult.textContent = '이미 사용 중인 아이디입니다.';
+              disableSignupButton();
             }
           }
         };
@@ -142,14 +148,36 @@
             const response = JSON.parse(xhr.responseText);
             if (response.available) {
               emailResult.textContent = '사용 가능한 이메일입니다.';
+              checkSignupButtonState();
             } else {
               emailResult.textContent = '이미 사용 중인 이메일입니다.';
+              disableSignupButton();
             }
           }
         };
         xhr.send('email=' + encodeURIComponent(email));
       }
     });
+
+    // 회원가입 버튼 활성화/비활성화 함수
+    function checkSignupButtonState() {
+      const usernameResultText = usernameResult.textContent;
+      const emailResultText = emailResult.textContent;
+
+      if (
+        usernameResultText === '사용 가능한 아이디입니다.' &&
+        emailResultText === '사용 가능한 이메일입니다.'
+      ) {
+        signupButton.disabled = false; // 버튼 활성화
+      } else {
+        disableSignupButton();
+      }
+    }
+
+    // 회원가입 버튼 비활성화 함수
+    function disableSignupButton() {
+      signupButton.disabled = true; // 버튼 비활성화
+    }
   });
 </script>
 {% endblock script %}
