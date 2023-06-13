@@ -28,13 +28,13 @@ load_dotenv()
 CLIENT_ID = os.getenv('client_id')
 CLIENT_SECRET = os.getenv('client_secret')
 KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
-
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost',]
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost',]
 
 
 # Application definition
@@ -171,9 +171,9 @@ CKEDITOR_IMAGE_BACKEND = "pillow"
 # }
 
 # 이메일 인증
-EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
-EMAIL_PORT = '587' 			 # 서버 포트
-EMAIL_HOST_USER = 'ajh5251@gmail.com' 	 # 우리가 사용할 Gmail
-EMAIL_HOST_PASSWORD = 'zqdhdgosxdwopkgg'		 # 우리가 사용할 Gmail p
-EMAIL_USE_TLS = True			 # TLS 보안 설정
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정
+EMAIL_HOST = 'smtp.gmail.com' # 메일 호스트 서버
+EMAIL_PORT = '587' # 서버 포트
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # 우리가 사용할 Gmail
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # 우리가 사용할 Gmail p
+EMAIL_USE_TLS = True # TLS 보안 설정
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # 응답 메일 관련 설정
