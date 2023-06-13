@@ -19,11 +19,11 @@ def home(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
 
-    # # image_urls를 리스트로 변환
-    # for post in category_class:
-    #     post.image_urls = post.image_urls.split(',')
-    # for post in category_anonymous:
-    #     post.image_urls = post.image_urls.split(',')
+    # image_urls를 리스트로 변환
+    for post in category_class:
+        post.image_urls = post.image_urls.split(',')
+    for post in category_anonymous:
+        post.image_urls = post.image_urls.split(',')
 
     context = {
         'paints': paints,
@@ -103,7 +103,7 @@ def index(request):
         'tags': tags,
         'post_image_urls': [post.image_urls for post in page_obj],
     }
-
+    
     return render(request, 'posts/index.html', context)
 
 
@@ -129,8 +129,8 @@ def anonymous(request):
 
     total_pages = paginator.num_pages
 
-    # for post in page_obj:
-    #     post.image_urls = extract_image_urls(post.content)
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
@@ -271,6 +271,11 @@ def detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+
+    # 조회수
+    post.views += 1
+    post.save()
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,
@@ -313,6 +318,10 @@ def anonymous_detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+    # 조회수
+    post.views += 1
+    post.save()
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,

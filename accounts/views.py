@@ -136,7 +136,8 @@ def signup(request):
         # print(form)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False 
+            user.is_active = True 
+            # user.is_active = False 
             user.save()
             current_site = get_current_site(request) 
             message = render_to_string('accounts/activation_email.html', {
@@ -159,6 +160,32 @@ def signup(request):
         'form': form,
     }
     return render(request, 'accounts/signup.html', context)
+
+
+# 중복 아이디 체크
+
+def check_username(request):
+    username = request.POST.get('username', '')
+    print(username)
+    User = get_user_model()
+    try:
+        User.objects.get(username=username)
+        available = False
+    except User.DoesNotExist:
+        available = True
+
+    return JsonResponse({'available': available})
+
+# 중복 이메일 체크
+
+def check_email(request):
+    email = request.POST.get('email', '')
+    User = get_user_model()
+    users_with_email = User.objects.filter(email=email)
+    available = not users_with_email.exists()
+
+    return JsonResponse({'available': available})
+
 
 # 계정 활성화 함수(토큰을 통해 인증)
 def activate(request, uidb64, token):
