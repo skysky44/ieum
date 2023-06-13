@@ -27,17 +27,18 @@
           {{ form.password }}
           <label for="{{ form.password.id_for_label }}">Password</label>
         </div>
+        <div class ='text-center d-flex'>
+          {% include "accounts/email_error.html" %}
+        </div>
         <input type="submit" value="로그인" class="login--btn">
       </form>
+
   
       <div>
         <a class="signup-btn" href="{% url 'accounts:signup' %}">회원가입</a>
       </div>
     </div>
   </article>
-  <div>
-    {% include "accounts/email_error.html" %}
-  </div>
   
 {% endblock content %}
 
