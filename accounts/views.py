@@ -19,6 +19,7 @@ import tempfile
 from django.core.exceptions import ObjectDoesNotExist
 from balances.models import Result
 from datetime import date
+from .models import User
 
 # Create your views here.
 def login(request):
@@ -28,13 +29,32 @@ def login(request):
     
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
-        # if request.user.is_active == 0:
-        #     return redirect('posts:index')
-        
+        username = request.POST.get('username')
+        user = get_user_model()
+        users = user.objects.all()
+        a = []
+        for i in users:
+            a.append(i.username)
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('posts:index')
-    
+        else:
+            for i in a:
+                if username in a:
+                    context = {
+                        'error' : '⛔ 이메일 인증하세요.',
+                        'form': form,
+                        }
+                    return render(request, 'accounts/login.html', context)
+                elif username not in a:
+                    context = {
+                        'error' : '⛔ 회원정보가 존재하지 않습니다.',
+                        'form' : form,
+                        }
+                    return render(request, 'accounts/login.html', context)
+            
+        
+        
     else:
         form = CustomAuthenticationForm()
     context = {
@@ -103,6 +123,8 @@ from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
 from django.contrib import auth
 
+def complete_signup(request):
+    return render(request, 'accounts/complete_signup.html')
 
 def signup(request):
     # my_sentence = []
@@ -126,12 +148,11 @@ def signup(request):
             })
             mail_title = "계정 활성화 확인 이메일"
             mail_to = request.POST["email"]
-            print(mail_to)
             email = EmailMessage(mail_title, message, to=[mail_to])
             email.send()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
-            return redirect('posts:index')
+            return redirect('accounts:complete_signup')
     else:
         form = CustomUserCreationForm()
         # my_sentence = request.POST.getlist('tag')
@@ -184,8 +205,6 @@ def activate(request, uidb64, token):
         }
 
         return render(request, 'accounts/email_error.html', context)
-    return 
-
 
 
 @login_required
@@ -303,7 +322,7 @@ def profile(request, username):
     music = Track.objects.filter(user_id=user_id)
     post_reports = PostReport.objects.order_by('post_id', 'title')
     comment_reports = CommentReport.objects.order_by('comment_id', 'title')
-    balance_result = Result.objects.get(user_id=user_id)
+    # balance_result = Result.objects.get(user_id=user_id)
     word_list = []
     # for key, value in balance_result.word.items():
     #     if value == '졸려':
@@ -332,7 +351,6 @@ def profile(request, username):
     #     if introduction == ",":
     #             introductions_list.append(word)
     #             word = ""
-             
         
         # if introduction not in sign:
         #     word += introduction
@@ -366,7 +384,7 @@ def profile(request, username):
         'post_reports' : post_reports,
         'comment_reports' : comment_reports,
         'fortunes' : fortunes,
-        'balance_result' : balance_result,
+        # 'balance_result' : balance_result,
         # 'word_list' : word_list,
         'fortune_today' : date.today(),
 

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block style %}
+.complate--container {
+  margin: 11rem 0;
+}
+.complate--list{
+  display : flex;
+  flex-direction: column;
+  justify-content : center;
+  align-items: center;
+  height : 100%;
+  background-color : #E6F3E6;
+  padding: 5rem 0;
+}
+.complate--list > h3 {
+  margin-bottom: 1rem;
+}
+.button--wrap {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+/* 버튼 디자인 */
+.complete__etc--button {
+  font-size: 1rem;
+  border-radius: 20px;
+  background-color: #fff;
+  padding: 1rem 2rem;
+}
+{% endblock style %}
+{% block content %}
+<div class='complate--container'>
+  <div class="complate--list">
+    <h3>✔오늘, 이음 회원가입이 완료 되었습니다.</h3>
+    <p>오늘, 이음의 회원이 되신 것을 환영합니다.</p>
+    <p>오늘, 이음 홈페이지는 이메일 인증 이후 이용 하실 수 있습니다.</p>
+    <p>이메일 인증을 완료해 주세요.</p>
+    <div class="button--wrap">
+      <a class="complete__etc--button" href="{% url 'home' %}">홈으로</a>
+      <a class="complete__etc--button" href="{% url 'accounts:login' %}">로그인</a>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
