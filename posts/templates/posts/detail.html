@@ -399,13 +399,25 @@
           </form>
         </li>
       </ul>
+
+      <div class='d-flex justify-content-between mt-5'>
+        <div>
+            {% if previous_post %}
+                <!-- Display previous button linking to the previous post -->
+                <a href="{% url 'posts:detail' post_pk=previous_post.pk %}">이전 게시글</a>
+            {% endif %}
+        </div>
+        <div>
+            {% if next_post %}
+                <!-- Display next button linking to the next post -->
+                <a href="{% url 'posts:detail' post_pk=next_post.pk %}">다음 게시글</a>
+            {% endif %}
+        </div>
+      </div>
   </section>
 
 
 
-
-
-  
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
 {% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
