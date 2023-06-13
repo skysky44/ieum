@@ -19,6 +19,7 @@ import tempfile
 from django.core.exceptions import ObjectDoesNotExist
 from balances.models import Result
 from datetime import date
+from .models import User
 
 # Create your views here.
 def login(request):
@@ -28,13 +29,32 @@ def login(request):
     
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
-        if request.user.is_active == 0:
-            return redirect('posts:index')
-        
+        username = request.POST.get('username')
+        user = get_user_model()
+        users = user.objects.all()
+        a = []
+        for i in users:
+            a.append(i.username)
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('posts:index')
-    
+        else:
+            for i in a:
+                if username in a:
+                    context = {
+                         'error' : '이메일 인증하세요.',
+                         'form': form,
+                        }
+                    return render(request, 'accounts/login.html', context)
+                elif username not in a:
+                    context = {
+                         'error' : '회원정보가 존재하지 않습니다.',
+                         'form' : form,
+                        }
+                    return render(request, 'accounts/login.html', context)
+            
+        
+        
     else:
         form = CustomAuthenticationForm()
     context = {
@@ -130,7 +150,7 @@ def signup(request):
             email.send()
             auth_login(request, user)
             # my_sentence = request.POST.getlist('tag')
-            return redirect('posts:index')
+            return redirect('accounts:login')
     else:
         form = CustomUserCreationForm()
         # my_sentence = request.POST.getlist('tag')
