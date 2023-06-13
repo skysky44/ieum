@@ -3,18 +3,63 @@
 {% block title %} 채팅방 만들기 {% endblock title %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% static 'chat/css/index.css' %}">
 {% endblock head %}  
 
+{% block aside %}
+  <article class="main--title--wrap">
+    <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-chat-dots-fill"></i></span> 소통 이음</h1>
+    <p>관심 주제로 채팅방을 만들어보세요. 실시간 채팅으로 유저들과 대화해보세요!</p>
+  </article>
+{% endblock aside %}
+
 {% block content %}
-  <h1>Create Chat Room</h1>
-  <input type="text" id="room-name-input" placeholder="Enter room name">
-  <button onclick="createChatRoom()">Create Room</button>
+  <h2 class="mb-3">채팅방 만들기</h2>
+  <div class="d-flex">
+    <input type="text" id="room-name-input" class="form-control" style="width:400px;" placeholder="영어로 입력해주세요">
+    <button onclick="createChatRoom()" class="chat--create--btn">생성</button>
+  </div>
   
-  <div>
-    {% for room in rooms  %}
-      <a href="{% url 'chat:room' room %}">{{ room }}</a>
-      <a href="{% url 'chat:room_delete' room %}">X</a>
+  {% comment %} <div>
+    {% for room in rooms %}
+      <div>
+        <a href="{% url 'chat:room' room %}">{{ room }}</a>
+        <a href="{% url 'chat:room_delete' room %}" onclick="removeCheck()">
+          <i class="bi bi-x" style="color:crimson;"></i>
+        </a>
+      </div>
     {% endfor %}
+  </div> {% endcomment %}
+
+  <table class="table table-hover mt-5">
+    <thead style="text-align: center;">
+      <tr>
+        <th scope="col">방장</th>
+        <th scope="col">채팅방 제목</th>
+        <th scope="col">채팅방 입장</th>
+        <th scope="col">채팅방 삭제</th>
+      </tr>
+    </thead>
+    <tbody id="chat-table">
+      {% for room_owner in room_owners %}
+        <tr>
+          <td style="text-align: center;  width: 200px;">{{ room_owner.user__username }}</td>
+          <td style="text-align: center;  width: 200px;">{{ room_owner.room }}</td>
+          <td style="text-align: center;  width: 200px;">
+            <a href="{% url 'chat:room' room_owner.room %}" class="chat--enter--aTag">입장하기</a>
+          </td>
+          <td style="text-align: center;  width: 200px;">
+            <a href="{% url 'chat:room_delete' room_owner.room %}" onclick="removeCheck()">
+              <i class="bi bi-trash3" style="color:crimson;"></i>
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-2" style="text-align: center;">
+    <button id="load-more-button"><i>더보기</i></button>
   </div>
 {% endblock content %}
 
@@ -31,5 +76,49 @@
         // 생성된 채팅방으로 이동
         window.location.href = `/chat/${roomName}/`;
     }
+
+    // 채팅방 삭제할 때 alert창으로 확인
+    function removeCheck() {
+      if (confirm("정말 삭제하시겠습니까??") == true){
+        document.removefrm.submit();
+      }else{
+        return false;
+      }
+    }
+
+    // 페이지 로드 시 초기 행 개수 설정
+    var initialRowCount = 5;
+
+    // 테이블 요소 가져오기
+    var chatTable = document.getElementById('chat-table');
+
+    // 더 보기 버튼 요소 가져오기
+    var loadMoreButton = document.getElementById('load-more-button');
+
+    // 행 숨김/표시 상태를 관리하기 위한 변수
+    var rowCount = chatTable.rows.length;
+    var hiddenRows = Array.from(chatTable.rows).slice(initialRowCount);
+
+    // 초기 로드 시 행 숨김 처리
+    hiddenRows.forEach(function(row) {
+      row.style.display = 'none';
+    });
+
+    // 더 보기 버튼 클릭 시 행 추가 및 숨김 해제
+    loadMoreButton.addEventListener('click', function() {
+      hiddenRows.slice(0, initialRowCount).forEach(function(row) {
+        row.style.display = '';
+      });
+
+      hiddenRows = hiddenRows.slice(initialRowCount);
+      rowCount = chatTable.rows.length;
+
+      // 더 이상 행이 없는 경우 더 보기 버튼 숨김
+      if (hiddenRows.length === 0) {
+        loadMoreButton.style.display = 'none';
+      }
+    });
+    
+
   </script>
 {% endblock script %}
