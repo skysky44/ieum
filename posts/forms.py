@@ -42,7 +42,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '제목을 입력해주세요',
-                    'style': 'width:400px;'
                 }
             ),
 
@@ -57,7 +56,6 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '주소',
-                    'style': 'width:350px;'
                 }
             ),
         }
