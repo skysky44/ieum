@@ -39,6 +39,7 @@ class Post(models.Model):
     # content = CKEditorField('Content', config_name='extends')
     category = models.CharField(max_length=20)
     address = models.CharField(max_length=20)
+    place_name = models.CharField(max_length=50) 
     created_at = models.DateTimeField(auto_now = True)
     updated_at = models.DateTimeField(auto_now = True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_post')

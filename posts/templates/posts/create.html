@@ -89,6 +89,12 @@
         </div>
       </div>
       <div class="create--menu">
+        <p class="create--lable">장소 이름</p>
+        <div class="create--content">
+          {{ form.place_name }}
+        </div>
+      </div>
+      <div class="create--menu">
         <p class="create--lable">태그</p>
         <div class="create--content">
           {{ form.tags }}
@@ -412,6 +418,9 @@
 function selectAddress(place) {
   // Set the selected address to the address form
   document.getElementById('id_address').value = place.address_name;
+
+  // Set the selected place name to the place name form
+  document.getElementById('id_place_name').value = place.place_name;
 
   // You can add more fields or manipulate the form as needed
 
