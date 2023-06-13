@@ -2,15 +2,26 @@ from django.shortcuts import render, redirect
 from .models import Message
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+from django.db.models import Max
+
+
+# def index(request):
+#     messages = Message.objects.all()
+#     rooms = []
+#     for message in messages:
+#         rooms.append(message.room)
+#     context = {
+#         'rooms': set(rooms),
+#     }
+
+#     return render(request, 'chat/index.html', context)
 
 
 def index(request):
-    messages = Message.objects.all()
-    rooms = []
-    for message in messages:
-        rooms.append(message.room)
+    # 채팅방을 만든 유저 이름을 뽑아내기 위해 작성
+    room_owners = Message.objects.filter(is_owner=True).values('user__username', 'room').annotate(latest_message=Max('timestamp'))
     context = {
-        'rooms': set(rooms),
+        'room_owners': room_owners,
     }
 
     return render(request, 'chat/index.html', context)
