@@ -9,6 +9,9 @@
     display: flex;
     justify-content: end;
 }
+#fortunes--sentence {
+    text-align: center;
+}
 @media (max-width: 1030px) {
     .profile--wrap{
         display: block;
@@ -18,6 +21,9 @@
     }
     #profile--third--wrap {
         margin-top: 20px;
+    }
+    #fortunes--sentence {
+        text-align: center;
     }
     #sentence {
         text-align: center;
