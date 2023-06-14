@@ -9,11 +9,11 @@ class Question(models.Model):
     def question_image_path(instance, filename):
         return f'balances/{instance.title}/{filename}'
     
-    title = models.CharField(max_length=1000)
+    title = models.TextField()
     content1 = models.TextField()
     content2 = models.TextField()
-    word1 = models.CharField(max_length=100, null=True, blank=True)
-    word2 = models.CharField(max_length=100, null=True, blank=True)
+    word1 = models.CharField(max_length=1000, null=True, blank=True)
+    word2 = models.CharField(max_length=1000, null=True, blank=True)
     
     image1 =  ProcessedImageField(
         upload_to= question_image_path,

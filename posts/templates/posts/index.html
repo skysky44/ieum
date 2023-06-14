@@ -30,7 +30,7 @@
     <div>
       <ul class="posts--list">
         {% for post in category_class  %}
-        
+          {% if post.user.taste == request.user.taste %}
           <li class="post--container">
               <div class="post--wrap">
                 <!-- 게시물 이미지 -->
@@ -76,7 +76,9 @@
                 </div>
               </div>
           </li>
+          {% endif %}
         {% endfor %}
+        
       </ul>
     </div>
   </div>

@@ -35,7 +35,7 @@ class User(AbstractUser):
     birthday = models.DateField(null=True, blank=True)
     image = models.ImageField(blank=True, upload_to='')
     region = models.CharField(max_length=10, choices=REGION_CHOICES, default=SEOUL)
-    score = models.IntegerField(default=100)
+    score = models.IntegerField(default=140)
     taste = models.CharField(max_length=2, default='N')
     privacy = models.BooleanField(default=False)
     introductions = models.CharField(max_length=255)

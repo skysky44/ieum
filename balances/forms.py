@@ -9,7 +9,7 @@ class QuestionForm(forms.ModelForm):
         max_length=1000,
         required=True,
         label='Q',
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class': 'form-control',
                 
