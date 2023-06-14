@@ -1,13 +1,26 @@
-.received_messages--btn {
+.received_messages--title {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 0;
+}
+.received_messages--btn1 {
     box-sizing: border-box;
     /* border: 1px solid; */
     border: none;
-    background: #DEECA1;
+    background: #f4ead5;
     border-radius: 5px;
     padding: 3px 10px;
 }
-.received_messages--btn:hover {
-    background: #d0df8d;
+.received_messages--btn2 {
+    box-sizing: border-box;
+    /* border: 1px solid; */
+    border: none;
+    background: #f4ead5;
+    border-radius: 5px;
+    padding: 3px 10px;
+}
+.received_messages--btn2:hover {
+    background: #f1e1bc;
 }
 .received_messages--content {
     width: 350px; 
@@ -17,12 +30,12 @@
     display: inline-block;
 }
 .received_messages--pagination1 {
-    background: #DEECA1 !important;
-    border: 1px solid #DEECA1 !important;
-    color: black;
+    background: #f5e6c5 !important;
+    border: 1px solid #f5e6c5 !important;
+    color: black !important;
 }
 .received_messages--pagination2 {
     background: white !important;
-    border: 1px solid #DEECA1 !important;
+    border: 1px solid #f5e6c5 !important;
     color: black;
 }

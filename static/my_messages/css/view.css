@@ -1,32 +1,89 @@
+.view--wrap {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+}
+@media (max-width: 1024px) {
+    .view--wrap {
+        display: block;
+    }
+    #view--content--wrap1 {
+        border-bottom: 1px solid rgb(224, 224, 224);
+        padding-bottom: 40px;
+    }
+    #view--content--wrap2 {
+        padding-top: 40px;
+        width: 400px;
+    }
+}
+.view--title {
+    border-bottom: 2px solid #b4e977;
+    padding-bottom: 10px;
+}
+.view--header {
+    display: flex;
+    justify-content: space-between;
+}
+.view--time {
+    color:#bdbdbd; 
+    font-size:.8rem;
+    margin-top: 5px;
+}
+.view--aTag--wrap {
+    text-align: end;
+    margin-top: 10px;
+}
+.view--aTag {
+    color:#6dac25;
+    text-decoration: underline;
+    text-underline-offset : 3px;
+}
 .view--content--box {
     box-sizing: border-box;
     /* border: 1px solid; */
     padding: 10px 10px 30px 10px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 5px;
-    height: 320px;
+    height: 277px;
     max-height: calc(100vh - 200px); 
     overflow-x: hidden; 
     overflow-y: auto;
+    margin-top: 15px;
+}
+/* .view--form--wrap {
+    display: grid;
+    grid-template-columns: 90px 310px;
+    margin-top: 10px;
+} */
+.view--reply--content--box {
+    margin-top: 10px;
+    /* height: 300px; */
+}
+.view--btn--wrap {
+    text-align: center;
+    margin-top: 20px;
+    border-top: 1px solid #b4e977;
+    padding-top: 20px;
 }
 .view--btn1 {
     box-sizing: border-box;
     /* border: 1px solid; */
     border: none;
-    background: #DEECA1;
+    background: #e7ffcb;
     border-radius: 5px;
-    padding: 3px 10px;
-    margin-right: 30px;
+    padding: 5px 10px;
+    display: inline-block;
+    width: 500px;
 }
 .view--btn2 {
     box-sizing: border-box;
     /* border: 1px solid; */
     border: none;
-    background: #DEECA1;
+    background: #e7ffcb;
     border-radius: 5px;
-    padding: 4.5px 10px;
-    margin-right: 30px;
+    padding: 5px 10px;
+    display: inline-block;
+    width: 400px;
 }
 .view--btn1:hover, .view--btn2:hover {
-    background: #d0df8d;
+    background: #d6fcaa;
 }
