@@ -41,40 +41,42 @@
       <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
       <ul class="posts--list">
         {% for post in category_class %}
-          <li class="post--wrap">
-            <div>
-              {% if post.image_urls %}
-                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-              {% endif %}
-            </div>
-            <div class="post--text--list">
-              <ul class="post--tag--list">
-                {% for tag in post.tags.all %}
-                  {% if forloop.counter <= 3 %}
-                    <li class="post--tag">
-                      ﹟{{ tag }}
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-              <div class="post--title--wrap">
-                <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
+          <a href="{% url 'posts:detail' post.pk %}">
+            <li class="post--wrap">
+              <div>
+                {% if post.image_urls %}
+                  <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                {% endif %}
               </div>
-              <div class="post--user--wrap">
-                <p>{{ post.user }}</p>
-                <p class="post--time"><i>{{ post.created_time }}</i></p>
+              <div class="post--text--list">
+                <ul class="post--tag--list">
+                  {% for tag in post.tags.all %}
+                    {% if forloop.counter <= 3 %}
+                      <li class="post--tag">
+                        ﹟{{ tag }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+                <div class="post--title--wrap">
+                  <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
+                </div>
+                <div class="post--user--wrap">
+                  <p>{{ post.user }}</p>
+                  <p class="post--time"><i>{{ post.created_time }}</i></p>
+                </div>
               </div>
-            </div>
-            <!-- 카테고리 태그 -->
+              <!-- 카테고리 태그 -->
 
-            <!--
-            {% for post in category_class %}
-              {% for img_url in post.image_urls %}
-                <img class="posts_image" src="{{ img_url }}" alt="">
+              <!--
+              {% for post in category_class %}
+                {% for img_url in post.image_urls %}
+                  <img class="posts_image" src="{{ img_url }}" alt="">
+                {% endfor %}
               {% endfor %}
-            {% endfor %}
-             -->
-          </li>
+               -->
+            </li>
+          </a>
         {% endfor %}
       </ul>
       <div class="posts--etc--wrap">
@@ -85,29 +87,31 @@
       <h1 class="font--gangwon posts--title">털어놔요, 고민 이음</h1>
       <ul class="posts--list">
         {% for post in category_anonymous %}
-          <li class="post--wrap">
-            <div>
-              {% if post.image_urls %}
-                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-              {% endif %}
-            </div>
-            <div class="post--text--list">
-              <ul class="post--tag--list">
-                {% for tag in post.tags.all %}
-                  {% if forloop.counter <= 3 %}
-                    <li class="post--tag">
-                      ﹟{{ tag }}
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-              <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
-              <div class="post--user--wrap">
-                <p>{{ post.user }}</p>
-                <p class="post--time"><i>{{ post.created_time }}</i></p>
+          <a href="{% url 'posts:detail' post.pk %}">
+            <li class="post--wrap">
+              <div>
+                {% if post.image_urls %}
+                  <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                {% endif %}
               </div>
-            </div>
-          </li>
+              <div class="post--text--list">
+                <ul class="post--tag--list">
+                  {% for tag in post.tags.all %}
+                    {% if forloop.counter <= 3 %}
+                      <li class="post--tag">
+                        ﹟{{ tag }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+                <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+                <div class="post--user--wrap">
+                  <p>{{ post.user.image.url }} {{ post.user }}</p>
+                  <p class="post--time"><i>{{ post.created_time }}</i></p>
+                </div>
+              </div>
+            </li>
+          </a>
         {% endfor %}
       </ul>
       <div class="posts--etc--wrap">
