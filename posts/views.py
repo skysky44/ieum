@@ -122,9 +122,9 @@ def anonymous(request):
     elif section == 'oldest':
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
-        
     tags = Post.tags.all()
-    per_page = 3
+    per_page = 6
+    
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 
@@ -138,7 +138,7 @@ def anonymous(request):
         'section': section,
         'total_pages': total_pages,
         'tags': tags,
-        # 'post.image_urls' : post.image_urls,
+        'post_image_urls': [post.image_urls for post in page_obj],
     }
     return render(request, 'posts/anonymous.html', context)
 
@@ -256,6 +256,7 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    print(post.created_at)
     comment_form = CommentForm()
     comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
@@ -263,8 +264,9 @@ def detail(request, post_pk):
     comment_forms = []
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
-    previous_post = Post.objects.filter(id__lt=post_pk).order_by('-id').first()
-    next_post = Post.objects.filter(id__gt=post_pk).order_by('id').first()
+    category_class = Post.objects.filter(category='모임').order_by('-id')
+    previous_post = category_class.filter(id__lt=post_pk).order_by('-id').first()
+    next_post = category_class.filter(id__gt=post_pk).order_by('id').first()
     for comment in comments:
         u_comment_form = (
             comment,
@@ -304,56 +306,55 @@ def detail(request, post_pk):
     return render(request, 'posts/detail.html', context)
 
 
-import uuid
-
-def generate_anonymous_id():
-    return str(uuid.uuid4())[:6]
-
-
 @login_required
 def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
-    post_report_form = PostReportForm()
-    comment_report_form = CommentReportForm()
     comment_form = CommentForm()
+    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
     comment_latest = post.comments.all().order_by('-created_at')
-    comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comment_forms = []
+    post_report_form = PostReportForm()
+    comment_report_form = CommentReportForm()
+    category_class = Post.objects.filter(category='익명').order_by('-id')
+    previous_post = category_class.filter(id__lt=post_pk).order_by('-id').first()
+    next_post = category_class.filter(id__gt=post_pk).order_by('id').first()
     for comment in comments:
         u_comment_form = (
             comment,
-            CommentForm(instance=comment)
+            CommentForm(instance=comment),
         )
-        comment_forms.append(u_comment_form) 
+        comment_forms.append(u_comment_form)
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
-    # 조회수
-    post.views += 1
+
+    # 조회수 증가
+    post.view_count += 1
     post.save()
+    
+    # image_urls를 리스트로 변환
+    post.image_urls = extract_image_urls(post.content)
+    # post.image_urls = post.image_urls.split(', ')
+
 
     context ={
         'post' : post,
         'comment_forms': comment_forms,
         'comment_form': comment_form,
-        'comment_latest' : comment_latest,
         'comments' : comments,
+        'comment_latest': comment_latest,
         'tags' : tags,
         'posts' : posts,
         'music' : music,
         'comment_likes' : comment_likes,
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
+        'post.image_urls' : post.image_urls,
+        'previous_post': previous_post,
+        'next_post': next_post
     }
 
-    # Generate or retrieve anonymous ID for the current user
-    anonymous_id = request.session.get('anonymous_id')
-    if not anonymous_id:
-        anonymous_id = generate_anonymous_id()
-        request.session['anonymous_id'] = anonymous_id
-    context['anonymous_id'] = anonymous_id
-    
     return render(request, 'posts/anonymous_detail.html', context)
 
 
@@ -574,7 +575,7 @@ def post_report(request, post_pk):
             post.user.reported = True
             post.user.save()
             post.report = True
-            post.save()
+            post_report.save()
             return redirect('posts:detail', post_pk)
             
     # context = {
@@ -599,7 +600,7 @@ def anonymous_post_report(request, post_pk):
             post.user.reported = True
             post.user.save()
             post.report = True
-            post.save()
+            post_report.save()
             return redirect('posts:anonymous_detail', post_pk)
 
 
@@ -694,7 +695,7 @@ def comment_report(request, post_pk, comment_pk):
             comment.user.reported = True
             comment.user.save()
             comment.report = True
-            comment.save()
+            comment_report.save()
             return redirect('posts:detail', post_pk)
         
 
@@ -714,7 +715,7 @@ def anonymous_comment_report(request, post_pk, comment_pk):
             comment.user.reported = True
             comment.user.save()
             comment.report = True
-            comment.save()
+            comment_report.save()
             return redirect('posts:anonymous_detail', post_pk)
             
     # context = {
