@@ -54,6 +54,10 @@
   </form>
   <hr>
   <a href="{% url 'paints:index' %}">그림 게시판으로 가기</a> 
+  <form action="{% url 'paints:profile_update' paint.pk%}" enctype="multipart/form-data" method='POST'>
+    {% csrf_token %}
+    <input type="submit" value='프로필 이미지 변경'>
+  </form>
 </article>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
