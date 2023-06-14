@@ -17,14 +17,14 @@
       <i class="view--time">{{ message.timestamp|date:'Y년 n월 d일 A g:i' }}</i>
       <p class="view--content--box">{{ message.content|linebreaksbr }}</p>
       <div class="view--btn--wrap">
-        <a href="{% url 'my_messages:received_messages' %}" class="view--btn1">수신 쪽지함으로 돌아가기</a>
+        <a href="{% url 'my_messages:received_messages' %}" class="view--btn1">받은 쪽지함으로 돌아가기</a>
       </div>
     </div>
     <div id="view--content--wrap2">
       <h3 class="view--title">답장하기</h3>
       <ul>
         <li class="view--aTag--wrap">
-          <a href="{% url 'my_messages:sent_messages' %}" class="view--aTag">송신 쪽지함</a>
+          <a href="{% url 'my_messages:sent_messages' %}" class="view--aTag">보낸 쪽지함</a>
         </li>
       </ul>
       <form method="post" class="" style="width: 400px;">

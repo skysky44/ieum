@@ -17,7 +17,7 @@
         <i class="sent_view--time">{{ message.timestamp|date:'Y년 n월 d일 A g:i' }}</i>
         <p class="sent_view--content--box">{{ message.content|linebreaksbr }}</p>
         <div class="sent_view--btn--wrap">
-          <a href="{% url 'my_messages:received_messages' %}" class="sent_view--btn">수신 쪽지함</a>
+          <a href="{% url 'my_messages:received_messages' %}" class="sent_view--btn">받은 쪽지함</a>
         </div>
       </div>
     </div>
