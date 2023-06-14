@@ -103,15 +103,14 @@
   </div>
   <div class="big--content--wrap">
     <div class="big--content">
-      <img class="paint--big--userpaint" src="#" alt="paint--image">
-      <h2>그림</h2>
-      <ul class="sub--image--list">
+      <img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paints_banner_02.jpg' %}" alt="paint--image">
+      {% comment %} <ul class="sub--image--list">
         {% for paint in paints %}
           <li class="sub--image--wrap">
             <img class="sub--image" src="{{ paint.image.url }}" alt="paint--image">
           </li>
         {% endfor %}
-      </ul>
+      </ul> {% endcomment %}
     </div>
   </div>
 </article>
@@ -164,7 +163,7 @@
   let imgElement = document.querySelector('.paint--big--userpaint');
 
   // paint--big--userpaint 요소를 초기에 숨김
-  imgElement.style.display = 'none';
+  {% comment %} imgElement.style.display = 'none'; {% endcomment %}
 
   document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
     if (event.target.classList.contains('paint--userpaint')) {
@@ -186,7 +185,7 @@
       setTimeout(function() {
         imgElement.src = originalSrc;
         imgElement.style.opacity = '1';
-        imgElement.style.display = 'none'; // 마우스가 벗어날 때 숨김
+        {% comment %} imgElement.style.display = 'none'; // 마우스가 벗어날 때 숨김 {% endcomment %}
       }, 200);
     }
   });
