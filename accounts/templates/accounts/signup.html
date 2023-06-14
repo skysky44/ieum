@@ -27,6 +27,9 @@
           <p class="signup--lable">아이디</p>
           <div class="create--content">
             {{ form.username }}
+            <button type="button" id="check-username" value = "aaa">중복 확인</button>
+            <div id="username-result"></div>
+            <div class="error-message" id="username-error"></div>
           </div>
         </div>
         <div class="signup--menu">
@@ -45,6 +48,9 @@
           <p class="signup--lable">이메일</p>
           <div class="create--content">
             {{ form.email }}
+            <button type="button" id="check-email" value="aaa">중복 확인</button>
+            <div id="email-result"></div>
+            <div class="error-message" id="email-error"></div>
           </div>
         </div>
         <div class="signup--menu">
@@ -57,6 +63,7 @@
           <p class="signup--lable">비밀번호</p>
           <div class="create--content">
             {{ form.password1 }}
+            <div class="error-message" id="password-error"></div>
           </div>
         </div>
         <div class="signup--menu">
@@ -93,4 +100,112 @@
 {% endblock content %}
 
 {% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkUsernameButton = document.getElementById('check-username');
+    const usernameResult = document.getElementById('username-result');
+    const usernameError = document.getElementById('username-error');
+    const checkEmailButton = document.getElementById('check-email');
+    const emailResult = document.getElementById('email-result');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    const signupButton = document.querySelector('.signup--input--button');
+
+    // 초기 회원가입 버튼 비활성화
+    signupButton.disabled = true;
+
+    checkUsernameButton.addEventListener('click', function () {
+      const usernameInput = document.getElementById('id_username');
+      const username = usernameInput.value.trim();
+
+      if (username !== '') {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url 'accounts:check_username' %}');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.available) {
+              usernameResult.textContent = '사용 가능한 아이디입니다.';
+              usernameError.textContent = '';
+              checkSignupButtonState();
+            } else {
+              usernameResult.textContent = '';
+              usernameError.textContent = '이미 사용 중인 아이디입니다.';
+              disableSignupButton();
+            }
+          }
+        };
+        xhr.send('username=' + encodeURIComponent(username));
+      }
+    });
+
+    checkEmailButton.addEventListener('click', function () {
+      const emailInput = document.getElementById('id_email');
+      const email = emailInput.value.trim();
+
+      if (email !== '') {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url 'accounts:check_email' %}');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.available) {
+              emailResult.textContent = '사용 가능한 이메일입니다.';
+              emailError.textContent = '';
+              checkSignupButtonState();
+            } else {
+              emailResult.textContent = '';
+              emailError.textContent = '이미 사용 중인 이메일입니다.';
+              disableSignupButton();
+            }
+          }
+        };
+        xhr.send('email=' + encodeURIComponent(email));
+      }
+    });
+
+    // 비밀번호 확인 체크
+    const passwordInput1 = document.getElementById('id_password1');
+    const passwordInput2 = document.getElementById('id_password2');
+    passwordInput2.addEventListener('input', function () {
+      const password1 = passwordInput1.value;
+      const password2 = passwordInput2.value;
+
+      if (password1 !== password2) {
+        passwordError.textContent = '비밀번호가 일치하지 않습니다.';
+        disableSignupButton();
+      } else {
+        passwordError.textContent = '';
+        checkSignupButtonState();
+      }
+    });
+
+    // 회원가입 버튼 활성화/비활성화 함수
+    function checkSignupButtonState() {
+      const usernameResultText = usernameResult.textContent;
+      const emailResultText = emailResult.textContent;
+      const passwordErrorText = passwordError.textContent;
+
+      if (
+        usernameResultText === '사용 가능한 아이디입니다.' &&
+        emailResultText === '사용 가능한 이메일입니다.' &&
+        passwordErrorText === ''
+      ) {
+        signupButton.disabled = false; // 버튼 활성화
+      } else {
+        disableSignupButton();
+      }
+    }
+
+    // 회원가입 버튼 비활성화 함수
+    function disableSignupButton() {
+      signupButton.disabled = true; // 버튼 비활성화
+    }
+  });
+</script>
 {% endblock script %}

@@ -400,6 +400,25 @@
     </section>
   </article>
   
+
+
+      <div class='d-flex justify-content-between mt-5'>
+        <div>
+            {% if previous_post %}
+                <!-- Display previous button linking to the previous post -->
+                <a href="{% url 'posts:detail' post_pk=previous_post.pk %}">이전 게시글</a>
+            {% endif %}
+        </div>
+        <div>
+            {% if next_post %}
+                <!-- Display next button linking to the next post -->
+                <a href="{% url 'posts:detail' post_pk=next_post.pk %}">다음 게시글</a>
+            {% endif %}
+        </div>
+      </div>
+  </section>
+
+
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
 {% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -410,60 +429,45 @@
 <script src="{% static 'posts/js/detail_likes_ajax.js' %}"></script>
 <script src="{% static 'posts/js/detail_comment_likes_ajax.js' %}"></script>
 <script>
-
-var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-    mapOption = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-        level: 3 // 지도의 확대 레벨
-    };  
-
-// 지도를 생성합니다    
-var map = new kakao.maps.Map(mapContainer, mapOption); 
-
-// 주소-좌표 변환 객체를 생성합니다
-var geocoder = new kakao.maps.services.Geocoder();
-
-// 주소로 좌표를 검색합니다
-geocoder.addressSearch( "{{ post.address }}", function(result, status) {
-
-    // 정상적으로 검색이 완료됐으면 
+  var mapContainer = document.getElementById('map'); // div to display the map
+  var mapOption = {
+    center: new kakao.maps.LatLng(33.450701, 126.570667), // coordinates of the center of the map
+    level: 3 // zoom level of the map
+  };
+  
+  // create the map
+  var map = new kakao.maps.Map(mapContainer, mapOption);
+  
+  // create an address-to-coordinate conversion object
+  var geocoder = new kakao.maps.services.Geocoder();
+  
+  // retrieve coordinates by address
+  geocoder.addressSearch("{{ post.address }}", function(result, status) {
+    // if the search was successful
     if (status === kakao.maps.services.Status.OK) {
-
-        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-        // 결과값으로 받은 위치를 마커로 표시합니다
-        var marker = new kakao.maps.Marker({
-            map: map,
-            position: coords
-        });
-
-        // 인포윈도우로 장소에 대한 설명을 표시합니다
-        var infowindow = new kakao.maps.InfoWindow({
-            content: '<div style="width:150px;text-align:center;padding:6px 0;">만나고 싶은 곳</div>'
-        });
-        infowindow.open(map, marker);
-
-        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-        map.setCenter(coords);
-    } 
-});    
-
-const modal = document.getElementById('myModal');
-const modalImg = document.getElementById("img01");
-
-// Get all images and attach click event listener to each one
-const images = document.querySelectorAll('.post--img');
-images.forEach(function(img) {
-    img.onclick = function(){
-        modal.style.display = "block";
-        modalImg.src = this.src;
+      
+      var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+  
+      // Mark the position received as a result with a marker
+      var marker = new kakao.maps.Marker({
+        map: map,
+        position: coords
+      });
+  
+      // Retrieve the place_name from the database
+      var placeName = "{{ post.place_name }}";
+  
+      // Display the place_name in the infowindow
+      var infowindow = new kakao.maps.InfoWindow({
+        content: '<div style="width:150px;text-align:center;padding:6px 0;">' + placeName + '</div>'
+      });
+      infowindow.open(map, marker);
+  
+      // Move the center of the map to the location received as the result
+      map.setCenter(coords);
     }
-});
+  });
 
-const span = document.querySelector('.modal--close'); 
-span.onclick = function() { 
-    modal.style.display = "none";
-}
 
 window.onclick = function(event) {
     if (event.target == modal) {

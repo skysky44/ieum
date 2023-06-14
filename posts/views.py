@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm, PostReportForm, CommentReportForm
@@ -263,6 +263,8 @@ def detail(request, post_pk):
     comment_forms = []
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
+    previous_post = Post.objects.filter(id__lt=post_pk).order_by('-id').first()
+    next_post = Post.objects.filter(id__gt=post_pk).order_by('id').first()
     for comment in comments:
         u_comment_form = (
             comment,
@@ -280,7 +282,7 @@ def detail(request, post_pk):
     # image_urls를 리스트로 변환
     post.image_urls = extract_image_urls(post.content)
     # post.image_urls = post.image_urls.split(', ')
-    
+
 
     context ={
         'post' : post,
@@ -295,6 +297,8 @@ def detail(request, post_pk):
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
         'post.image_urls' : post.image_urls,
+        'previous_post': previous_post,
+        'next_post': next_post
     }
 
     return render(request, 'posts/detail.html', context)
@@ -325,6 +329,10 @@ def anonymous_detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+    # 조회수
+    post.views += 1
+    post.save()
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,
