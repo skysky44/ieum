@@ -16,7 +16,7 @@
 {% block content %}
   <h2 class="mb-3">채팅방 만들기</h2>
   <div class="d-flex">
-    <input type="text" id="room-name-input" class="form-control" style="width:400px;" placeholder="영어로 입력해주세요">
+    <input type="text" id="room-name-input" class="form-control" style="width:400px;" placeholder="채팅방 제목을 입력해주세요">
     <button onclick="createChatRoom()" class="chat--create--btn">생성</button>
   </div>
   
@@ -43,12 +43,12 @@
     <tbody id="chat-table">
       {% for room_owner in room_owners %}
         <tr>
-          <td style="text-align: center;  width: 200px;">{{ room_owner.user__username }}</td>
-          <td style="text-align: center;  width: 200px;">{{ room_owner.room }}</td>
-          <td style="text-align: center;  width: 200px;">
+          <td class="index--table--box">{{ room_owner.user__username }}</td>
+          <td class="index--content">{{ room_owner.room }}</td>
+          <td class="index--table--box">
             <a href="{% url 'chat:room' room_owner.room %}" class="chat--enter--aTag">입장하기</a>
           </td>
-          <td style="text-align: center;  width: 200px;">
+          <td class="index--table--box">
             <a href="{% url 'chat:room_delete' room_owner.room %}" onclick="removeCheck()">
               <i class="bi bi-trash3" style="color:crimson;"></i>
             </a>
