@@ -38,9 +38,9 @@ class Post(models.Model):
     content = RichTextUploadingField()
     # content = CKEditorField('Content', config_name='extends')
     category = models.CharField(max_length=20)
-    address = models.CharField(max_length=20, blank=True)
-    place_name = models.CharField(max_length=50, blank=True) 
-    created_at = models.DateTimeField(auto_now = True)
+    address = models.CharField(max_length=20)
+    place_name = models.CharField(max_length=50) 
+    created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_post')
     tags = TaggableManager(blank=True)
@@ -79,7 +79,7 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
-    created_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comment' )
     category = models.CharField(max_length=20)
@@ -117,7 +117,7 @@ class PostReport(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_report')
     title = models.CharField(max_length=30)
     content = models.TextField()
-    created_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add = True)
 
 
 class CommentReport(models.Model):
@@ -136,7 +136,7 @@ class CommentReport(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_report')
     title = models.CharField(max_length=30)
     content = models.TextField()
-    created_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add = True)
 
 
 class PostTrack(models.Model):

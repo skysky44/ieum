@@ -59,7 +59,8 @@
                 </div>
                 <p class="post--time"><i>{{ post.created_time }}</i></p>
                 <div class="post--like">
-                  <form action="{% url 'posts:likes' post.pk %}" method="POST">
+                <p>조회 {{ post.view_count }}</p>
+                  <form action="{% url 'posts:anonymous_likes' post.pk %}" method="POST">
                     {% csrf_token %}
                     {% if user in post.like_users.all  %}
                     <button class="border-0 bg-transparent" type="submit">

@@ -46,9 +46,12 @@
         <div class="detail--header--titile--wrap">
           <h1 class="detail--title">{{ post.title }}</h1>
           <!-- 게시물 신고 모달 버튼 -->
-          <button type="button" class="detail--bell--wrap" data-bs-toggle="modal" data-bs-target="#PostReportModal">
-            <i class="bi bi-bell-fill"></i>
-          </button>
+          {% if request.user == post.user %}
+          {% else %}
+            <button type="button" class="detail--bell--wrap" data-bs-toggle="modal" data-bs-target="#PostReportModal">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+          {% endif %}
         </div>
         <div class="detail--header--info">
           <div class="detail--header--info--list">
@@ -70,15 +73,19 @@
             <div id="detail--like" class="detail--like--form">
               <form class="like-form" data-post-id="{{ post.pk }}">
                 {% csrf_token %}
-                {% if request.user in post.like_users.all %}
-                <button class="border-0 bg-transparent" type="submit" value="좋아요">
+                {% if post.user == request.user %}
                   <i class="bi bi-suit-heart-fill"></i>
-                </button>
                 {% else %}
-                  <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
-                    <i class="bi bi-suit-heart"></i>
+                  {% if request.user in post.like_users.all %}
+                  <button class="border-0 bg-transparent" type="submit" value="좋아요">
+                    <i class="bi bi-suit-heart-fill"></i>
                   </button>
-                {% endif %}
+                  {% else %}
+                    <button class="border-0 bg-transparent" type="submit" value="좋아요 취소">
+                      <i class="bi bi-suit-heart"></i>
+                    </button>
+                  {% endif %}
+                {% endif %} 
               </form>
               <span id="like-count"> {{post.like_users.count}}</span>
             </div>
@@ -138,7 +145,10 @@
       {% comment %} 댓글생성 {% endcomment %}
       <article class="comments--create--container">
         <div class="comments__user--wrap">
-          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+          <img style="width:25px; height:25px; border-radius:50%;" src=
+                {% if request.user.image %} "{{ request.user.image.url }}" 
+                {% else %} "{% static 'accounts/image/user_image.png' %}" 
+                {% endif %} alt="프로필 사진" id="profile-image"/>
           <p>{{ user }}</p>
         </div>
         <form id="comment-form" action="{% url 'posts:comment_create' post.pk %}" method='POST'>
@@ -166,10 +176,13 @@
                       <i class="bi bi-bookmark-heart-fill" style="color:crimson;"></i>
                     </div>
                     <p class="comment--date">{{ comment_like.created_time }}</p>
-                    <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment_like.pk}}">수정</button>
-                    <form action="{% url 'posts:comment_delete' post.pk comment_like.pk %}">
-                      <input type="submit" value="삭제" style="color:#555;">
-                    </form>
+                    {% if request.user == comment_like.user %}
+                      <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment_like.pk}}">수정</button>
+                      <form action="{% url 'posts:comment_delete' post.pk comment_like.pk %}">
+                        <input type="submit" value="삭제" style="color:#555;">
+                      </form>
+                    {% else %}
+                    {% endif %}
                   </div>
                   <div>
                     {% if request.user == comment_like.user %}
@@ -232,19 +245,6 @@
                         <p class="comment--date">{{ comment.created_time }}</p>
                       </div>
                       <div class="comments__btn--list2">
-                          {% comment %} <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                            {% csrf_token %}
-                            {% if request.user in comment.like_users.all %}
-                              <button class="border-0 bg-transparent" type="submit">
-                                ❤️
-                              </button>
-                            {% else %}
-                              <button class="border-0 bg-transparent" type="submit">
-                                🤍
-                              </button>
-                            {% endif %}
-                          </form>
-                          <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
                         <form id="comment-like-form-{{ comment.pk }}" data-post-id="{{post.pk}}" data-comment-id="{{comment.pk}}" class="l_form comment--like--form">
                           {% csrf_token %}
                           <button id="comment-heart" class="comment-like-button" type="submit" >
@@ -310,19 +310,6 @@
                       <p class="comment--date">{{ comment.created_time }}</p>
                       </div>
                       <div class="comments__btn--list2">
-                          {% comment %} <form action="{% url 'posts:comment_likes' post.pk comment.pk %}" method="POST">
-                            {% csrf_token %}
-                            {% if request.user in comment.like_users.all %}
-                              <button class="border-0 bg-transparent" type="submit">
-                                ❤️
-                              </button>
-                            {% else %}
-                              <button class="border-0 bg-transparent" type="submit">
-                                🤍
-                              </button>
-                            {% endif %}
-                          </form>
-                          <span class="ms-1">{{comment.like_users.count}}</span> {% endcomment %}
                         <form id="comment-like-o-form-{{ comment.pk }}" data-post-id="{{post.pk}}" data-comment-id="{{comment.pk}}" class="o_form comment--like--form">
                           {% csrf_token %}
                           <button id="comment-heart-2" class="comment-like-button" type="submit" >
