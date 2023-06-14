@@ -5,11 +5,6 @@ from .models import User
 from balances.models import Result
 import datetime
 
-# 나의 취향 단어 db에서 불러오기
-result_words = Result.objects.values_list('word', flat=True)
-
-# for i in result_words:
-#     print(i)
 SENTENCE_CHOICES = [('특별함 보다 소소한 행복을 추구해요.', "특별함 보다 소소한 행복을 추구해요."),
         ('미래보다는 매 순간 최선을 다하는 것이 더 중요해요.', "미래보다는 매 순간 최선을 다하는 것이 더 중요해요."),
         ('내가 좋아하는 걸로 삶을 채워가고 싶어요.', "내가 좋아하는 걸로 삶을 채워가고 싶어요."),
@@ -129,18 +124,6 @@ class CustomUserCreationForm(UserCreationForm):
         choices=SENTENCE_CHOICES,
         widget=forms.CheckboxSelectMultiple,
     )
-    # my_sentence = forms.MultipleChoiceField(
-    #     choices = SENTENCE_CHOICES,
-    #     label='자기소개',
-    #     widget=forms.CheckboxSelectMultiple(
-    #         attrs={
-
-    #         }
-
-    #     ),
-
-    # )
-    
 
     password = None
 
@@ -284,14 +267,23 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         help_text='',
     )
 
-
-class ResultWordForm(forms.ModelForm):
+class ResultForm(forms.ModelForm):
     words = forms.MultipleChoiceField(
-        choices=SENTENCE_CHOICES,
+        label=False,
         widget=forms.CheckboxSelectMultiple,
     )
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(ResultForm, self).__init__(*args, **kwargs)
+        result_queryset = Result.objects.filter(user=user)
+        choices = []
+        for result in result_queryset:
+            word_choices = [(word, word) for word in result.word]
+            choices.extend(word_choices)
+        self.fields['words'].choices = choices
 
-    class Meta(UserChangeForm.Meta):
+    class Meta:
         model = get_user_model()
-        
+        fields = ('words',)
+

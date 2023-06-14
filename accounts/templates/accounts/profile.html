@@ -67,12 +67,12 @@
           <div><input type="submit" value="Follow" disabled="disabled"></div>
         {% elif request.user != person %}
           <div>
-            <form id='follow-form' data-user-id="{{ person.pk }}" action="{% url 'accounts:follow' person.pk %}" method="POST" class="d-flex justify-content-center">
+            <form id='follow-form' data-user-id="{{ person.pk }}" class="d-flex justify-content-center">
               {% csrf_token %}
               {% if request.user in person.followers.all %}
-                <input type="submit" value="Unfollow" class="profile--follow--btn">
+                <input id="followinput" type="submit" value="Unfollow" class="profile--follow--btn">
               {% else %}
-                <input type="submit" value="Follow" class="profile--follow--btn">
+                <input id="followinput" type="submit" value="Follow" class="profile--follow--btn">
               {% endif %}
             </form>
           </div>
@@ -112,20 +112,43 @@
         {% endfor %}
       </div>
 
-      <!-- 워드 -->
+      {% if request.user == person %}
+      <!-- 밸런스 게임 워드 모달 버튼 -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#wordModal">
+        {{user.username}}의 단어
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="wordModal" tabindex="-1" aria-labelledby="wordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="wordModalLabel">단어로 '나'를 표현해 보세요!</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url 'accounts:word_create' %}" method="POST" >
+                {% csrf_token %}
+                {{word_form.as_p}}
+                <input type="submit" value="제출">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+       <!-- 워드 표시 -->
+      {% for word in word_list %}
+        <p>{{ word }}</p>
+      {% endfor %}
+
+      <!-- 지현님 워드 표시하셨던 클래스 혹시 몰라서 안 지웠습니당 -->
       {% comment %} <div class="profile--word--wrap">
         {% for w in balance_result.word.values %}
           <p class="profile--word"># {{w}}</p>
         {% endfor %}
         {% for word in word_list %}
           <span>{{word}}</span>
-        {% endfor %}
-      </div> {% endcomment %}
-      {% comment %} <div id="wordContainer">
-        <button class="editButton">Edit</button>
-        <button class="completeButton">complete</button>
-        {% for word in word_list %}            
-            <span class="word">{{word}}</span>
         {% endfor %}
       </div> {% endcomment %}
 
@@ -181,7 +204,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
-        <ul class="mt-2 modal_list">
+        <ul id="followers-list" class="mt-2 modal_list">
           {% for follower in person.followers.all %}
             <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item">
               <div class="profile--follow--img--box">
@@ -293,18 +316,21 @@
 
 
 <!-- 포춘쿠키 메세지 -->
-{% if fortunes.date == fortune_today %}
-{% else %}
-  <span>아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
-
-  <form action="{% url 'posts:fortune_cookie' %}" method="post">
-    {% csrf_token %}
-    <button type="submit" style="border: none; background: none;">
-      <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
-    </button>
-  </form>
+{% if request.user == person %}
+  {% if fortunes.date == fortune_today %}
+    <p>{{ fortunes.message }}</p>
+  {% else %}
+    <span>아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
+    <form action="{% url 'posts:fortune_cookie' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" style="border: none; background: none;">
+        <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
+      </button>
+    </form>
+  {% endif %}
 {% endif %}
-<p>{{ fortunes.message }}</p>
+
+
 
 <!-- 신고 당한 게시물과 댓글 표시 -->
 {% comment %} {% if request.user.is_superuser %} {% endcomment %}
@@ -399,22 +425,17 @@
       {% endif %}
     {% endfor %}
   </div>
-
-  
-
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'accounts/js/profile_music_ajax.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_main.js' %}"></script>
-<script>
-  const form = document.querySelector('#follow-form');
-
+<script>  
+  const form = document.querySelector('#follow-form')
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+  
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     const userId = event.target.dataset.userId;
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
   
     axios({
       method: 'post',
@@ -422,40 +443,54 @@
       headers: { 'X-CSRFToken': csrftoken },
     })
       .then((response) => {
-        console.log(response);
         const isFollowed = response.data.is_followed;
-        const followBtn = document.querySelector('#follow-form > input[type=submit]');
-  
+        const followInput = document.querySelector('#followinput');
+        console.log(response)
         if (isFollowed === true) {
-          followBtn.value = 'Unfollow';
+          followInput.value = 'Unfollow';
         } else {
-          followBtn.value = 'Follow';
+          followInput.value = 'Follow';
         }
   
-        const followingCountTag = document.querySelector('#followings-count');
         const followerCountTag = document.querySelector('#followers-count');
-        const followingList = document.querySelector('#followingModal .modal_list');
-        const followerList = document.querySelector('#followerModal .modal_list');
-  
-        followingCountTag.textContent = response.data.followings_count;
+        const followerList = document.querySelector('#followers-list');
         followerCountTag.textContent = response.data.followers_count;
   
-        followingList.innerHTML = '';
+        // Clear existing follower list
         followerList.innerHTML = '';
-
   
-        // 팔로워 리스트
+        // Append each follower to the follower list
         response.data.followers_list.forEach((follower) => {
-          const listItem = document.createElement('li');
-          const profileImg = document.createElement('img');
-          profileImg.src = follower.image_url;  // 프로필 이미지 URL을 설정하세요.
-          profileImg.alt = '프로필 사진';
-          listItem.appendChild(profileImg);
-          listItem.innerHTML += `<span>${follower.username}</span>`;
+          const followerLink = document.createElement('a')
+          followerLink.classList.add("modal_list_item", "follower-item")
+          followerLink.href = `/accounts/profile/${follower.username}`
+          const followerDiv = document.createElement('div')
+          followerDiv.classList.add("profile--follow--img--box")
+          if (follower.image) {
+            const followerImage = document.createElement('img')
+            followerImage.classList.add("profile--follow--img", "profile--follow--img--modal")
+            followerImage.src = follower.image
+            followerImage.alt = `${follower.username}'s profile image`
+            followerDiv.appendChild(followerImage)
+          } else {
+            const followerImage = document.createElement('img')
+            followerImage.classList.add("profile--follow--img", "profile--follow--img--modal")
+            followerImage.src = "/static/accounts/image/user_image.png"
+            followerImage.alt = "기본 프로필 사진"
+            followerDiv.appendChild(followerImage)
+          }
+          followerLink.appendChild(followerDiv)
+  
+          const listItem = document.createElement('li')
+          const followerSpan = document.createElement('span')
+          followerSpan.textContent = follower.username;
+          listItem.appendChild(followerLink);
+          listItem.appendChild(followerSpan);
           followerList.appendChild(listItem);
-        });
-      });
-  });
+        })
+      })
+  })
+
 </script>
 {% endblock content %}
 {% block script %}
