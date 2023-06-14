@@ -6,8 +6,6 @@
 <link rel="stylesheet" href="{% static 'paints/css/index.css' %}">
 {% endblock head %}
 
-{% block style %}
-{% endblock style %}  
 
 {% block aside %}
 <article class="main--title--wrap">
@@ -34,6 +32,7 @@
                   <form id="paints-form-{{paint.pk}}" data-paint-id="{{ paint.pk }}">
                     {% csrf_token %}
                     {% if request.user == paint.user %}
+                    {% else %}
                       {% if request.user in paint.like_users.all %}
                         <button type="submit" class="">
                           <i class="bi-suit-heart-fill" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
@@ -47,15 +46,14 @@
                           </i>
                         </button>
                       {% endif %}
-                    {% else %}
                     {% endif %}
                   </form>
                 {% endif %} 
                 {% if request.user == paint.user %}
+                {% else %}
                   <a class="paint--update" href="{% url 'paints:update' paint.pk %}">
                     <i class="bi-pencil-fill" style="color: #008d63;"></i>
                   </a>
-                {% else %}
                 {% endif %}
               </div>
               <p class="paint--user">{{ paint.user }}</p>
@@ -103,14 +101,15 @@
   </div>
   <div class="big--content--wrap">
     <div class="big--content">
-      <img class="paint--big--userpaint" src="{% static 'paints/image/ieum_paints_banner_02.jpg' %}" alt="paint--image">
-      {% comment %} <ul class="sub--image--list">
+      <img class="paint--big--userpaint" src="#" alt="paint--image">
+      <h2>그림</h2>
+      <ul class="sub--image--list">
         {% for paint in paints %}
           <li class="sub--image--wrap">
             <img class="sub--image" src="{{ paint.image.url }}" alt="paint--image">
           </li>
         {% endfor %}
-      </ul> {% endcomment %}
+      </ul>
     </div>
   </div>
 </article>
@@ -163,7 +162,7 @@
   let imgElement = document.querySelector('.paint--big--userpaint');
 
   // paint--big--userpaint 요소를 초기에 숨김
-  {% comment %} imgElement.style.display = 'none'; {% endcomment %}
+  imgElement.style.display = 'none';
 
   document.querySelector('.paints--list').addEventListener('mouseover', function(event) {
     if (event.target.classList.contains('paint--userpaint')) {
@@ -185,7 +184,7 @@
       setTimeout(function() {
         imgElement.src = originalSrc;
         imgElement.style.opacity = '1';
-        {% comment %} imgElement.style.display = 'none'; // 마우스가 벗어날 때 숨김 {% endcomment %}
+        imgElement.style.display = 'none'; // 마우스가 벗어날 때 숨김
       }, 200);
     }
   });
