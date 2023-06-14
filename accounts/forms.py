@@ -279,11 +279,13 @@ class ResultForm(forms.ModelForm):
         result_queryset = Result.objects.filter(user=user)
         choices = []
         for result in result_queryset:
-            word_choices = [(word, word) for word in result.word]
-            choices.extend(word_choices)
+            for selected_words in result.word.values():
+                for word in selected_words:
+                    # Create a tuple with the key-value pair for the choice label and value
+                    choice = (word, word)
+                    choices.append(choice)
         self.fields['words'].choices = choices
 
     class Meta:
         model = get_user_model()
         fields = ('words',)
-
