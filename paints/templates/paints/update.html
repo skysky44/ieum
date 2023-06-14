@@ -6,59 +6,72 @@
 <link rel="stylesheet" href="{% static 'paints/css/create.css' %}">
 {% endblock head %}
 
-{% block style %}
-{% endblock style %}  
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="font--gangwon main--title"><span class="" style="color:skyblue;"><i class="bi bi-palette"></i></span> 그림 수정하기</h1>
+  <p>작은 그림 하나에도 감정과 이야기가 담겨 있어요. 그 소중한 작품 하나하나가 우리의 일상을 더욱 풍요롭게 만들어주죠.</p>
+</article>
+{% endblock aside %}
 
 {% block content %}
+
 <article class="paint__create--container">
-  <h1>그림 수정하기</h1>
-   
-  <section>
-    <canvas id="myCanvas">
-    </canvas>
-  </section>
-  <section>
-    <div>
-      <div class="line--width--wrap">
-        <span>굵기선택</span>
-        <input id="line-width" type="range" min="1" max="10" value="5">
+    <section class="index--link--wrap">
+      <a class="index--link" href="{% url 'paints:index' %}">목록</a>
+    </section>
+    <canvas id="myCanvas"></canvas>
+    <section>
+      <div class="palette--container">
+        <div class="palette--wrap">
+          <div class="palette--color--wrap">
+            <span>팔레트</span>
+            <input id="thisColor" type="color" class="this--color">
+          </div>
+          <div id="colorList">
+            <ul class="color--list">
+              <li class="color-option" style="background-color: #ff0000;" data-color="#ff0000"></li>
+              <li class="color-option" style="background-color: #ffa500;" data-color="#ffa500"></li>
+              <li class="color-option" style="background-color: #ffff00;" data-color="#ffff00"></li>
+              <li class="color-option" style="background-color: #008003;" data-color="#008003"></li>
+              <li class="color-option" style="background-color: #0000ff;" data-color="#0000ff"></li>
+              <li class="color-option" style="background-color: #000080;" data-color="#000080"></li>
+              <li class="color-option" style="background-color: #800080;" data-color="#800080"></li>
+              <li class="color-option" style="background-color: #a5512a;" data-color="#a5512a"></li>
+              <li class="color-option" style="background-color: #000000;" data-color="#000000"></li>
+              <li class="color-option" style="background-color: #c0c0c0;" data-color="#c0c0c0"></li>
+              <li class="color-option" style="background-color: #ffd700;" data-color="#ffd700"></li>
+              <li class="color-option" style="background-color: #FFF89A;" data-color="#FFF89A"></li>
+              <li class="color-option" style="background-color: #EDFFA9;" data-color="#EDFFA9"></li>
+              <li class="color-option" style="background-color: #BAE5E5;" data-color="#BAE5E5"></li>
+              <li class="color-option" style="background-color: #98D6EA;" data-color="#98D6EA"></li>
+              <li class="color-option" style="background-color: #F3D1F4;" data-color="#F3D1F4"></li>
+              <li class="color-option" style="background-color: #F3D1F4;" data-color="#F3D1F4"></li>
+              <li class="color-option" style="background-color: #D9ACF5;" data-color="#D9ACF5"></li>
+              <li class="color-option" style="background-color: #C1AEFC;" data-color="#C1AEFC"></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <button id="mode-btn" class="paint--button">그리기</button>
+      <div class="etc--container">
+        <div class="line--width--wrap">
+          <span>선굵기</span>
+          <input id="line-width" type="range" min="1" max="10" value="5">
+        </div>
+        <button id="undoBtn" class="cancel--button"> 실행 취소</button>
+      </div>
+    </section>
+    <div class="update--button--wrap">
+        <form action="{% url 'paints:delete' paint.pk %}">
+            <input class="paint--remove--button" type="submit" value="그림 삭제">
+        </form>
+        <button onclick="downloadImage()" class="paint--update--button">그림 수정</button>
     </div>
-    <div class="palette--wrap">
-      <div class="line--width--wrap">
-        <span>팔레트</span>
-        <input id="thisColor" type="color" class="this--color">
-      </div>
-      <button id="colorListBtn" class="paint--button">색상선택</button>
-      <div id="colorList">
-        <ul class="color--list">
-          <li class="color-option" style="background-color: #d63031;" data-color="#d63031"></li>
-          <li class="color-option" style="background-color: #fdcb6e;" data-color="#fdcb6e"></li>
-          <li class="color-option" style="background-color: #ffeaa7;" data-color="#ffeaa7"></li>
-          <li class="color-option" style="background-color: #a29bfe;" data-color="#a29bfe"></li>
-          <li class="color-option" style="background-color: #0984e3;" data-color="#0984e3"></li>
-          <li class="color-option" style="background-color: #6c5ce7;" data-color="#6c5ce7"></li>
-          <li class="color-option" style="background-color: #e84393;" data-color="#e84393"></li>
-          <li class="color-option" style="background-color: #2d3436;" data-color="#2d3436"></li>
-        </ul>
-      </div>
-    </div>
-    <button id="undoBtn" class="paint--button"> 실행 취소</button>
-  </section>
-  <section>
-    <button onclick="downloadImage()" class="paint--button">그림 수정</button>
-  </section>
-  <form action="{% url 'paints:delete' paint.pk %}">
-    <input type="submit" value="삭제">
-  </form>
-  <hr>
-  <a href="{% url 'paints:index' %}">그림 게시판으로 가기</a> 
-  <form action="{% url 'paints:profile_update' paint.pk%}" enctype="multipart/form-data" method='POST'>
+    <form action="{% url 'paints:profile_update' paint.pk%}" enctype="multipart/form-data" method='POST'>
     {% csrf_token %}
-    <input type="submit" value='프로필 이미지 변경'>
-  </form>
-</article>
+    <input class="paint--button" type="submit" value='프로필 이미지로 사용'>
+    </form>
+  </article>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -76,21 +89,13 @@
 
     image.src = imageUrl;
 
-
-
-    const modeBtn = document.getElementById("mode-btn")
     const colorOptions = Array.from(
         document.getElementsByClassName("color-option")
     );
     const thisColor = document.getElementById("thisColor");
     const lineWidth = document.getElementById("line-width");
-    {% comment %} const canvas = document.querySelector("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 400;
-    canvas.height = 400; {% endcomment %}
     ctx.lineWidth = lineWidth.value; 
     let isPainting = false;
-    let isFilling = false;
 
     function onMove(event) {
         if(isPainting) {
@@ -131,23 +136,6 @@
         thisColor.value = colorValue
     }
     
-    function onModeClick() {
-        if(isFilling){
-            isFilling = false;
-            modeBtn.innerText = "그리기";
-        } else {
-            isFilling = true;
-            modeBtn.innerText = "배경색";
-        
-        }
-    }
-    
-    function onCanvasClick() {
-        if (isFilling) {
-            ctx.fillRect(0, 0, 400, 400);
-        }
-    }
-    
     
     canvas.addEventListener("mousemove", onMove);
     canvas.addEventListener("mousedown", startPainting);
@@ -155,7 +143,6 @@
     canvas.addEventListener("mouseleave", cancelPainting);
     // document.addEventListener("mouseup", cancelPainting)
     
-    canvas.addEventListener("click", onCanvasClick)
     
     lineWidth.addEventListener("change", onLineWidthChange);
     thisColor.addEventListener("change", onClolorChange)
@@ -165,9 +152,6 @@
     colorOptions.forEach(color => color.addEventListener("click",
     onColorClick));
     
-    modeBtn.addEventListener("click", onModeClick)
-
-
 
 
     let canvasHistory = [canvas.toDataURL()]; // 그리기 이력을 저장하는 배열에 초기 canvas 상태를 추가
