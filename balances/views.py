@@ -45,7 +45,6 @@ def detail(request, question_pk):
     }
     return render(request, 'balances/detail.html', context)
 
-import json
 def answer(request, question_pk, select_answer):
     question = Question.objects.get(pk=question_pk)
     user = request.user
@@ -72,7 +71,7 @@ def answer(request, question_pk, select_answer):
         # 유저의 워드 딕셔너리 만들기
         word_list = result.word
         if not word_list:
-            word_list = []
+            word_list = {}
         
         # 워드 값이 있는 경우에만 딕셔너리 만들어주기
         if question.word1 != None and question.word2 != None:
@@ -81,13 +80,16 @@ def answer(request, question_pk, select_answer):
                 selected_word = question.word1
             elif select_answer == 2:
                 selected_word = question.word2
-            # Append the selected word to the list
-            word_list.append(selected_word)
-            
+            # Split the selected_word by comma (or any other delimiter you prefer)
+            selected_words = selected_word.split(',')
+
+            # Append the selected words to the list
+            word_list[str(question_pk)] = selected_words
+            # word_list.extend(selected_words)
+
             # Update the word list in the Result model
             result.word = word_list
             result.save()
-        
         # 점수 매기기
         if question_pk <= 13:
             # 질문 번호가 홀수인지 짝수인지 확인
@@ -112,6 +114,7 @@ def answer(request, question_pk, select_answer):
                 user.taste = 'F'
             user.save()
     return redirect('balances:detail', question_pk)
+
 
 def update(request, question_pk):
     question = Question.objects.get(pk=question_pk)
