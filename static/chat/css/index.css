@@ -11,7 +11,18 @@ aside.base--item {
 .main--title--icon {
   color: #f9cbff;
 }
-
+.index--table--box {
+  text-align: center;
+  width: 200px;
+}
+.index--content {
+  /* text-align: center; */
+  width: 300px; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap; 
+  /* display: inline-block; */
+}
 .chat--create--btn {
   border-radius: 6px;
   background: #fdeaff;
