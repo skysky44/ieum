@@ -64,7 +64,6 @@ def detail(request, paint_pk):
 @csrf_exempt
 @login_required
 def update(request, paint_pk):
-     
     paint = Paint.objects.get(pk=paint_pk)
     if request.user == paint.user:
         if request.method == 'POST':
@@ -117,3 +116,16 @@ def like_users(request, paint_pk):
         'paint_likes_count': paint.like_users.count()
     }
     return JsonResponse(context)
+
+
+def profile_update(request, paint_pk):
+    paint = Paint.objects.get(pk=paint_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        user.image = paint.image
+        user.save()
+        return redirect('accounts:profile', user.username)
+
+    context = {'paint': paint}
+    return render(request, 'paints/index.html', context)

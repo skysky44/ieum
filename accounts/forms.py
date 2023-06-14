@@ -207,6 +207,10 @@ class CustomUserChangeForm(UserChangeForm):
         widget=forms.CheckboxSelectMultiple,
     )
 
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(CustomPasswordChangeForm, self).__init__(*args, **kwargs)
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
 
