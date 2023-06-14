@@ -1,38 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'posts/css/main_search.css' %}">
+{% endblock head %}
 
 {% block title %}검색 {% endblock title %}
 
 
 {% block content %}
-
-<h2>{{ query }}에 대한 검색 결과</h2>
-
-<div>
-  {% if meeting_posts %}
-      <h3>공감 이음:</h3>
-      {% for post in meeting_posts %}
-          <h2>제목: {{ post.title }}</h2>
-          <p> 내용: {{ post.content|safe }}</p>
-      {% empty %}
-          <p>검색 결과 없습니다.</p>
-      {% endfor %}
-  {% endif %}
-</div>
-<div>
-  {% if anonymous_posts %}
-      <h3>고민 이음:</h3>
-      {% for post in anonymous_posts %}
-          <h2>제목: {{ post.title }}</h2>
-          <p>내용: {{ post.content|safe }}</p>
-      {% empty %}
-          <p>검색 결과 없습니다.</p>
-      {% endfor %}
-  {% endif %}
-  
-  {% if not meeting_posts and not anonymous_posts %}
-      <p>검색 결과 없습니다.</p>
-  {% endif %}
-</div>
+<article>
+  <div class="search--word--wrap"><h3 class="search--word">{{ query }}</h3>에 대한 검색 결과</div>
+  <div class="search--list">
+    <section class="search--wrap">
+      <p class="search--title">공감 이음 게시판 결과<i class="bi bi-caret-down-fill"></i></p>
+      {% if meeting_posts %}
+        {% for post in meeting_posts %}
+          <article class="search--content">
+            <a href="{% url 'posts:detail' post.pk %}">
+                <h4>{{ post.title }}</h4>
+                <p> {{ post.content|slice:":188"|safe }}</p>
+            </a>
+          </article>
+        {% endfor %}
+      {% else %}
+          <article class="search--content">
+            <p>검색 결과 없습니다.</p>
+          </article>
+      {% endif %}
+    </section>
+    <section class="search--wrap">
+      <p class="search--title">고민 이음 게시판 결과<i class="bi bi-caret-down-fill"></i></p>
+      {% if anonymous_posts %}
+          {% for post in anonymous_posts %}
+            <article class="search--content">
+              <a href="{% url 'posts:detail' post.pk %}">
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.content|slice:":188"|safe }}</p>
+              </a>
+            </article>
+          {% endfor %}
+        {% else %}
+          <article class="search--content">
+            <p>검색 결과 없습니다.</p>
+          </article>
+      {% endif %}
+    </section>
+        {% comment %} {% if not meeting_posts and not anonymous_posts %}
+            <p>검색 결과 없습니다.</p>
+        {% endif %} {% endcomment %}
+  </div>
+</article>
 
 {% endblock content %}
 

@@ -114,6 +114,7 @@
 
     // 초기 회원가입 버튼 비활성화
     signupButton.disabled = true;
+    signupButton.value = '회원가입 (중복 확인 필수)'
 
     checkUsernameButton.addEventListener('click', function () {
       const usernameInput = document.getElementById('id_username');
@@ -197,6 +198,7 @@
         passwordErrorText === ''
       ) {
         signupButton.disabled = false; // 버튼 활성화
+        signupButton.value = '회원가입';
       } else {
         disableSignupButton();
       }
