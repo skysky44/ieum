@@ -33,24 +33,30 @@
                 {% if request.user.is_authenticated %}
                   <form id="paints-form-{{paint.pk}}" data-paint-id="{{ paint.pk }}">
                     {% csrf_token %}
-                    {% if request.user in paint.like_users.all %}
-                      <button type="submit" class="">
-                        <i class="bi-suit-heart-fill" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
-                          <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
-                        </i>
-                      </button>
+                    {% if request.user == paint.user %}
+                      {% if request.user in paint.like_users.all %}
+                        <button type="submit" class="">
+                          <i class="bi-suit-heart-fill" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
+                            <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
+                          </i>
+                        </button>
+                      {% else %}
+                        <button type="submit" class="">
+                          <i class="bi-suit-heart" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
+                            <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
+                          </i>
+                        </button>
+                      {% endif %}
                     {% else %}
-                      <button type="submit" class="">
-                        <i class="bi-suit-heart" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
-                          <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
-                        </i>
-                      </button>
                     {% endif %}
                   </form>
-                {% endif %}  
-                <a class="paint--update" href="{% url 'paints:update' paint.pk %}">
-                  <i class="bi-pencil-fill" style="color: #008d63;"></i>
-                </a>
+                {% endif %} 
+                {% if request.user == paint.user %}
+                  <a class="paint--update" href="{% url 'paints:update' paint.pk %}">
+                    <i class="bi-pencil-fill" style="color: #008d63;"></i>
+                  </a>
+                {% else %}
+                {% endif %}
               </div>
               <p class="paint--user">{{ paint.user }}</p>
             </div>

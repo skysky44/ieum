@@ -294,7 +294,7 @@ def profile(request, username):
         # fortunes = Fortune.objects.filter(user_id=user_id)
     except ObjectDoesNotExist:
         fortunes = None
- 
+
     # 자기소개 표시
     introductions_list = []
     sign = ["[","]","'",","]
