@@ -71,6 +71,7 @@ def extract_image_urls(content):
     image_urls = [tag['src'] for tag in image_tags]
     return image_urls
 
+
 def index(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')
     page = request.GET.get('page', '1')
@@ -103,7 +104,7 @@ def index(request):
         'tags': tags,
         'post_image_urls': [post.image_urls for post in page_obj],
     }
-    
+
     return render(request, 'posts/index.html', context)
 
 
@@ -274,9 +275,14 @@ def detail(request, post_pk):
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
 
-    # 조회수
-    post.views += 1
+    # 조회수 증가
+    post.view_count += 1
     post.save()
+    
+    # image_urls를 리스트로 변환
+    post.image_urls = extract_image_urls(post.content)
+    # post.image_urls = post.image_urls.split(', ')
+
 
     context ={
         'post' : post,
@@ -290,6 +296,7 @@ def detail(request, post_pk):
         'comment_likes' : comment_likes,
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
+        'post.image_urls' : post.image_urls,
         'previous_post': previous_post,
         'next_post': next_post
     }

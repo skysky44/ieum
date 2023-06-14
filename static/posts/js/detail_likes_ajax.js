@@ -26,12 +26,12 @@
 
       if (data.is_liked) {
         likeButton.innerHTML = `
-          <i class="bi bi-hand-thumbs-up text-primary" style="font-size:1.5rem;"></i>
+          <i class="bi bi-suit-heart-fill" style="#ffdcae"></i>
         `;
         likeButton.setAttribute("value", "좋아요");
       } else {
         likeButton.innerHTML = `
-          <i class="bi bi-hand-thumbs-up text-secondary" style="font-size:1.5rem;"></i>
+          <i class="bi bi-suit-heart text-secondary" style="#ffdcae"></i>
         `;
         likeButton.setAttribute("value", "좋아요 취소");
       }

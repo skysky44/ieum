@@ -22,11 +22,11 @@ form.forEach(function (form) {
       const commentCountTag2 = o_form.querySelector('#comment-like-count-2');
 
       if (commentLike) {
-        heartButton.textContent = "❤️";
-        heartButton2.textContent = "❤️";
+        heartButton.innerHTML = '<i class="bi bi-suit-heart-fill"></i>';
+        heartButton2.innerHTML = '<i class="bi bi-suit-heart-fill"></i>';
       } else {
-        heartButton.textContent = "🤍";  
-        heartButton2.textContent = "🤍";  
+        heartButton.innerHTML = '<i class="bi bi-suit-heart"></i>';  
+        heartButton2.innerHTML = '<i class="bi bi-suit-heart"></i>';  
       }
 
       const commentCountData = response.data.like_count;
@@ -61,11 +61,11 @@ form2.forEach(function (form) {
       const commentLike = response.data.liked;
 
       if (commentLike) {
-        heartButton.textContent = "❤️";
-        heartButton2.textContent = "❤️";
+        heartButton.innerHTML = '<i class="bi bi-suit-heart-fill"></i>';
+        heartButton2.innerHTML = '<i class="bi bi-suit-heart-fill"></i>';
       } else {
-        heartButton.textContent = "🤍";  
-        heartButton2.textContent = "🤍";  
+        heartButton.innerHTML = '<i class="bi bi-suit-heart"></i>';  
+        heartButton2.innerHTML = '<i class="bi bi-suit-heart"></i>';  
       }
 
       const commentCountData = response.data.like_count;

@@ -64,7 +64,8 @@
 }
 .post--etc--wrap {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+  color: #777;
 }
 .user--wrap {
   display: flex;
