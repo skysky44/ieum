@@ -1,19 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}문제만들기{% endblock title %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'balances/css/balance.css' %}">
+{% endblock head %}  
 
-{% block style %}
-{% endblock style %}  
+{% block title %}밸런스게임: 수정하기 - {% endblock title %}
+
+{% block aside %}
+<article class="main--title--wrap">
+  <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-controller"></i></span> 밸런스 수정 A or B</h1>
+  <p>자신의 성향을 간단한 게임을 통해 알아가 보세요!</p>
+</article>
+{% endblock aside %} 
 
 {% block content %}
-<h1>수정하기</h1>
+<article>
   <form action="{% url 'balances:update' question.pk %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}}
-
-    <input type="submit" value="수정">
+    {% comment %} {{form.as_p}} {% endcomment %}
+    <div class="create--balance--title--wrap">
+      <p class="create--balance--title">질문</p>
+      <p class="">{{ form.title }}</p>
+    </div>
+    <div class="create--blance--list">
+      <div class="create--a--container">
+        <h2 class="create--answer--title font--gangwon">A</h2>
+        <div class="balance--menu">
+          <p class="balance--lable">이미지</p>
+          <div class="balance--content">
+            {{ form.image1 }}
+          </div>
+        </div>
+        <div class="balance--menu">
+          <p class="balance--lable">내용</p>
+          <div class="balance--content">
+            {{ form.content1 }}
+          </div>
+        </div>
+        <div class="balance--menu">
+          <p class="balance--lable">추가할 단어</p>
+          <div class="balance--content">
+            {{ form.word1 }}
+          </div>
+        </div>
+      </div>
+      <div class="create--b--container">
+        <h2 class="create--answer--title font--gangwon">B</h2>
+        <div class="balance--menu">
+          <p class="balance--lable">이미지</p>
+          <div class="balance--content">
+            {{ form.image2 }}
+          </div>
+        </div>
+        <div class="balance--menu">
+          <p class="balance--lable">내용</p>
+          <div class="balance--content">
+            {{ form.content2 }}
+          </div>
+        </div>
+        <div class="balance--menu">
+          <p class="balance--lable">추가할 단어</p>
+          <div class="balance--content">
+            {{ form.word2 }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="balance--create--etc--wrap">
+      <a class="balance--cancel-btn" href="{% url 'balances:detail' question.pk %}">취소</a>
+      <input class="balance--create-btn" type="submit" value="수정">
+    </div>
   </form>
+</article>
 {% endblock content %}
 
 {% block script %}

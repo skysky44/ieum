@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} : {{ person.username }}님의 프로필 {% endblock title %}
+{% block title %}{{ person.username }}님의 프로필 - {% endblock title %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
   
@@ -17,6 +17,7 @@
       <i title="로그아웃" class="bi bi-box-arrow-right" style="font-size:1.8rem;"></i>
     </a>
   </div>
+  
 {% else %}
   <div class="profile--wrap mt-5 mx-5">
     <div class="d-flex flex-column">
@@ -140,7 +141,16 @@
       {% for word in word_list %}
         <p>{{ word }}</p>
       {% endfor %}
-      
+
+      <!-- 지현님 워드 표시하셨던 클래스 혹시 몰라서 안 지웠습니당 -->
+      {% comment %} <div class="profile--word--wrap">
+        {% for w in balance_result.word.values %}
+          <p class="profile--word"># {{w}}</p>
+        {% endfor %}
+        {% for word in word_list %}
+          <span>{{word}}</span>
+        {% endfor %}
+      </div> {% endcomment %}
 
       <!-- 프로필 음악 -->
       <div class="profile--music--box mt-3">

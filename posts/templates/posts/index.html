@@ -55,7 +55,8 @@
                       <img class="user--image" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
                       <p class="">{{ post.user }}</p>
                     </a>
-                    <p class="post--time"><i>{{ post.created_time }}</i></p>
+                    <p class="post--time"><i></i>{{ post.created_time }}</p>
+                    <p>조회 {{ post.view_count }}</p>
                     <div class="post--like">
                       <form action="{% url 'posts:likes' post.pk %}" method="POST">
                         {% csrf_token %}
@@ -201,25 +202,8 @@
     // 페이지 로드 시 페이지네이션 업데이트
     updatePagination();
   });
-  
+
 </script>
 {% endblock content %}
 {% block script %}
-<!-- <script>
-  const children = document.querySelectorAll('.post--content--wrap > p > img');
-  let leftValue = 0;
-
-  
-  children.forEach((image, index) => {
-  let rotateValue;
-  if (index % 2 === 0) {
-    // 짝수 번째 이미지의 경우
-    rotateValue = -(Math.abs((index + 1) * 0.01));
-  } else {
-    // 홀수 번째 이미지의 경우
-    rotateValue = (index + 1) * 0.01;
-  }
-  image.style.transform = `rotate(${rotateValue}turn)`;
-  });
-</script> -->
 {% endblock script %}

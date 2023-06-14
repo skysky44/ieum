@@ -14,21 +14,21 @@ def extract_image_urls(content):
     image_urls = re.findall(pattern, content)
     return image_urls
 
-class ListField(models.TextField):
-    def from_db_value(self, value, expression, connection):
-        if value is not None:
-            return value.split(", ")
-        return []
+# class ListField(models.TextField):
+#     def from_db_value(self, value, expression, connection):
+#         if value is not None:
+#             return value.split(", ")
+#         return []
 
-    def to_python(self, value):
-        if isinstance(value, list):
-            return value
-        if value is not None:
-            return value.split(", ")
-        return []
+#     def to_python(self, value):
+#         if isinstance(value, list):
+#             return value
+#         if value is not None:
+#             return value.split(", ")
+#         return []
 
-    def get_prep_value(self, value):
-        return ', '.join(value)
+#     def get_prep_value(self, value):
+#         return ', '.join(value)
 
 # Create your models here.
 class Post(models.Model):
@@ -38,22 +38,24 @@ class Post(models.Model):
     content = RichTextUploadingField()
     # content = CKEditorField('Content', config_name='extends')
     category = models.CharField(max_length=20)
-    address = models.CharField(max_length=20)
+    address = models.CharField(max_length=20, blank=True)
+    place_name = models.CharField(max_length=50, blank=True) 
     created_at = models.DateTimeField(auto_now = True)
     updated_at = models.DateTimeField(auto_now = True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_post')
     tags = TaggableManager(blank=True)
     report = models.BooleanField('신고', default=False)
-    image_urls = ListField(blank=True, null=True)
-    # image_urls = models.TextField(blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        self.image_urls = extract_image_urls(self.content)
-        super().save(*args, **kwargs)
+    # image_urls = ListField(blank=True, null=True)
+    image_urls = models.TextField(blank=True, null=True)
+    view_count = models.PositiveIntegerField(default=0)
+    
     # def save(self, *args, **kwargs):
-    #     # content에서 이미지 URL 추출하여 image_urls 필드에 저장
-    #     self.image_urls = ', '.join(extract_image_urls(self.content))
+    #     self.image_urls = extract_image_urls(self.content)
     #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # content에서 이미지 URL 추출하여 image_urls 필드에 저장
+        self.image_urls = ', '.join(extract_image_urls(self.content))
+        super().save(*args, **kwargs)
 
     @property
     def created_time(self):

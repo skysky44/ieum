@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .forms import PostForm, CommentForm, PostReportForm, CommentReportForm
@@ -19,11 +19,11 @@ def home(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
 
-    # # image_urls를 리스트로 변환
-    # for post in category_class:
-    #     post.image_urls = post.image_urls.split(',')
-    # for post in category_anonymous:
-    #     post.image_urls = post.image_urls.split(',')
+    # image_urls를 리스트로 변환
+    for post in category_class:
+        post.image_urls = post.image_urls.split(',')
+    for post in category_anonymous:
+        post.image_urls = post.image_urls.split(',')
 
     context = {
         'paints': paints,
@@ -37,12 +37,39 @@ def home(request):
 def aboutus(request):
     return render(request, 'aboutus.html')
 
+from django.db.models import Q
+# 검색 기능
+def main_search(request):
+    query = request.GET.get('query')
+    print(query)
+
+    if query:
+        meeting_posts = Post.objects.filter(
+            Q(category__icontains='모임'),
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+
+        anonymous_posts = Post.objects.filter(
+            Q(category__icontains='익명'),
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+
+
+    context = {
+        'query': query,
+        'meeting_posts': meeting_posts,
+        'anonymous_posts': anonymous_posts,
+    }
+    return render(request, 'posts/main_search_results.html', context)
+
+  
 from bs4 import BeautifulSoup
 def extract_image_urls(content):
     soup = BeautifulSoup(content, 'html.parser')
     image_tags = soup.find_all('img')
     image_urls = [tag['src'] for tag in image_tags]
     return image_urls
+  
 
 def index(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')
@@ -66,15 +93,15 @@ def index(request):
 
     total_pages = paginator.num_pages
 
-    # for post in page_obj:
-    #     post.image_urls = extract_image_urls(post.content)
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
         'tags': tags,
-        # 'post_image_urls' : post.image_urls,
+        'post_image_urls': [post.image_urls for post in page_obj],
     }
 
     return render(request, 'posts/index.html', context)
@@ -102,8 +129,8 @@ def anonymous(request):
 
     total_pages = paginator.num_pages
 
-    # for post in page_obj:
-    #     post.image_urls = extract_image_urls(post.content)
+    for post in page_obj:
+        post.image_urls = extract_image_urls(post.content)
 
     context = {
         'category_class': page_obj,
@@ -235,6 +262,8 @@ def detail(request, post_pk):
     comment_forms = []
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
+    previous_post = Post.objects.filter(id__lt=post_pk).order_by('-id').first()
+    next_post = Post.objects.filter(id__gt=post_pk).order_by('id').first()
     for comment in comments:
         u_comment_form = (
             comment,
@@ -244,6 +273,16 @@ def detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+
+    # 조회수 증가
+    post.view_count += 1
+    post.save()
+    
+    # image_urls를 리스트로 변환
+    post.image_urls = extract_image_urls(post.content)
+    # post.image_urls = post.image_urls.split(', ')
+
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,
@@ -256,6 +295,9 @@ def detail(request, post_pk):
         'comment_likes' : comment_likes,
         'post_report_form' : post_report_form,
         'comment_report_form' : comment_report_form,
+        'post.image_urls' : post.image_urls,
+        'previous_post': previous_post,
+        'next_post': next_post
     }
 
     return render(request, 'posts/detail.html', context)
@@ -286,6 +328,10 @@ def anonymous_detail(request, post_pk):
     tags = post.tags.all()
     posts = Post.objects.exclude(user=request.user).order_by('like_users')
     music = PostTrack.objects.filter(post=post_pk)
+    # 조회수
+    post.views += 1
+    post.save()
+
     context ={
         'post' : post,
         'comment_forms': comment_forms,
@@ -479,15 +525,22 @@ def likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
         post.like_users.remove(request.user)
+        is_liked = False
     else:
         post.like_users.add(request.user)
+        is_liked = True
 
-    # 이전 페이지로 리디렉션
-    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
-    if referer:
-        return redirect(referer)
+    # # 이전 페이지로 리디렉션
+    # referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    # if referer:
+    #     return redirect(referer)
+
+    context = {
+        'is_liked': is_liked,
+        'like_count': post.like_users.count(),
+    }
     
-    return redirect('posts:index')
+    return JsonResponse(context)
 
 
 def anonymous_likes(request, post_pk):
@@ -559,7 +612,9 @@ def comment_create(request, post_pk):
             comment.category = post.category  # 혹은 다른 문자열 값
             comment.user = request.user
             comment.save()
-            return redirect('posts:detail', post.pk)
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
 
         
 def anonymous_comment_create(request, post_pk):
@@ -720,7 +775,7 @@ def search_spotify(request):
             }
             return render(request, 'posts/search_results.html', context)
 
-    return render(request, 'posts/create.html')
+    return render(request, 'posts/search_results.html')
 
 
 def search(query):

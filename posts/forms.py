@@ -4,7 +4,7 @@ from taggit.forms import TagField, TagWidget
 from ckeditor.widgets import CKEditorWidget
 
 class PostForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorWidget(config_name='default'))
+    # content = forms.CharField(widget=CKEditorWidget(config_name='default'))
     category = forms.ChoiceField(
         label='카테고리',
         widget=forms.Select(
@@ -35,14 +35,13 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ('title', 'content', 'category', 'address', 'tags')
+        fields = ('title', 'content', 'category', 'address', 'place_name', 'tags')
 
         widgets = {
             'title': forms.TextInput(
                 attrs={
                     'class': 'form-control',
                     'placeholder': '제목을 입력해주세요',
-                    'style': 'width:400px;'
                 }
             ),
 
@@ -57,7 +56,12 @@ class PostForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': '주소',
-                    'style': 'width:350px;'
+                }
+            ),
+            'place_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': '장소 이름',
                 }
             ),
         }
@@ -73,6 +77,8 @@ class PostForm(forms.ModelForm):
         self.fields['content'].widget.attrs['style'] = 'width:100%; border: none;'
         self.fields['address'].label = '주소'
         self.fields['address'].widget.attrs['style'] = 'width:100%; border: none;'
+        self.fields['place_name'].label = '주소'
+        self.fields['place_name'].widget.attrs['style'] = 'width:100%; border: none;'
         self.fields['tags'].label = '태그'
         self.fields['tags'].widget.attrs['class'] = 'form-control'
         self.fields['tags'].widget.attrs['placeholder'] = '콤마로 구분하여 입력해주세요'

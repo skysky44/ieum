@@ -3,24 +3,41 @@
 {% block title %} 채팅 {% endblock title %}
 
 {% block head %}
+<link rel="stylesheet" href="{% static 'chat/css/room.css' %}">
 {% endblock head %}  
 
 {% block content %}
-  <div id="chat-log">
-    {% for message in messages %}
+  <div class="room--wrap">
+    <div class="room--title">
+      <a href="{% url 'chat:index' %}" style="margin-left:10px;"><i class="bi bi-arrow-bar-left" style="font-size: 1.5rem;"></i></a>
+      <p style="margin:auto;">{{ room_name }}</p>
+    </div>
+    <div id="chat-log" class="room--content--box" style="padding:10px;">
+      {% for message in messages %}
         <div class="message">
-            <p>{{ message.user }}:{{ message.content }}</p>
+          {% if request.user == message.user %}
+            <div class="room--content--mymsg">
+              {% comment %} <p class="room--content--time1">{{message.timestamp|date:'g:i A'}}</p> {% endcomment %}
+              <p class="room--content--time1" data-current-time="{% now 'A g:i' %}">{{ message.timestamp|date:'A g:i' }}</p>
+              <p class="room--content--wrap1">{{ message.content }}</p>
+            </div>
+          {% else %}
+            <p>{{ message.user }}</p>
+            <div class="room--content--anothermsg">
+              <p class="room--content--wrap2">{{ message.content }}</p>
+              <p class="room--content--time2" data-current-time="{% now 'A g:i' %}">{{message.timestamp|date:'A g:i'}}</p>
+            </div>
+          {% endif %}
         </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
+    <div>
+      <form id="chat-form" data-room-name="{{ room_name }}" class="room--chatForm--wrap">
+        <input type="text" id="chat-message" class="room--chatForm--input" autocomplete="off" placeholder="메시지를 입력하세요">
+        <button type="submit" class="room--chatForm--sendBtn"><i class="bi bi-arrow-up-circle-fill"></i></button>
+      </form>
+    </div>
   </div>
-  <div>
-    <form id="chat-form" data-room-name="{{ room_name }}">
-        <input type="text" id="chat-message" autocomplete="off">
-        <button type="submit">Send</button>
-    </form>
-  </div>
-
-  <a href="{% url 'chat:index' %}">뒤로가기</a>
 {% endblock content %}
 
 {% block script %}
@@ -35,61 +52,128 @@
     const chatSocket = new WebSocket(
     
     wsStart + window.location.host +
-        '/ws/chat/' + roomName + '/'
+      '/ws/chat/' + roomName + '/'
     );
     console.log(chatSocket)
 
     // WebSocket 연결이 열린 경우 실행되는 이벤트 핸들러입니다.
     chatSocket.onopen = function(event) {
-        console.log('WebSocket connection is open.');
-
-        // Send a test message
-
+      console.log('WebSocket connection is open.');
+      // Send a test message
     };
 
     // WebSocket 메시지 수신 시 실행되는 이벤트 핸들러입니다.
     chatSocket.onmessage = function(event) {
-        console.log(event.data)
-        const message = JSON.parse(event.data);
-        console.log(message);
-        if (message.type === 'chat.message') {
-            const chatLog = document.getElementById('chat-log');
+      console.log(event.data)
+      const message = JSON.parse(event.data);
+      console.log(message);
+      if (message.type === 'chat.message') {
+        const chatLog = document.getElementById('chat-log');
+        //const messageElement = document.createElement('div');
+        //messageElement.classList.add('message');
+        //const content = document.createElement('p');
+        //content.textContent = `${message.user}:${message.message}`;
+        //console.log(message.message)
+        //messageElement.appendChild(content);
+        //chatLog.appendChild(messageElement)
 
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-
-            const content = document.createElement('p');
-            content.textContent = `${message.user}:${message.message}`;
-            console.log(message.message)
-            messageElement.appendChild(content);
-
-            chatLog.appendChild(messageElement)
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        const currentUser = '{{ request.user.username }}';
+        console.log('Current User:', currentUser);
+        //const timestampElement1 = document.querySelector('.room--content--time1');
+        //const timestampElement2 = document.querySelector('.room--content--time2');
+        if (message.user === currentUser) {
+          console.log('true');
+        } else {
+          console.log('false');
         }
+        
+        if (message.user === currentUser) {
+          const contentMyMsg = document.createElement('div');
+          contentMyMsg.classList.add('room--content--mymsg');
+          const contentTime1 = document.createElement('p');
+          const timestampElement1 = document.querySelector('.room--content--time1');
+
+          if (timestampElement1) {
+            //contentTime1.textContent = timestampElement1.dataset.currentTime;
+            const options = { hour: "numeric", minute: "numeric" };
+            contentTime1.textContent = new Date().toLocaleTimeString("ko-KR", options);
+            console.log(contentTime1.textContent)
+          } else {
+            const options = { hour: "numeric", minute: "numeric" };
+            contentTime1.textContent = new Date().toLocaleTimeString("ko-KR", options);
+            //console.log(new Date().toLocaleTimeString())
+            console.log(contentTime1.textContent)
+          }
+
+          contentTime1.classList.add('room--content--time1');
+          const content1 = document.createElement('p');
+          content1.textContent = `${message.message}`;
+          content1.classList.add('room--content--wrap1');
+          contentMyMsg.appendChild(contentTime1)
+          contentMyMsg.appendChild(content1)
+          messageElement.appendChild(contentMyMsg)
+          chatLog.appendChild(messageElement)
+        } else {
+          const contentAnotherMsg = document.createElement('div');
+          contentAnotherMsg.classList.add('room--content--anothermsg');
+          const content2 = document.createElement('p');
+          content2.textContent = `${message.message}`;
+          content2.classList.add('room--content--wrap2');
+          console.log(content2)
+          const contentTime2 = document.createElement('p');
+          const timestampElement2 = document.querySelector('.room--content--time2');
+
+          if (timestampElement2) {
+            contentTime2.textContent = timestampElement2.dataset.currentTime;
+            console.log(contentTime2.textContent)
+          } else {
+            const options = { hour: "numeric", minute: "numeric" };
+            contentTime2.textContent = new Date().toLocaleTimeString("ko-KR", options);
+            console.log(contentTime2.textContent)
+          }
+
+          contentTime2.classList.add('room--content--time2');
+          contentAnotherMsg.appendChild(contentTime2)
+          contentAnotherMsg.appendChild(content2)
+          messageElement.appendChild(contentAnotherMsg)
+          chatLog.appendChild(messageElement)
+        }
+        // 채팅창에 내용을 입력하면 스크롤의 위치를 아래로 이동
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
     };
 
     chatSocket.onclose = function (event) {
-        console.log('WebSocket connection closed.');
-      };
-  
-      chatSocket.onerror = function (event) {
-        console.error('WebSocket error:', event);
-      };
+      console.log('WebSocket connection closed.');
+    };
+
+    chatSocket.onerror = function (event) {
+      console.error('WebSocket error:', event);
+    };
 
     // 채팅 메시지를 전송하는 이벤트 핸들러입니다.
     document.getElementById('chat-form').onsubmit = function(event) {
-        event.preventDefault();
-        const messageInput = document.getElementById('chat-message');
-        const message = messageInput.value.trim();
-        console.log(message);
+      event.preventDefault();
+      const messageInput = document.getElementById('chat-message');
+      const message = messageInput.value.trim();
+      console.log(message);
+      // 전송할 메시지 객체를 생성하여 WebSocket을 통해 전송합니다.
+      const chatMessage = {
+          'message': message
+      };
+      chatSocket.send(JSON.stringify(chatMessage));
+      messageInput.value = '';
+    }
 
-        // 전송할 메시지 객체를 생성하여 WebSocket을 통해 전송합니다.
-        const chatMessage = {
-            'message': message
-        };
-        chatSocket.send(JSON.stringify(chatMessage));
+    // 새로고침하면 마지막 채팅이 있는 스크롤로 이동
+    const objDiv = document.getElementById("chat-log");
+    console.log(objDiv.scrollTop)
+    console.log(objDiv.scrollHeight)
+    objDiv.scrollTop = objDiv.scrollHeight;
+    console.log(objDiv.scrollTop)
 
-        messageInput.value = '';
-    };
-</script>
+  </script>
 {% endblock script %}
 

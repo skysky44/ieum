@@ -1,0 +1,112 @@
+.room--wrap {
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    width: 600px;
+    margin: auto;
+}
+.room--title {
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    font-size: 25px;
+    font-weight: 900;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+}
+.room--content--box {
+    max-width: 100%;
+    max-height: 450px;
+    /* overflow-x: hidden;
+    overflow-y: auto; */
+    overflow:auto;
+}
+.room--content--box::-webkit-scrollbar {
+    width: 6px;
+}
+.room--content--box::-webkit-scrollbar-thumb {
+    height: 30%;
+    background: #f9cbff;
+    border-radius: 10px;
+}
+.room--content--box::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);
+}
+.room--content--mymsg {
+    display: flex;
+    justify-content: end;
+}
+.room--content--anothermsg {
+    display: flex;
+    justify-content: start;
+}
+.room--content--time1 {
+    font-size: 10px;
+    color: #c4c4c4;
+    align-items: end;
+    display: flex;
+    margin: 10px;
+}
+.room--content--time2 {
+    font-size: 10px;
+    color: #c4c4c4;
+    align-items: end;
+    display: flex;
+    margin: 10px;
+}
+.room--content--wrap1 {
+    display: inline-block;
+    /* border-radius: 15px; */
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 5px 15px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    word-break:break-all;
+}
+.room--content--wrap2 {
+    display: inline-block;
+    /* border-radius: 15px; */
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 5px 15px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    word-break:break-all;
+}
+.room--content--mymsg > .room--content--wrap1 {
+    background-color: #f9dafd;
+    color: black;
+}
+.room--content--anothermsg > .room--content--wrap2 {
+    background-color: #f1f0f0;
+}
+.room--chatForm--wrap {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    border-top: 2px solid #f0f0f0;
+}
+.room--chatForm--input {
+    width: 90%;
+    height: calc(100% - 1px);
+    border: none;
+    padding: 5px 10px;
+    /* width: 90%;
+    height: calc(100% - 1px);
+    padding: 7px 15px;
+    border-radius: 40px;
+    border: 1px solid #ddd; */
+}
+.room--chatForm--input:focus {
+    outline: none;
+}
+.room--chatForm--sendBtn {
+    outline: none;
+    border: none;
+    background: none;
+    color: #f39aff;
+    font-size: 1.5rem;
+    margin-left: 10px;
+}

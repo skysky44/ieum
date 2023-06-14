@@ -15,5 +15,10 @@ urlpatterns = [
     path('save_track/', views.save_track, name='save_track'),
     path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
     path('word_create/',views.word_create, name='word_create'),
-
+    # 중복 아이디, 이메일 체크
+    path('check-username/', views.check_username, name='check_username'),
+    path('check-email/', views.check_email, name='check_email'),
+    # 이메일 인증
+    path('activate/<str:uidb64>/<str:token>/', views.activate, name="activate"),
+    path('complete_signup/', views.complete_signup, name="complete_signup"),
 ]

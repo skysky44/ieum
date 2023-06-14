@@ -4,16 +4,16 @@
   <link rel="stylesheet" href="{% static 'my_messages/css/sent_messages.css' %}">
 {% endblock head %}
 {% block content %}
-  <div class="d-flex justify-content-between">
-    <h2>보낸 쪽지함</h2>
+  <div class="sent_messages--title">
+    <h2><i class="bi bi-mailbox" style="color: #ddd0b3;"></i> 송신 쪽지함</h2>
     <div class="d-flex align-items-center">
-      <a href="{% url 'my_messages:received_messages' %}" class="sent_messages--btn">받은 쪽지함으로 가기</a>
+      <a href="{% url 'my_messages:received_messages' %}" class="sent_messages--btn">수신 쪽지함</a>
     </div>
   </div>
   <table class="table table-hover mt-5">
     <thead style="text-align: center;">
       <tr>
-        <th scope="col">이름</th>
+        <th scope="col">받은이</th>
         <th scope="col">보낸 시간</th>
         <th scope="col">확인 여부</th>
       </tr>
@@ -26,7 +26,7 @@
               <a href="{% url 'my_messages:view_message' message.id %}?param=2">{{ message.receiver }}</a>
             </td>
             <td style="text-align: center;  width: 200px;">
-              <a href="{% url 'my_messages:view_message' message.id %}?param=2">{{ message.timestamp }}</a>
+              <a href="{% url 'my_messages:view_message' message.id %}?param=2">{{ message.timestamp|date:'Y년 n월 d일 A g:i' }}</a>
             </td>
             <td style="text-align: center;  width: 200px;">
               {% if message.is_read %}
@@ -46,14 +46,17 @@
   </table>
   
   <!-- 페이지네이션 -->
-  <ul class="pagination justify-content-center">
+  <ul class="pagination justify-content-center" style="margin: 30px 0;">
     {% if sent_messages.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ sent_messages.previous_page_number }}"><i class="bi bi-caret-left" style="color: black;"></i></a>
+        <a class="page-link" style="color: black;" href="?page=1">처음으로</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" style="color: black;" href="?page={{ sent_messages.previous_page_number }}">이전</a>
       </li>
     {% else %}
       <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-left" style="color: black;"></i></a>
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
       </li>
     {% endif %}
     {% for page_number in sent_messages.paginator.page_range %}
@@ -71,11 +74,14 @@
     {% endfor %}
     {% if sent_messages.has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ sent_messages.next_page_number }}"><i class="bi bi-caret-right" style="color: black;"></i></a>
+        <a class="page-link" style="color: black;" href="?page={{ sent_messages.next_page_number }}">다음</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" style="color: black;" href="?page={{ sent_messages.paginator.num_pages }}">마지막으로</a>
       </li>
     {% else %}
       <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><i class="bi bi-caret-right" style="color: black;"></i></a>
+        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
       </li>
     {% endif %}
   </ul>
