@@ -46,7 +46,8 @@ class Post(models.Model):
     report = models.BooleanField('신고', default=False)
     # image_urls = ListField(blank=True, null=True)
     image_urls = models.TextField(blank=True, null=True)
-
+    view_count = models.IntegerField(default=0)
+    
     # def save(self, *args, **kwargs):
     #     self.image_urls = extract_image_urls(self.content)
     #     super().save(*args, **kwargs)

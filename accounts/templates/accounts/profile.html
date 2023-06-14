@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} : {{ person.username }}님의 프로필 {% endblock title %}
+{% block title %}{{ person.username }}님의 프로필 - {% endblock title %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
   
@@ -17,6 +17,7 @@
       <i title="로그아웃" class="bi bi-box-arrow-right" style="font-size:1.8rem;"></i>
     </a>
   </div>
+  
 {% else %}
   <div class="profile--wrap mt-5 mx-5">
     <div class="d-flex flex-column">

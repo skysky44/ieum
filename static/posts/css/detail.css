@@ -1,15 +1,6 @@
 
-.detail--container {
-    width: 100%;
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 1px 4px 2px 2px rgba(0, 0, 0, 0.25);
-    padding: 1rem;
-    margin: 1rem;
-}
 #detail--main--box {
-  display: grid;
-  grid-template-columns: 1fr 400px;
+
 }
 @media (max-width: 1024px) {
   #detail--main--box {
@@ -17,8 +8,7 @@
   }
 }
 #header {
-  display: grid;
-  grid-template-columns: 1fr 350px;
+
 }
 @media (max-width: 1024px) {
   #header {
@@ -33,9 +23,6 @@
   grid-template-columns: 1fr 3fr 1fr;
 }
 @media (max-width: 1024px) {
-  #detail--music {
-    margin-top: 20px;
-  }
 }
 @media (max-width: 540px) {
   #music-track {
@@ -45,23 +32,50 @@
     display: block;
   }
 }
-.detail--content p img {
-  display: block;
-  top: 100px;
-  left: 30px;
-  width: auto;
-  height: auto;
-  margin: 15px 0;
-  max-width: 60%;
-  max-height: 300px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 3px;
+.detail--container {
 }
-
+.detail--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.detail--header {
+  border-top: 1px solid #cc7f3b;
+  border-bottom: 1px solid #ccc;
+  padding: 1rem 2rem;
+}
+.detail--header--titile--wrap {
+  display: grid;
+  grid-template-columns: 1fr 12px;
+}
+.detail--title {
+  margin-bottom: 1rem;
+}
+.detail--header--info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  color:#777; font-size:.9rem;
+}
+.detail--header--info--list {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+.user--wrap {
+  display: flex;
+  align-items: flex-end;
+}
+.detail--like--form {
+  display: flex;
+}
+.detail--content p img {
+  display: none;
+}
 .detail--tag {
   box-sizing: border-box;
-  /* border: 1px solid black; */
-  background: #DEECA1;
+  background: #FFF6EA;
   padding: 3px 6px;
   border-radius: 20px;
 }
@@ -69,11 +83,18 @@
 .detail__map {
   border-radius: 10px;
 }
+.aside--music--wrap {
+  position: fixed;
+  top: 14%;
+  right: 0;
+  z-index: 9;
+}
 .detail--music--box {
   box-sizing: border-box;
   /* border: 1px solid; */
   border-radius: 5px;
   padding: 3px 6px;
+  background-color: #fff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 10px;
   max-width: 350px;
@@ -90,31 +111,103 @@
   background-color: #ffe570;
 }
 
-.comments__content--wrap {
+/* comment */
+.comments--container--list {
   display: flex;
-  justify-content: space-between;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 15px;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1rem 0;
 }
-.comments__user--wrap {
+.comments--wrap {
+  border-top: 2px solid #ccc;
+}
+/* create */
+.comments--create--container {
+  background-color: #f5f5f5;
+  padding: 1.5rem 1rem;
+}
+.comment__create--list {
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  width: 100%;
+  height: 50px;
+}
+.create--list__item1 {
+  height: 100%;
+}
+.create--list__item2 {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+} 
+.comment__create--textarea--wrap textarea {
+  max-height: 50px;
+  width: 98%;
 }
-.comment--date {
-  font-size: 11px;
-  color: #555;
-  margin: 5px 0 0 5px;
-}
-.comments__btn--list1 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-.comments__btn--list2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* create end */
+
+.comments--select--wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
+.comments__content--wrap {
+  border-bottom: 1px solid #ccc;
+  background-color: #FFF6EA;
+  padding: 0.7rem 1rem;
+  font-size: 15px;
+}
+.comment--info--wrap {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+}
+.comment--info--list {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 0.5rem;
+  color: #555;
+  font-size: 13px;
+}
+
+.comments__user--wrap {
+  display: flex;
+  align-items: flex-end;
+} 
+/* .comment--like--form {
+  display: flex;
+  justify-items: flex-start;
+}
+.comment--like--count {
+  display: flex;
+  justify-content: flex-end;
+}  */
+.comment--bell--wrap {
+  display: flex;
+  justify-items: flex-start;
+}
+.comment--date {
+}
+.comments__btn--list1 {
+
+}
+.comments__btn--list2 {
+  display: flex;
+  gap: 0.5rem;
+}
+.more--btn--wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 0.5rem 0;
+}
 @media (max-width: 576px) {
   .comments__content--wrap {
     flex-direction: column;
@@ -131,88 +224,79 @@
     margin-top: 10px;
   }
 }
-.comment__create--list {
-  display: grid;
-  grid-template-columns: 1fr 30px;
-  width: 100%;
-  height: 50px;
-
-}
-.comment--update--btn {
-  padding: 4px 12px;
-  background: #DEECA1;
-  border-radius: 5px;
-  margin-left: 10px;
-}
-.comment--update--btn:hover {
-  background-color: #d0df8d;
-}
-.create--list__item1 {
-  height: 100%;
-}
-.create--list__item2 {
-  height: 50px;
-} 
-.comment__create--textarea--wrap textarea {
-  max-height: 50px;
-  width: 98%;
-}
 .create--list__item2 input {
   height: 100%;
   margin-left: 2px;
   left: -11px;
   position: relative;
 }
-/* 버튼 디자인, 나중에 한 폴더에 모을 예정 */
 
 
-.ieum--button1 {
-    font-size: 12px;
-    border-radius: 5px;
-    border: none;
-    background-color: #FFF7D3;
-    width: 40px;
-    padding: 0.1rem 0.5rem;
-    transition: background-color .30s ease-in-out;
-  }
-.ieum--button1:hover {
-  background-color: #ffe570;
+.detail--image--wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
-.ieum--button2 {
-    font-size: 12px;
-    border:none;
-    border-radius: 5px;
-    background-color: #CE996A;
-    padding: 0.1rem 0.5rem;
-    transition: background-color .30s ease-in-out;
-}
-.ieum--button2:hover {
-  background-color: #cc7f3b;
+.post--img {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
 }
 
-.ieum--button--nobgc1 {
-  /* border-bottom: 1px solid #000; */
-  /* border: 1px solid; */
-  padding: 2px 6px;
-  background: #DEECA1;
-  border-radius: 5px;
+/* 이미지 모달 */
+
+/* The Modal (background) */
+.modal--wrap {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.2); /* Black w/ opacity */
+  z-index: 999;
 }
-.ieum--button--nobgc1:hover {
-  background-color: #d0df8d;
+
+/* Modal Content (Image) */
+.modal--content {
+  margin: auto;
+  display: block;
+  /* width: 80%; */
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+  border-radius: 10px;
 }
-.ieum--button--nobgc2 {
-  padding: 2px 6px;
-  background: #FFF7D3;
-  border-radius: 5px;
+
+/* Add Animation - Zoom in the Modal */
+.modal--content {
+  animation-name: zoom;
+  animation-duration: 0.6s;
 }
-.ieum--button--nobgc2:hover {
-  background-color: #ffe570;
+
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
 }
-.ieum--button--nobgc3 {
-  border: none;
-  background: #CE996A;
-  border-radius: 5px;
+
+/* The Close Button */
+.modal--close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
 }
-.ieum--button--nobgc3:hover {
-  background-color: #cc7f3b;
+
+.modal--close:hover,
+.modal--close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
 }

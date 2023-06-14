@@ -55,7 +55,8 @@
                       <img class="user--image" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
                       <p class="">{{ post.user }}</p>
                     </a>
-                    <p class="post--time"><i>{{ post.created_time }}</i></p>
+                    <p class="post--time"><i></i>{{ post.created_time }}</p>
+                    <p>조회 {{ post.view_count }}</p>
                     <div class="post--like">
                       <form action="{% url 'posts:likes' post.pk %}" method="POST">
                         {% csrf_token %}
@@ -201,7 +202,7 @@
     // 페이지 로드 시 페이지네이션 업데이트
     updatePagination();
   });
-  
+
 </script>
 {% endblock content %}
 {% block script %}
