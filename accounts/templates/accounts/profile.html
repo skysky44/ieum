@@ -117,6 +117,10 @@
               <i title="로그아웃" class="bi bi-box-arrow-right" style="font-size:1.8rem;"></i>
             </a>
           </div>
+        {% else %}
+          <a href="{% url 'my_messages:compose_message_to_user' person.username %}" class="me-4">
+            <i title="쪽지 보내기" class="bi bi-envelope" style="font-size:1.8rem;"></i>
+          </a>
         {% endif %}
       </div>
 

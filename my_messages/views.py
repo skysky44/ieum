@@ -20,6 +20,24 @@ def compose_message(request):
     return render(request, 'my_messages/compose.html', {'form': form})
 
 @login_required
+def compose_message_to_user(request, username):
+    person = get_object_or_404(User, username=username)
+    if request.method == 'POST':
+        form = ComposeMessageForm(request.POST, user=request.user)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user
+            message.receiver = person
+            message.save()
+            return redirect('my_messages:sent_messages')
+    else:
+        initial_data = {'receiver': person}
+        form = ComposeMessageForm(initial=initial_data, user=request.user)
+    return render(request, 'my_messages/compose_to_user.html', {'form': form, 'person': person})
+
+
+
+@login_required
 def received_messages(request):
     received_messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
     page = request.GET.get('page', '1')
