@@ -19,7 +19,7 @@
   </div>
   
 {% else %}
-  <div class="profile--wrap mt-5 mx-5">
+  <div class="profile--wrap mt-5">
     <div class="d-flex flex-column">
       <!-- 프로필 사진 -->
       <div class="d-flex justify-content-center">
@@ -78,17 +78,32 @@
           </div>
         {% endif %}
       </div>
+
+      <!-- 포춘쿠키 메세지 -->
+      {% if request.user == person %}
+      {% if fortunes.date == fortune_today %}
+        <p id="sentence">"{{ fortunes.message }}"</p>
+      {% else %}
+        <span>아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
+        <form action="{% url 'posts:fortune_cookie' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" style="border: none; background: none;">
+            <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
+          </button>
+        </form>
+      {% endif %}
+      {% endif %}
     </div>
 
     <!-- 지우면 안돼요!! 반응형(grid) -->
     <div></div>
 
-    <div>
+    <div id="profile--third--wrap">
       <div class="profile--atag mb-3">
         {% if request.user.is_authenticated and request.user.username == username %}
           <!-- 쪽지 -->
           <a href="{% url 'my_messages:received_messages' %}" class="me-4">
-            <i title="쪽지보내기" class="bi bi-envelope" style="font-size:1.8rem;"></i>
+            <i title="쪽지함" class="bi bi-envelope" style="font-size:1.8rem;"></i>
           </a>
 
           <!-- 프로필 설정 -->
@@ -113,34 +128,41 @@
       </div>
 
       {% if request.user == person %}
-      <!-- 밸런스 게임 워드 모달 버튼 -->
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#wordModal">
-        {{user.username}}의 단어
-      </button>
+        <!-- 밸런스 게임 워드 모달 버튼 -->
+        <div class="profile--balance--word">
+          <button type="button" class="profile--word--btn" data-bs-toggle="modal" data-bs-target="#wordModal">
+            {{user.username}}님의 단어
+          </button>
+        </div>
 
-      <!-- Modal -->
-      <div class="modal fade" id="wordModal" tabindex="-1" aria-labelledby="wordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="wordModalLabel">단어로 '나'를 표현해 보세요!</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form action="{% url 'accounts:word_create' %}" method="POST" >
-                {% csrf_token %}
-                {{word_form.as_p}}
-                <input type="submit" value="제출">
-              </form>
+        <!-- Modal -->
+        <div class="modal fade" id="wordModal" tabindex="-1" aria-labelledby="wordModalLabel" aria-hidden="true">
+          <div class="modal-dialog" style="width: 400px;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="wordModalLabel">단어로 '나'를 표현해 보세요!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="{% url 'accounts:word_create' %}" method="POST" >
+                  {% csrf_token %}
+                  {{word_form.as_p}}
+                  <div class="profile--word--submit--wrap">
+                    <input type="submit" value="제출" class="profile--word--submit--btn">
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       {% endif %}
-       <!-- 워드 표시 -->
-      {% for word in word_list %}
-        <p>{{ word }}</p>
-      {% endfor %}
+       
+      <!-- 워드 표시 -->
+      <ul class="profile--word--wrap">
+        {% for word in word_list %}
+          <li class="profile--word"># {{ word }}</li>
+        {% endfor %}
+      </ul>
 
       <!-- 지현님 워드 표시하셨던 클래스 혹시 몰라서 안 지웠습니당 -->
       {% comment %} <div class="profile--word--wrap">
@@ -172,9 +194,11 @@
         {% else %}
           {% for track in music %}
             <div id="track-{{ forloop.counter }}" class="profile--music--track">
-              <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+              <div class="profile--music--img">
+                <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+              </div>
               <span class="profile--music--album">{{ track.album }}</span>
-              <div class="profile--music--btn">
+              <div class="profile--music--btn--wrap">
                 <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
                 {% if request.user == person %}
                   <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2 ms-2">삭제</a>
@@ -204,9 +228,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
-        <ul id="followers-list" class="mt-2 modal_list">
+        <ul id="followers-list" class="mt-2 modal_list d-flex">
           {% for follower in person.followers.all %}
-            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item">
+            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item profile--modal--follow--list">
               <div class="profile--follow--img--box">
                 {% if follower.image %}
                   <img src="{{ follower.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
@@ -234,7 +258,7 @@
       <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
         <ul class="modal_list d-flex mt-2" style="display: flex;">
           {% for following in person.followings.all %}
-            <a href="{% url 'accounts:profile' following %}" class="modal_list_item">
+            <a href="{% url 'accounts:profile' following %}" class="modal_list_item profile--modal--follow--list">
               <div class="profile--follow--img--box">
                 {% if following.image %}
                   <img src="{{ following.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
@@ -315,7 +339,7 @@
 </div>
 
 
-<!-- 포춘쿠키 메세지 -->
+{% comment %} <!-- 포춘쿠키 메세지 -->
 {% if request.user == person %}
   {% if fortunes.date == fortune_today %}
     <p>{{ fortunes.message }}</p>
@@ -328,7 +352,7 @@
       </button>
     </form>
   {% endif %}
-{% endif %}
+{% endif %} {% endcomment %}
 
 
 
@@ -337,7 +361,7 @@
 <br><br>
 
   <!-- 신고 당한 게시물-->
-  <h3 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h3>
+  <h4 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h4>
   <br>
   <div class="row">
     {% for post_report in post_reports %}
@@ -384,7 +408,7 @@
   <br>
 
   <!-- 신고 당한 댓글-->
-  <h3 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 댓글들</h3>
+  <h4 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 댓글들</h4>
   <br>
   <div class="row">
     {% for comment_report in comment_reports %}
