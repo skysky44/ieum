@@ -9,7 +9,7 @@
 {% block content %}
   <div class="room--wrap">
     <div class="room--title">
-      <a href="{% url 'chat:index' %}" style="margin-left:10px;"><i class="bi bi-arrow-bar-left" style="font-size: 1.5rem;"></i></a>
+      <a title="채팅방 목록으로 가기" href="{% url 'chat:index' %}" style="margin-left:10px;"><i class="bi bi-arrow-bar-left" style="font-size: 1.5rem;"></i></a>
       <p style="margin:auto;">{{ room_name }}</p>
     </div>
     <div id="chat-log" class="room--content--box" style="padding:10px;">
@@ -22,7 +22,13 @@
               <p class="room--content--wrap1">{{ message.content }}</p>
             </div>
           {% else %}
-            <p>{{ message.user }}</p>
+            <p>
+              <img style="width:25px; height:25px; border-radius:50%;" src=
+                {% if message.user.image %} "{{ message.user.image.url }}" 
+                {% else %} "{% static 'accounts/image/user_image.png' %}" 
+                {% endif %} alt="프로필 사진" id="profile-image"/>&nbsp;
+              <strong>{{ message.user }}</strong>
+            </p>
             <div class="room--content--anothermsg">
               <p class="room--content--wrap2">{{ message.content }}</p>
               <p class="room--content--time2" data-current-time="{% now 'A g:i' %}">{{message.timestamp|date:'A g:i'}}</p>
