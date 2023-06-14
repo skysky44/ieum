@@ -54,7 +54,6 @@ def login(request):
                     return render(request, 'accounts/login.html', context)
             
         
-        
     else:
         form = CustomAuthenticationForm()
     context = {
