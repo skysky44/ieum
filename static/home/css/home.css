@@ -147,3 +147,9 @@ aside.base--item {
   background-color: #efefef;
   padding: 1rem 2rem;
 }
+.home__etc--sm--button {
+  font-size: 0.8rem;
+  border-radius: 20px;
+  background-color: #fafafa;
+  padding: 0.2rem 1rem;
+}
