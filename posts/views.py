@@ -776,7 +776,7 @@ def search_spotify(request):
             }
             return render(request, 'posts/search_results.html', context)
 
-    return render(request, 'posts/create.html')
+    return render(request, 'posts/search_results.html')
 
 
 def search(query):
