@@ -62,15 +62,14 @@ def main_search(request):
     }
     return render(request, 'posts/main_search_results.html', context)
 
-
-
+  
 from bs4 import BeautifulSoup
 def extract_image_urls(content):
     soup = BeautifulSoup(content, 'html.parser')
     image_tags = soup.find_all('img')
     image_urls = [tag['src'] for tag in image_tags]
     return image_urls
-
+  
 
 def index(request):
     category_class = Post.objects.filter(category='모임').order_by('-id')

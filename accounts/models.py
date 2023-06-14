@@ -33,24 +33,15 @@ class User(AbstractUser):
     ]
     followings = models.ManyToManyField('self', related_name='followers', symmetrical=False)
     birthday = models.DateField(null=True, blank=True)
-    tags = models.CharField(max_length=100, default='태그')
     image = models.ImageField(blank=True, upload_to='')
     region = models.CharField(max_length=10, choices=REGION_CHOICES, default=SEOUL)
     score = models.IntegerField(default=100)
     taste = models.CharField(max_length=2, default='N')
     privacy = models.BooleanField(default=False)
-    pick = models.CharField(max_length=10, default=3)
     introductions = models.CharField(max_length=255)
     reported = models.BooleanField(default=False)
-    words = models.CharField(null=True, blank=True, max_length=255)
+    words = models.JSONField(null=True, blank=True)
 
-    # def set_introductions(self, introductions):
-    #     self.introductions = ','.join(introductions)
-
-    # def get_introduces(self):
-    #     return self.introductions.split(',')
-
-    # reported = models.BooleanField(default=False)
 
 class Track(models.Model):
     # id = models.CharField(max_length=100, primary_key=True)
