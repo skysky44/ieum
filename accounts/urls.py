@@ -14,4 +14,6 @@ urlpatterns = [
     path('set_profile_music/<str:track_id>/', views.set_profile_music, name='set_profile_music'),
     path('save_track/', views.save_track, name='save_track'),
     path('delete_track/<int:track_pk>/',views.delete_track, name='delete_track'),
+    path('word_create/',views.word_create, name='word_create'),
+
 ]

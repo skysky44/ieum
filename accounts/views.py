@@ -3,7 +3,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm, CustomPasswordChangeForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm, CustomPasswordChangeForm, ResultForm
 from django.contrib.auth import get_user_model
 import requests
 from django.contrib import messages
@@ -67,7 +67,6 @@ def delete(request):
 
 
 def signup(request):
-    # my_sentence = []
     if request.user.is_authenticated:
         return redirect('posts:index')
 
@@ -77,11 +76,9 @@ def signup(request):
             user = form.save(commit=False)
             user.save()
             auth_login(request, user)
-            # my_sentence = request.POST.getlist('tag')
             return redirect('posts:index')
     else:
         form = CustomUserCreationForm()
-        # my_sentence = request.POST.getlist('tag')
     context = {
         'form': form,
     }
@@ -184,16 +181,6 @@ def calculate_distance(address1, address2):
 
     return distance
 
-# def balance(word_dict):
-#     word_list = []
-#     for key, value in word_dict.items():
-#         if value == '졸려':
-#             word_list.append('졸려')
-#             word_list = word_list + ["잠 오는 봄", "낮잠", "지루해", "집순이"]
-
-
-
-
 def profile(request, username):
     User = get_user_model()
     person = get_object_or_404(User, username=username)
@@ -201,19 +188,15 @@ def profile(request, username):
     post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
     post_reports = PostReport.objects.order_by('post_id', 'title')
-    comment_reports = CommentReport.objects.order_by('comment_id', 'title')
-    balance_result = Result.objects.get(user_id=user_id)
-    word_list = []
-    # for key, value in balance_result.word.items():
-    #     if value == '졸려':
-    #         word_list.append('졸려')
-    #         word_list = word_list + ["잠 오는 봄", "낮잠", "지루해", "집순이"]
+    comment_reports = CommentReport.objects.order_by('comment_id', 'title') 
+    word_form = ResultForm(user=request.user)
     
     try:
         fortunes = Fortune.objects.get(user_id=user_id)
+        # fortunes = Fortune.objects.filter(user_id=user_id)
     except ObjectDoesNotExist:
         fortunes = None
-
+ 
     # 자기소개 표시
     introductions_list = []
     sign = ["[","]","'",","]
@@ -223,18 +206,25 @@ def profile(request, username):
         if person.introductions[i] == "," or i == len_word - 1:
             introductions_list.append(word)
             word = ""
-        if person.introductions[i] not in sign:
+        elif person.introductions[i] not in sign:
             word += person.introductions[i]
-            
-
-    # for introduction in person.introductions:
-    #     if introduction == ",":
-    #             introductions_list.append(word)
-    #             word = ""
-             
-        
-        # if introduction not in sign:
-        #     word += introduction
+    
+    # 밸런스 단어 받기
+    if person.words:
+        word_list = []
+        word2 = ""
+        len_word2 = len(person.words)
+        for j in range(len_word2):
+            if j == len_word2 - 1:
+                word2 += person.words[j]
+                word_list.append(word2)
+            elif person.words[j] == ",":
+                word_list.append(word2)
+                word2 = ""
+            else:
+                word2 += person.words[j]
+    else:
+        word_list = []
             
     if request.method == 'GET':
         query = request.GET.get('q')
@@ -265,9 +255,9 @@ def profile(request, username):
         'post_reports' : post_reports,
         'comment_reports' : comment_reports,
         'fortunes' : fortunes,
-        'balance_result' : balance_result,
-        # 'word_list' : word_list,
+        'word_list' : word_list,
         'fortune_today' : date.today(),
+        'word_form' : word_form,
 
     }
     return render(request, 'accounts/profile.html', context)
@@ -276,19 +266,22 @@ def profile(request, username):
 
 @login_required
 def follow(request, user_pk):
-    person = get_object_or_404(User, pk=user_pk)
-
+    # person = get_object_or_404(User, pk=user_pk)
+    User = get_user_model()
+    person  = User.objects.get(pk=user_pk)
     if person != request.user:
-        if person.followers.filter(pk=request.user.pk).exists():
+        if request.user in person.followers.all():
             person.followers.remove(request.user)
             is_followed = False
         else:
             person.followers.add(request.user)
             is_followed = True
-
-        followers_list = [{'username': follower.username, 'image_url': follower.image.url} for follower in person.followers.all()]
-        # followings_list = [{'username': following.username, 'image_url': following.image.url} for following in person.followings.all()]
-
+        followers_list = []
+        for follower in person.followers.all():
+            if follower.image:
+                followers_list.append({'username': follower.username, 'pk': follower.pk, 'image': follower.image.url})
+            else:
+                followers_list.append({'username': follower.username, 'pk': follower.pk})
         context = {
             'is_followed': is_followed,
             'followings_count': person.followings.count(),
@@ -298,7 +291,6 @@ def follow(request, user_pk):
         }
 
         return JsonResponse(context)
-
     return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
 
 
@@ -417,4 +409,18 @@ def set_profile_music(request, track_id):
 
     return redirect('accounts:profile', username=user.username)
 
-
+# 밸런스 게임에서 할당 된 워드를 폼으로 받기 위한 코드
+def word_create(request):
+    user = request.user
+    if request.method == 'POST':
+        word_form = ResultForm(request.POST, user=user)
+        if word_form.is_valid():
+            words = word_form.cleaned_data['words']
+            
+            # Update the User model with the selected words
+            user.words = ','.join(words)
+            user.save()
+            
+            return redirect('accounts:profile', user.username)
+    else:
+        word_form = ResultForm(user=user)
