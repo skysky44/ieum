@@ -5,10 +5,10 @@
 {% endblock head %}
 {% block content %}
   <div class="received_messages--title">
-    <h2><i class="bi bi-mailbox" style="color: #ddd0b3;"></i> 수신 쪽지함</h2>
+    <h2><i class="bi bi-mailbox" style="color: #ddd0b3;"></i> 받은 쪽지함</h2>
     <div class="d-flex align-items-center">
       <a href="{% url 'my_messages:compose_message' %}" class="received_messages--btn1 me-3"><i class="bi bi-reply-fill" style="transform: scaleX(-1); color: #cfa03b;"></i> 쪽지 보내기</a>
-      <a href="{% url 'my_messages:sent_messages' %}" class="received_messages--btn2">송신 쪽지함</a>
+      <a href="{% url 'my_messages:sent_messages' %}" class="received_messages--btn2">보낸 쪽지함</a>
     </div>
   </div>
   {% comment %} {% if received_messages %}
