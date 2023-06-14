@@ -22,6 +22,9 @@ from datetime import date
 from .models import User
 
 # Create your views here.
+def balances(request):
+    return render(request, 'accounts/balances.html')
+
 def login(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
@@ -37,7 +40,15 @@ def login(request):
             a.append(i.username)
         if form.is_valid():
             auth_login(request, form.get_user())
-            return redirect('posts:index')
+            user1 = User.objects.get(username=username)
+            user_pk = user1.pk
+            hiword_1 = Result.objects.filter(pk=user_pk)
+            if hiword_1.exists():
+                return redirect('posts:index')
+            else:
+                return redirect('accounts:balances')
+
+            
         else:
             for i in a:
                 if username in a:
@@ -52,9 +63,6 @@ def login(request):
                         'form' : form,
                         }
                     return render(request, 'accounts/login.html', context)
-            
-        
-        
     else:
         form = CustomAuthenticationForm()
     context = {
