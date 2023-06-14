@@ -300,3 +300,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+input[type="submit"] {
+  background: none;
+}

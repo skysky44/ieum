@@ -1,0 +1,32 @@
+.search--word--wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 20px;
+  margin-bottom: 0.5rem;
+}
+.search--word {
+  display: inline-block;
+  border-radius: 10px;
+  background-color: rgb(219, 245, 255);
+  padding: 0.2rem 1rem;
+}
+.search--list {
+  border-top: 4px solid #ccc;
+}
+.search--wrap {
+  border-bottom: 3px solid #ccc;
+  padding: 1rem;
+}
+
+.search--title {
+  margin-bottom: 0.3rem;
+  font-size: 20px;
+}
+.search--content {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #fafafa;
+  margin: 1rem 0;
+}

@@ -1,3 +1,4 @@
+/* aside */
 aside.base--item {
   background-color: #eee;
 }
@@ -12,6 +13,7 @@ aside.base--item {
 .aboutus__title--container > h1 {
   margin-bottom: 10px;
 }
+
 .aboutus__member--container {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -27,6 +29,49 @@ aside.base--item {
 .aboutus__member--list > li {
   width: 100%;
   text-align: center;
+}
+
+
+/* main */
+.chicchoc--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.member--wrap {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #fafafa;
+  margin: 1rem 0;
+}
+.member--wrap ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.3rem; 
+}
+.member--wrap span {
+  display: inline-block;
+  width: 60px;
+  /* text-align: center; */
+  margin-right: 1rem;
+}
+.member--wrap em {
+  font-style: normal;
+  font-size: 1rem;
+  text-decoration: rgb(255, 196, 0) wavy underline;
+}
+.member--wrap a {
+  font-size: 0.8rem;
+  border-radius: 50px;
+  background-color: #dedede;
+  padding: 0.1rem 0.5rem;
+  margin-left: 0.5rem;
+}
+/* plus member */
+.trophy--title--wrap {
+  margin-top: 2rem;
 }
 .trophy--viewport {
   display: flex;
@@ -48,4 +93,14 @@ aside.base--item {
   100% {
     transform: rotateY(360deg);
   }
+}
+
+
+.plus--member--wrap {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #fafafa;
+  margin: 1rem 0;
+
 }
