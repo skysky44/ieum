@@ -19,7 +19,7 @@ def home(request):
     if request.user.is_authenticated:     
         if request.user.taste == 'T' :
             category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
-            category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:]
+            category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:4]
         elif request.user.taste == 'F' :
             category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
             category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:4]
