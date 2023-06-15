@@ -25,6 +25,11 @@
     <header class="base--item">
       <div class="header--container">
         <div class="header--wrap">
+          {% if user.reported == True %}
+            <div class="base--report--wrap">
+              <a href="{% url 'accounts:profile' user %}"><p>당신의 게시물이 신고 되었습니다! 확인 해 주세요! </p></a>
+            </div>
+          {% endif %}
           <div class="header--item1">
             <a href="{% url 'home' %}">
               <h1 class="font--gangwon" style="color:#482121;"><span style="color:#489F48;">♪</span>오늘, 이음</h1>
@@ -32,78 +37,80 @@
           </div>
           <div class="header--item2">
           <!-- 공감 or 현실 -->
-          <nav>
-            <ul class="nav--list">
-              <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' %}nav__active{% endif %}">
-                {% if request.user.is_superuser %}
-                  <a href="{% url 'posts:index' %}">
-                    모든 이음
-                  </a>
-                {% else %}
-                  {% if request.user.is_authenticated %}
-                    {% if user.taste == "F" %}
-                      <a href="{% url 'posts:index' %}">
-                        공감 이음
-                      </a>
-                    {% elif user.taste == "T" %} 
-                      <a href="{% url 'posts:index' %}">
-                        현실 이음
-                      </a>
+            <nav>
+              <ul class="nav--list">
+                <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' or request.resolver_match.view_name == 'accounts:balances' or request.resolver_match.view_name == 'accounts:login' %}nav__active{% endif %}">
+                  {% if request.user.is_superuser %}
+                    <a href="{% url 'posts:index' %}">
+                      모든 이음
+                    </a>
+                  {% else %}
+                    {% if request.user.is_authenticated %}
+                      {% if user.taste == "F" %}
+                        <a href="{% url 'posts:index' %}">
+                          공감 이음
+                        </a>
+                      {% elif user.taste == "T" %} 
+                        <a href="{% url 'posts:index' %}">
+                          현실 이음
+                        </a>
+                      {% else %}
+                        <a href="{% url 'accounts:balances' %}">
+                          밸런스 게임을 해주세요!
+                        </a>
+                      {% endif %}
                     {% else %}
-                      <a href="{% url 'accounts:balances' %}">
-                        밸런스 게임을 해주세요!
+                      <a href="{% url 'accounts:login' %}">
+                        로그인을 해주세요!
                       </a>
                     {% endif %}
-                  {% else %}
-                    <a href="{% url 'accounts:login' %}">
-                      로그인을 해주세요!
-                    </a>
                   {% endif %}
+                </li>
+                <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
+                  <a href="{% url 'paints:index' %}">
+                    그림 이음
+                  </a>
+                </li>
+                <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:anonymous' %}nav__active{% endif %}">
+                  <a href="{% url 'posts:anonymous' %}">
+                    고민 이음
+                  </a>
+                </li>
+                <li class="nav--list--text {% if request.resolver_match.view_name == 'chat:index' %}nav__active{% endif %}">
+                    <a href="{% url 'chat:index' %}">소통 이음</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav--list--text {% if request.resolver_match.view_name == 'accounts:profile' %}nav__active{% endif %}">
+                  <!-- 프로필페이지 -->
+                  <div class="nav--profile">
+                    <a href="{% url 'accounts:profile' user %}">내 페이지</a>
+                    {% get_unread_messages_count user as unread_messages_count %}
+                    {% if unread_messages_count > 0 %}
+                      <div class="user--message">
+                        <a href="{% url 'my_messages:received_messages' %}" class="">{{ unread_messages_count }}</a>
+                      </div>
+                    {% endif %} 
+                  </div>
+                </li>
+                {% else %}
+                <li class="nav--list--text">
+                  <!-- 로그인 -->
+                  <div>
+                    <a href="{% url 'accounts:login' %}">로그인</a>
+                  </div>
+                </li>
                 {% endif %}
-              </li>
-              <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
-                <a href="{% url 'paints:index' %}">
-                  그림 이음
-                </a>
-              </li>
-              <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:anonymous' %}nav__active{% endif %}">
-                <a href="{% url 'posts:anonymous' %}">
-                  고민 이음
-                </a>
-              </li>
-              {% if request.user.is_authenticated %}
-              <li class="nav--list--text {% if request.resolver_match.view_name == 'accounts:profile' %}nav__active{% endif %}">
-                <!-- 프로필페이지 -->
-                <div class="nav--profile">
-                  <a href="{% url 'accounts:profile' user %}">내 페이지</a>
-                  {% get_unread_messages_count user as unread_messages_count %}
-                  {% if unread_messages_count > 0 %}
-                    <div class="user--message">
-                      <a href="{% url 'my_messages:received_messages' %}" class="">{{ unread_messages_count }}</a>
-                    </div>
-                  {% endif %} 
-                </div>
-              </li>
-              {% else %}
-              <li class="nav--list--text">
-                <!-- 로그인 -->
-                <div>
-                  <a href="{% url 'accounts:login' %}">로그인</a>
-                </div>
-              </li>
-              {% endif %}
-            </ul>
-          </nav>
-            
+              </ul>
+            </nav>
             <!-- 모바일 네비 토글키 -->
             <button id="navToggleButton" style="display:none;">
               <i class="bi bi-list" style="font-size:1.8rem;"></i>
             </button>
           </div>
-          <div class="header--item3">
-            <!-- 네 정환님 검색 하신다구요? 네 -->
+          <div class="header--item3 header--search--wrap">
+            <!-- 네 정환님 검색 하신다구요? 네그럼요-정환- -->
             <!-- 검색 넣으실때 아래는 다지우고 넣으셔도 됩니다 정환님 데헷 -->
-            <form method="GET" action="{% url 'posts:main_search' %}">
+            <form method="GET" action="{% url 'posts:main_search' %}" class="header--search--form">
               <input class="form-control" type="text" name="query" value= "{{ query }}" placeholder="검색어를 입력하세요">
             </form>
             <!-- 여기까지에요 흐흐흐 -->
@@ -171,38 +178,18 @@
     {% block content %}
     {% endblock content %}
     </main>
-    {% if user.reported == True %}
-      <a href="{% url 'accounts:profile' user %}">
-        <div class="nori--viewport">
-          <div class="nori--wheel" style="height: 130px; width: 130px; background-color: rgb(252, 118, 118);">
-            <div class="nori--item">
-                <p style="color: white">당신의 게시물이</p>
-                <p style="color: white">신고 되었습니다!</p>
-            </div>
-          </div>
-        </div>
-      </a>
-    {% else %}
-      <a href="#">
-        <div class="nori--viewport">
-          <div class="nori--wheel">
-            <div class="nori--item">
-                <p>떠든사람</p>
-                <p>장민지</p>
-            </div>
-          </div>
-        </div>
-      </a>
-    {% endif %}
-    <a href="{% url 'chat:index' %}">
-      <div class="nori--viewport-2">
-        <div class="nori--wheel-2">
+
+    <a href="#">
+      <div class="nori--viewport">
+        <div class="nori--wheel">
           <div class="nori--item">
-            <p>채팅</p>
+              <p>떠든사람</p>
+              <p>장민지</p>
           </div>
         </div>
       </div>
     </a>
+
     <!-- main 2-->
     <main>
       {% block main2 %}{% endblock main2 %}

@@ -13,7 +13,7 @@
     <p><img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" {% endif %} alt="프로필사진"></p>
   </section>
   <section>
-    <h2 class="font--gangwon main--title"><i class="bi bi-emoji-heart-eyes" style="color:#a7eaa7;"></i> {{ person.username }} 님의 프로필페이지</h2>
+    <h2 class="font--gangwon main--title"> {{ person.username }} 님의 프로필페이지</h2>
     <div>
       {% if request.user.is_authenticated and request.user.username == username %}
         {% if person.taste == "T" %}
@@ -33,6 +33,11 @@
         {% endif %}
       {% endif %}
     </div>
+      {% if user.reported == True %}
+        <div class="profile--report--move--button--wrap">
+          <a class="profile--report--move--button" href="#profile--report--move">신고된 게시물 확인하러가기</a>
+        </div>
+      {% endif %}
     <div>{% comment %} 유저 간 거리 {% endcomment %}
       <article>
         {% if person == user  %}
@@ -291,7 +296,7 @@
     </section>
 
 {% endif %}
-
+    <div id="profile--report--move"></div>
       <!-- 신고 당한 게시물 (신고 당한 게시물이 있는 경우만 표시)-->
     {% if my_post_reports.exists or request.user.is_superuser %}
       <div class="profile--report--container">
