@@ -3,6 +3,9 @@
     border: 1px solid #ddd;
     width: 600px;
     margin: auto;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 .room--title {
     height: 60px;
@@ -12,6 +15,9 @@
     font-weight: 900;
     border-bottom: 1px solid #ddd;
     display: flex;
+    background-color: #fbf7fc;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 .room--content--box {
     max-width: 100%;
@@ -77,6 +83,7 @@
 }
 .room--content--mymsg > .room--content--wrap1 {
     background-color: #f9dafd;
+    /* background: linear-gradient(45deg, #fce9ff, #f5bffc); */
     color: black;
 }
 .room--content--anothermsg > .room--content--wrap2 {
