@@ -85,9 +85,9 @@
       </div>
       <div class="signup--form2">
         <div class="signup--introductions--list">
-          <p class="signup--lable introductions--lable">나를 표현하는 문장을 선택해주세요.</p>
+          <p class="signup--lable introductions--lable text-center">나를 표현하는 문장을 선택해주세요. <br> (최소1개, 최대3개 선택)</p>
           <div class="signup--introductions--content">
-            {{ form.introductions }}
+            <div id='id_introductions'>{{ form.introductions }}</div>
           </div>
         </div>
       </div>
@@ -214,6 +214,25 @@
     function disableSignupButton() {
       signupButton.disabled = true; // 버튼 비활성화
     }
+  });
+
+  // introductions 체크박스 3개 선택
+  const checkboxes = document.querySelectorAll('#id_introductions input[type="checkbox"]');
+  let selectedCount = 0;
+  
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', (event) => {
+      if (event.target.checked) {
+        selectedCount++;
+      } else {
+        selectedCount--;
+      }
+  
+      if (selectedCount > 3) {
+        event.target.checked = false;
+        selectedCount--;
+      }
+    });
   });
 </script>
 {% endblock script %}

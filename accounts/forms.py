@@ -125,6 +125,12 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.CheckboxSelectMultiple,
     )
 
+    def clean_introductions(self):
+        selected_choices = self.cleaned_data.get('introductions')
+        if selected_choices and len(selected_choices) > 3:
+            raise forms.ValidationError('Please select 3 choices or fewer.')
+        return selected_choices
+
     password = None
 
     class Meta(UserChangeForm.Meta):

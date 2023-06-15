@@ -4,6 +4,11 @@
   grid-gap: 1.2rem;
   margin-bottom: 10px;
 }
+.create--menu__music {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 1.2rem;
+}
 .create--lable {
   display: flex;
   justify-content: center;
