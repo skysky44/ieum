@@ -34,40 +34,52 @@
 {% endblock aside %}
 
 {% block content %}
-  <article>
+  <article style="max-width:955px; margin: auto;">
     <form action="{% url 'posts:update' post.pk %}" method ='POST' enctype="multipart/form-data">
       {% csrf_token %}
-      {% comment %} {{form.as_p}} {% endcomment %}
-      <div class="create--menu">
-        <p class="create--lable">제목</p>
-        <div class="create--content">
-          {{ form.title }}
-        </div>
-      </div>
       <div class="create--menu">
         <p class="create--lable">분류</p>
-        <div class="create--content">
+        <div class="create--content" style="width:835px;">
           {{ form.category }}
         </div>
       </div>
       <div class="create--menu">
+        <p class="create--lable">제목</p>
+        <div class="create--content" style="width:835px;">
+          {{ form.title }}
+        </div>
+      </div>
+      <div class="create--menu">
+        <p class="create--lable">태그</p>
+        <div class="create--content" style="width:835px;">
+          {{ form.tags }}
+        </div>
+      </div>
+      <div class="create--menu">
+        <p class="create--lable">내용</p>
+        <div>
+          {{ form.media }}
+          {{ form.content }}
+        </div>
+      </div>
+      <div class="create--menu">
         <p class="create--lable">주소</p>
-        <div class="create--content">
+        <div class="create--content" style="width:835px;">
           {{ form.address }}
         </div>
       </div>
       <div class="create--menu">
         <p class="create--lable">장소 이름</p>
-        <div class="create--content">
+        <div class="create--content" style="width:835px;">
           {{ form.place_name }}
         </div>
       </div>
 
       <!-- 지도 -->
-      <div class="create--menu">
+      <div class="create--menu" style="max-height: 400px;">
         <p class="create--lable">지도</p>
-        <div class="map_wrap">
-          <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+        <div class="map_wrap" style="height: 400px;">
+          <div id="map" style="width:835px;height:100%;position:relative;overflow:hidden;"></div>
       
           <div id="menu_wrap" class="bg_white">
               <div class="option">
@@ -83,22 +95,8 @@
         </div>
       </div>
 
-      <div class="create--menu">
-        <p class="create--lable">태그</p>
-        <div class="create--content">
-          {{ form.tags }}
-        </div>
-      </div>
-      <div class="create--menu">
-        <p class="create--lable">내용</p>
-        <div>
-          {{ form.media }}
-          {{ form.content }}
-        </div>
-      </div>
-
       <!-- 음악 -->
-      <div class="create--music--container">
+      <div class="create--music--container" style="width: 955px;">
         <div class="create--menu__music">
           <p class="create--lable">노래</p>
         </div>
@@ -118,7 +116,7 @@
         </div>
       </div>
 
-      <div class="create--btn--wrap">
+      <div class="create--btn--wrap" style="width: 955px;">
         <a class="create--btn1" href="{% url 'posts:detail' post.pk %}">취소</a>
         <input class="create--btn2" type="submit" value='수정'>
       </div>
