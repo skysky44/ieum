@@ -13,26 +13,33 @@
 
 {% block aside %}
 <article class="main--title--wrap">
-  {% if user.taste == "F" %}
+  {% if request.user.is_superuser %}
     <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
-      공감 이음
-    </h1>
-    <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
-  {% elif user.taste == "T" %} 
-    <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
-      현실 이음
+      관리자 계정
     </h1>
     <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
   {% else %}
-    <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
-      <div class="complate--list">
-        <p>이 페이지는 밸런스 게임을 해야만 사용 가능합니다!</p> 
-        <p>밸런스 게임을 해주세요!</p>
-        <div class="button--wrap">
-          <a class="complete__etc--button" href="{% url 'accounts:balances' %}">벨런스 게임 하러 가기</a>
+    {% if user.taste == "F" %}
+      <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+        공감 이음
+      </h1>
+      <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+    {% elif user.taste == "T" %} 
+      <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+        현실 이음
+      </h1>
+      <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+    {% else %}
+      <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+        <div class="complate--list">
+          <p>이 페이지는 밸런스 게임을 해야만 사용 가능합니다!</p> 
+          <p>밸런스 게임을 해주세요!</p>
+          <div class="button--wrap">
+            <a class="complete__etc--button" href="{% url 'accounts:balances' %}">벨런스 게임 하러 가기</a>
+          </div>
         </div>
-      </div>
-    </h1>
+      </h1>
+    {% endif %}
   {% endif %}
 <article class="aside--music--wrap">
   <div id="detail--music">
@@ -110,11 +117,6 @@
           <div>조회 {{ post.view_count }}</div>
         </div>
       </article>
-      <article class="detail--map">
-        <div class="detail__map--wrap">
-          <div id="map" style="width:100%; height:200px;" class="detail__map"></div>
-        </div>
-      </article>
       <article id="detail--main--box">
         <div class="detail--content">{{ post.content|safe }}</div>
       </article>
@@ -129,6 +131,13 @@
           <div id="caption"></div>
         </div>
       </article>
+      {% if post.address %}
+        <article class="detail--map">
+          <div class="detail__map--wrap">
+            <div id="map" style="width:100%; height:200px;" class="detail__map"></div>
+          </div>
+        </article>
+      {% endif %}
       <article class="">
         {% for tag in tags %}
           <span class="detail--tag">#{{ tag }}</span>

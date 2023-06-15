@@ -4,9 +4,10 @@
 from django.shortcuts import render, redirect
 from .models import Question, Result
 from .forms import QuestionForm
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
+@login_required
 def index(request):
     if request.user.is_superuser:
         questions = Question.objects.all()
@@ -36,6 +37,7 @@ def create(request):
     else:
         return redirect('balances:index')
 
+@login_required
 def detail(request, question_pk):
     question = Question.objects.get(pk=question_pk)
     total = Question.objects.all().count()
@@ -47,6 +49,7 @@ def detail(request, question_pk):
     }
     return render(request, 'balances/detail.html', context)
 
+@login_required
 def answer(request, question_pk, select_answer):
     question = Question.objects.get(pk=question_pk)
     user = request.user
@@ -120,7 +123,7 @@ def answer(request, question_pk, select_answer):
             user.save()
     return redirect('balances:detail', question_pk)
 
-
+@login_required
 def update(request, question_pk):
     question = Question.objects.get(pk=question_pk)
     if request.user.is_superuser:
