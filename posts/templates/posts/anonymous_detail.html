@@ -98,16 +98,16 @@
       </article>
       <article class="detail--image--wrap">
         {% for img_url in post.image_urls %}
-          <img class="post--img" src="{{ img_url }}" alt="">
+          <img class="post--img" src="{{ img_url }}" alt="" onclick="openModal('{{ img_url }}')" id="img{{ forloop.index }}">
         {% endfor %}
         <!-- The Modal -->
         <div id="myModal" class="modal--wrap">
-          <span class="modal--close">&times;</span>
-          <img class="modal--content" id="img01">
+          <span class="modal--close" onclick="closeModal()">×</span>
+            <img class="modal--content" style='width:640px; height:440px;' id="modalImg">
           <div id="caption"></div>
         </div>
       </article>
-      {% if post.address %}
+      {% if address %}
         <article class="detail--map">
           <div class="detail__map--wrap">
             <div id="map" style="width:100%; height:200px;" class="detail__map"></div>
@@ -352,7 +352,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">댓글 수정</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" ariㄹa-label="Close"></button>
               </div>
               <div class="modal-body">
                 <form action="{% url 'posts:anonymous_comment_update' post.pk comment.pk %}" method ='POST' enctype="multipart/form-data">
@@ -408,7 +408,7 @@
       </div>
   </section>
 
-
+<input type="hidden" id="kakao_map_address" value="{{address}}">
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
 {% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -419,50 +419,81 @@
 <script src="{% static 'posts/js/detail_likes_ajax.js' %}"></script>
 <script src="{% static 'posts/js/detail_comment_likes_ajax.js' %}"></script>
 <script>
-  var mapContainer = document.getElementById('map'); // div to display the map
-  var mapOption = {
-    center: new kakao.maps.LatLng(33.450701, 126.570667), // coordinates of the center of the map
-    level: 3 // zoom level of the map
-  };
-  
-  // create the map
-  var map = new kakao.maps.Map(mapContainer, mapOption);
-  
-  // create an address-to-coordinate conversion object
-  var geocoder = new kakao.maps.services.Geocoder();
-  
-  // retrieve coordinates by address
-  geocoder.addressSearch("{{ post.address }}", function(result, status) {
-    // if the search was successful
-    if (status === kakao.maps.services.Status.OK) {
+  const mapAddress = document.getElementById('kakao_map_address').value
+  console.log(mapAddress)
+    if( mapAddress !== ""){
       
-      var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-  
-      // Mark the position received as a result with a marker
-      var marker = new kakao.maps.Marker({
-        map: map,
-        position: coords
+      var mapContainer = document.getElementById('map'); // div to display the map
+      var mapOption = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // coordinates of the center of the map
+        level: 3 // zoom level of the map
+      };
+      
+      // create the map
+      var map = new kakao.maps.Map(mapContainer, mapOption);
+      
+      // create an address-to-coordinate conversion object
+      var geocoder = new kakao.maps.services.Geocoder();
+      
+      // retrieve coordinates by address
+      geocoder.addressSearch("{{ post.address }}", function(result, status) {
+        // if the search was successful
+        if (status === kakao.maps.services.Status.OK) {
+          
+          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+      
+          // Mark the position received as a result with a marker
+          var marker = new kakao.maps.Marker({
+            map: map,
+            position: coords
+          });
+      
+          // Retrieve the place_name from the database
+          var placeName = "{{ post.place_name }}";
+      
+          // Display the place_name in the infowindow
+          var infowindow = new kakao.maps.InfoWindow({
+            content: '<div style="width:150px;text-align:center;padding:6px 0;">' + placeName + '</div>'
+          });
+          infowindow.open(map, marker);
+    
+          // Move the center of the map to the location received as the result
+          map.setCenter(coords);
+        }
       });
-  
-      // Retrieve the place_name from the database
-      var placeName = "{{ post.place_name }}";
-  
-      // Display the place_name in the infowindow
-      var infowindow = new kakao.maps.InfoWindow({
-        content: '<div style="width:150px;text-align:center;padding:6px 0;">' + placeName + '</div>'
-      });
-      infowindow.open(map, marker);
-  
-      // Move the center of the map to the location received as the result
-      map.setCenter(coords);
     }
-  });
+ 
+  var modal = document.getElementById("myModal");
+  console.log(modal);
+  if(modal) {
+  
+  var modalImg = document.getElementById("modalImg");
+  var captionText = document.getElementById("caption");
 
+  function openModal(imgUrl) {
+    var imgIndex = event.target.id.replace("img", "");
+    modal.style.display = "block";
+    modalImg.src = imgUrl;
+  }
 
-//window.onclick = function(event) {
-//    if (event.target == modal) {
-//        modal.style.display = "none";
-//    }
-//}
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+  }  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+
 </script>
 {% endblock content %}
