@@ -70,12 +70,20 @@ def extract_image_urls(content):
   
 
 def index(request):
+    param = request.GET.get('param')
+
+    if param == '1':
+        category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
+    elif param == '2':
+        category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
+
+    elif param == '3':
+        category_class = Post.objects.exclude(category='익명').order_by('-id')
     # category_class = Post.objects.filter(category='모임').order_by('-id')
-    category_class = Post.objects.exclude(category='익명').order_by('-id')
-    # taste_t_posts = Post.objects.exclude(category='anonymous').filter(user__taste='T').order_by('-id')
-    # taste_f_posts = Post.objects.exclude(category='anonymous').filter(user__taste='F').order_by('-id')
+    # t_list = []
     # for taste_t_post in taste_t_posts:
-        
+    #     t_list.append(taste_t_post.pk)
+    
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
 
@@ -89,8 +97,7 @@ def index(request):
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 6
-    
+    per_page = 1
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 

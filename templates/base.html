@@ -36,17 +36,17 @@
             <ul class="nav--list">
               <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' %}nav__active{% endif %}">
                 {% if request.user.is_superuser %}
-                  <a href="{% url 'posts:index' %}">
+                  <a href="{% url 'posts:index' %}?param=3">
                     모든 이음
                   </a>
                 {% else %}
                   {% if request.user.is_authenticated %}
                     {% if user.taste == "F" %}
-                      <a href="{% url 'posts:index' %}">
+                      <a href="{% url 'posts:index' %}?param=1">
                         공감 이음
                       </a>
                     {% elif user.taste == "T" %} 
-                      <a href="{% url 'posts:index' %}">
+                      <a href="{% url 'posts:index' %}?param=2">
                         현실 이음
                       </a>
                     {% else %}
