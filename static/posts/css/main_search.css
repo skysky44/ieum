@@ -30,3 +30,7 @@
   background-color: #fafafa;
   margin: 1rem 0;
 }
+
+img {
+  display: none;
+}
