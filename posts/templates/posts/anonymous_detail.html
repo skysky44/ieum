@@ -57,10 +57,10 @@
           <div class="detail--header--info--list">
             <div class="user--wrap">
               <img style="width:25px; height:25px; border-radius:50%;" src=
-                {% if post.user.image %} "{% static 'accounts/image/user_image.png' %}" 
-                {% else %} "{% static 'accounts/image/user_image.png' %}" 
+                {% if post.user.image %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" 
+                {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" 
                 {% endif %} alt="프로필 사진" id="profile-image"/>
-              <span class="">이음이</span>
+              <span class="detail--user">이음이</span>
             </div>
             <p class="">{{ post.created_at }}</p>
             {% if request.user == post.user %}
@@ -147,8 +147,8 @@
       {% comment %} 댓글생성 {% endcomment %}
       <article class="comments--create--container">
         <div class="comments__user--wrap">
-          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-          <p>이음이</p>
+          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+          <p class="detail--user">이음이</p>
         </div>
         <form id="comment-form" action="{% url 'posts:comment_create' post.pk %}" method='POST'>
           {% csrf_token %}
@@ -170,11 +170,11 @@
                 <div class="comment--info--wrap">
                   <div class="comment--info--list">
                     <div class="comments__user--wrap">
-                      <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/user_image.png' %} alt="프로필 사진" id="profile-image"/>
+                      <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/ieum_noprofile_02.png' %} alt="프로필 사진" id="profile-image"/>
                       {% if comment_like.user.username == post.user.username %}
-                        <p class="">이음이(작성자)</p>
+                        <p class="detail--user">이음이(작성자)</p>
                       {% else %}
-                        <p class="">이음이</p>
+                        <p class="detail--user">이음이</p>
                       {% endif %}
                       <i class="bi bi-bookmark-heart-fill" style="color:crimson;"></i>
                     </div>
@@ -224,8 +224,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{% static 'accounts/image/user_image.png' %}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p>이음이(작성자)</p>
+                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">이음이(작성자)</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -242,8 +242,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{% static 'accounts/image/user_image.png' %}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p class="">이음이</p>
+                          <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">이음이</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                       </div>
@@ -289,8 +289,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/user_image.png' %} alt="프로필 사진" id="profile-image"/>
-                          <p class="">이음이(작성자)</p>
+                          <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/ieum_noprofile_02.png' %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">이음이(작성자)</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -307,8 +307,8 @@
                   <div class="comment--info--wrap">
                     <div class="comment--info--list">
                       <div class="comments__user--wrap">
-                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/user_image.png' %} alt="프로필 사진" id="profile-image"/>
-                        <p class="">이음이</p>
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/ieum_noprofile_02.png' %} alt="프로필 사진" id="profile-image"/>
+                        <p class="detail--user">이음이</p>
                       </div>
                       <p class="comment--date">{{ comment.created_time }}</p>
                       </div>
