@@ -103,12 +103,12 @@
       </article>
       <article class="detail--image--wrap">
         {% for img_url in post.image_urls %}
-          <img class="post--img" src="{{ img_url }}" alt="">
+          <img class="post--img" src="{{ img_url }}" alt="" onclick="openModal('{{ img_url }}')" id="img{{ forloop.index }}">
         {% endfor %}
         <!-- The Modal -->
         <div id="myModal" class="modal--wrap">
-          <span class="modal--close">&times;</span>
-          <img class="modal--content" id="img01">
+          <span class="modal--close" onclick="closeModal()">×</span>
+            <img class="modal--content" style='width:640px; height:440px;' id="modalImg">
           <div id="caption"></div>
         </div>
       </article>
@@ -455,11 +455,25 @@
     }
   });
 
+  var modal = document.getElementById("myModal");
+  var modalImg = document.getElementById("modalImg");
+  var captionText = document.getElementById("caption");
 
-//window.onclick = function(event) {
-//    if (event.target == modal) {
-//        modal.style.display = "none";
-//    }
-//}
+  function openModal(imgUrl) {
+    var imgIndex = event.target.id.replace("img", "");
+    modal.style.display = "block";
+    modalImg.src = imgUrl;
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+
 </script>
 {% endblock content %}
