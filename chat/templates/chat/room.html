@@ -9,7 +9,7 @@
 {% block content %}
   <div class="room--wrap">
     <div class="room--title">
-      <a title="채팅방 목록으로 가기" href="{% url 'chat:index' %}" style="margin-left:10px;"><i class="bi bi-arrow-bar-left" style="font-size: 1.5rem;"></i></a>
+      <a title="채팅방 목록으로 가기" href="{% url 'chat:index' %}" style="margin-left:10px;"><i class="bi bi-chevron-left" style="font-size: 1.5rem;"></i></a>
       <p style="margin:auto;">{{ room_name }}</p>
     </div>
     <div id="chat-log" class="room--content--box" style="padding:10px;">
@@ -40,7 +40,7 @@
     <div>
       <form id="chat-form" data-room-name="{{ room_name }}" class="room--chatForm--wrap">
         <input type="text" id="chat-message" class="room--chatForm--input" autocomplete="off" placeholder="메시지를 입력하세요">
-        <button type="submit" class="room--chatForm--sendBtn"><i class="bi bi-arrow-up-circle-fill"></i></button>
+        <button type="submit" class="room--chatForm--sendBtn"><i class="bi bi-cursor-fill"></i></button>
       </form>
     </div>
   </div>
