@@ -39,7 +39,6 @@ def create(request):
 def detail(request, question_pk):
     question = Question.objects.get(pk=question_pk)
     total = Question.objects.all().count()
-    print(total)
     last = Question.objects.last()   
     context ={
         'question' : question,
@@ -94,8 +93,8 @@ def answer(request, question_pk, select_answer):
             result.word = word_list
             result.save()
         # 점수 매기기
-        if question_pk <= 16:
-            if question_pk == 7 or question_pk == 8:
+        if question_pk <= 18:
+            if question_pk == 6 or question_pk == 7 or question_pk == 9 or question_pk == 10:
                 pass
             else:
                 # 질문 번호가 홀수인지 짝수인지 확인
