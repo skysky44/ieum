@@ -1,9 +1,13 @@
-
 .create--menu {
   display: grid;
   grid-template-columns: 100px 1fr;
   grid-gap: 1.2rem;
   margin-bottom: 10px;
+}
+.create--menu__music {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 1.2rem;
 }
 .create--lable {
   display: flex;
@@ -13,9 +17,8 @@
   padding: 2px 5px;
 }
 .django-ckeditor-widget {
-  width: 100% !important;
+    width: 100% !important;
 }
-
 
 .create--music--container {
   display: flex;
@@ -65,11 +68,10 @@
 .create--music--result::-webkit-scrollbar-track {
   background: rgba(33, 122, 244, .1);
 }
-
 .create--btn--wrap {
-    display: flex;
-    gap: 1rem;
-  }
+  display: flex;
+  gap: 1rem;
+}
 .create--btn1 {
   width: 100%;
   padding: 0.6rem 0;

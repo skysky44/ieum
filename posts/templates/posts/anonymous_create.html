@@ -29,11 +29,6 @@
           {{ form.title }}
         </div>
       </div>
-      {% comment %}
-      <div>
-        {{ image_form }}
-      </div>
-      {% endcomment %}
       <div class="create--menu">
         <p class="create--lable">주소</p>
         <div class="create--content">
@@ -46,21 +41,51 @@
           {{ form.place_name }}
         </div>
       </div>
+
+      <div class="create--menu">
+        <p class="create--lable">지도</p>
+        <div class="map_wrap">
+          <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+      
+          <div id="menu_wrap" class="bg_white">
+              <div class="option">
+                  <div>
+                      키워드 : <input type="text" value="멀티캠퍼스 본사" id="keyword" size="15"> 
+                      <button type="button" onclick="searchPlaces()">검색하기</button> 
+                  </div>
+              </div>
+              <hr>
+              <ul id="placesList"></ul>
+              <div id="pagination"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="create--menu">
         <p class="create--lable">태그</p>
         <div class="create--content">
           {{ form.tags }}
         </div>
       </div>
+      {% comment %} <div class="create--menu">
+        <p class="create--lable">내용</p>
+        <div class="create--ck--area">
+          {{ form.content }}
+        </div>
+      </div> {% endcomment %}
       <div class="create--menu">
         <p class="create--lable">내용</p>
-        <div>
+        <div class="">
           {{ form.content }}
         </div>
       </div>
 
+
       <!-- 음악 -->
       <div class="create--music--container">
+        <div class="create--menu__music">
+          <p class="create--lable">노래</p>
+        </div>
         <div class="create--result--wrap">
           <div id="search-results" class="create--music--result">
             {% include 'posts/search_results.html' %}
@@ -77,31 +102,12 @@
         </div>
       </div>
 
-
       <div class="create--btn--wrap">
         <a href="{% url 'posts:index' %}" class="create--btn1">취소</a>
         <button class="create--btn2" type="submit">등록</button>
       </div>
     </form>
   </article>
-
-  <div class="map_wrap">
-    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
-
-    <div id="menu_wrap" class="bg_white">
-        <div class="option">
-            <div>
-                <form onsubmit="searchPlaces(); return false;">
-                    키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15"> 
-                    <button type="submit">검색하기</button> 
-                </form>
-            </div>
-        </div>
-        <hr>
-        <ul id="placesList"></ul>
-        <div id="pagination"></div>
-    </div>
-</div>
 
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
