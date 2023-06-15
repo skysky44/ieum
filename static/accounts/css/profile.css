@@ -135,6 +135,17 @@ aside.base--item {
   background-color: #fafafa;
   padding: 2rem 3rem;
 }
+.profile--sectence--list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.profile--user--sectence {
+  border-top: 1px solid #a5e8a5;
+  border-bottom: 1px solid #a5e8a5;
+  background-color: #e5ffe5;
+  padding: 2px 10px;
+}
 .profile--word--title {
   
 }
@@ -177,16 +188,21 @@ aside.base--item {
 }
 .profile--word--submit--btn {
     box-sizing: border-box;
-    /* border: 1px solid; */
-    background: #fff6ea;
+    border: 1px solid #ccc;
+    background: #eee;
     border-radius: 5px;
     width: 200px;
     height: 30px;
 }
 .profile--word--submit--btn:hover {
-    background: #fceddb;
+    background: rgba(231, 255, 164, 0.847);
 }
 /* 신고 */
+.profile--report--container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 .profile--text--list--wrap {
     display: flex;
     flex-direction: column;

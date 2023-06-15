@@ -35,24 +35,30 @@
           <nav>
             <ul class="nav--list">
               <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' %}nav__active{% endif %}">
-                {% if request.user.is_authenticated %}
-                  {% if user.taste == "F" %}
-                    <a href="{% url 'posts:index' %}">
-                      공감 이음
-                    </a>
-                  {% elif user.taste == "T" %} 
-                    <a href="{% url 'posts:index' %}">
-                      현실 이음
-                    </a>
+                {% if request.user.is_superuser %}
+                  <a href="{% url 'posts:index' %}">
+                    모든 이음
+                  </a>
+                {% else %}
+                  {% if request.user.is_authenticated %}
+                    {% if user.taste == "F" %}
+                      <a href="{% url 'posts:index' %}">
+                        공감 이음
+                      </a>
+                    {% elif user.taste == "T" %} 
+                      <a href="{% url 'posts:index' %}">
+                        현실 이음
+                      </a>
+                    {% else %}
+                      <a href="{% url 'accounts:balances' %}">
+                        밸런스 게임을 해주세요!
+                      </a>
+                    {% endif %}
                   {% else %}
-                    <a href="{% url 'accounts:balances' %}">
-                      밸런스 게임을 해주세요!
+                    <a href="{% url 'accounts:login' %}">
+                      로그인을 해주세요!
                     </a>
                   {% endif %}
-                {% else %}
-                  <a href="{% url 'accounts:login' %}">
-                    로그인을 해주세요!
-                  </a>
                 {% endif %}
               </li>
               <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
