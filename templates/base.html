@@ -38,8 +38,8 @@
                 <a href="{% url 'posts:index' %}">
                   {% if user.taste == "F" %}
                     공감 이음
-                  {% elif user.taste == "TF" %}
-                    공감현실 이음
+                  {% comment %} {% elif user.taste == "TF" %}
+                    공감현실 이음 {% endcomment %}
                   {% elif user.taste == "T" %}
                     현실 이음
                   {% endif %}
