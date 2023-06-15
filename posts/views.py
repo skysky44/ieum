@@ -18,8 +18,6 @@ def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
     category_class = Post.objects.exclude(category='익명').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
-    print("-------------------------------")
-    print(category_anonymous)
     # image_urls를 리스트로 변환
     for post in category_class:
         post.image_urls = post.image_urls.split(',')
@@ -260,7 +258,6 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
-    print(post.created_at)
     comment_form = CommentForm()
     comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
@@ -556,15 +553,22 @@ def anonymous_likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
         post.like_users.remove(request.user)
+        is_liked = False
     else:
         post.like_users.add(request.user)
+        is_liked = True
 
-    # 이전 페이지로 리디렉션
-    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
-    if referer:
-        return redirect(referer)
+    # # 이전 페이지로 리디렉션
+    # referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    # if referer:
+    #     return redirect(referer)
+
+    context = {
+        'is_liked': is_liked,
+        'like_count': post.like_users.count(),
+    }
     
-    return redirect('posts:anonymous')
+    return JsonResponse(context)
 
 
 @login_required

@@ -101,18 +101,15 @@
                     <p class="post--time"><i></i>{{ post.created_time }}</p>
                     <p>조회 {{ post.view_count }}</p>
                     <div class="post--like">
-                      <form action="{% url 'posts:likes' post.pk %}" method="POST">
-                        {% csrf_token %}
                         {% if user in post.like_users.all  %}
-                        <button class="border-0 bg-transparent" type="submit">
+                        <div class="border-0 bg-transparent">
                           ❤️
-                        </button>
+                        </div>
                         {% else %}
-                          <button class="border-0 bg-transparent" type="submit">
+                          <div class="border-0 bg-transparent">
                             🤍
-                          </button>
+                          </div>
                         {% endif %}
-                      </form>
                       <span class="ms-1">{{post.like_users.count}}</span>
                     </div>
                   </div>
