@@ -42,8 +42,8 @@ def login(request):
             auth_login(request, form.get_user())
             user1 = User.objects.get(username=username)
             user_pk = user1.pk
-            hiword_1 = Result.objects.filter(pk=user_pk)
-            if hiword_1.exists():
+            balances_word = Result.objects.filter(pk=user_pk)
+            if balances_word.exists():
                 return redirect('posts:index')
             else:
                 return redirect('accounts:balances')
@@ -149,7 +149,6 @@ def signup(request):
 
 def check_username(request):
     username = request.POST.get('username', '')
-    print(username)
     User = get_user_model()
     try:
         User.objects.get(username=username)
