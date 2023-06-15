@@ -38,10 +38,13 @@ def create(request):
 
 def detail(request, question_pk):
     question = Question.objects.get(pk=question_pk)
+    total = Question.objects.all().count()
+    print(total)
     last = Question.objects.last()   
     context ={
         'question' : question,
         'last' : last,
+        'total' : total,
     }
     return render(request, 'balances/detail.html', context)
 
