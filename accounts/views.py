@@ -22,6 +22,9 @@ from datetime import date
 from .models import User
 
 # Create your views here.
+def balances(request):
+    return render(request, 'accounts/balances.html')
+
 def login(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
@@ -37,7 +40,15 @@ def login(request):
             a.append(i.username)
         if form.is_valid():
             auth_login(request, form.get_user())
-            return redirect('posts:index')
+            user1 = User.objects.get(username=username)
+            user_pk = user1.pk
+            balances_word = Result.objects.filter(pk=user_pk)
+            if balances_word.exists():
+                return redirect('posts:index')
+            else:
+                return redirect('accounts:balances')
+
+            
         else:
             for i in a:
                 if username in a:
@@ -52,9 +63,6 @@ def login(request):
                         'form' : form,
                         }
                     return render(request, 'accounts/login.html', context)
-            
-        
-        
     else:
         form = CustomAuthenticationForm()
     context = {
@@ -110,7 +118,6 @@ def signup(request):
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, files=request.FILES)
-        # print(form)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = True 
@@ -141,7 +148,6 @@ def signup(request):
 
 def check_username(request):
     username = request.POST.get('username', '')
-    print(username)
     User = get_user_model()
     try:
         User.objects.get(username=username)

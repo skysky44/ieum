@@ -35,9 +35,25 @@
           <nav>
             <ul class="nav--list">
               <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' %}nav__active{% endif %}">
-                <a href="{% url 'posts:index' %}">
-                  공감 이음
-                </a>
+                {% if request.user.is_authenticated %}
+                  {% if user.taste == "F" %}
+                    <a href="{% url 'posts:index' %}">
+                      공감 이음
+                    </a>
+                  {% elif user.taste == "T" %} 
+                    <a href="{% url 'posts:index' %}">
+                      현실 이음
+                    </a>
+                  {% else %}
+                    <a href="{% url 'accounts:balances' %}">
+                      밸런스 게임을 해주세요!
+                    </a>
+                  {% endif %}
+                {% else %}
+                  <a href="{% url 'accounts:login' %}">
+                    로그인을 해주세요!
+                  </a>
+                {% endif %}
               </li>
               <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
                 <a href="{% url 'paints:index' %}">
@@ -149,12 +165,34 @@
     {% block content %}
     {% endblock content %}
     </main>
-    <a href="#">
-      <div class="nori--viewport">
-        <div class="nori--wheel">
+    {% if user.reported == True %}
+      <a href="{% url 'accounts:profile' user %}">
+        <div class="nori--viewport">
+          <div class="nori--wheel" style="height: 130px; width: 130px; background-color: rgb(252, 118, 118);">
+            <div class="nori--item">
+                <p style="color: white">당신의 게시물이</p>
+                <p style="color: white">신고 되었습니다!</p>
+            </div>
+          </div>
+        </div>
+      </a>
+    {% else %}
+      <a href="#">
+        <div class="nori--viewport">
+          <div class="nori--wheel">
+            <div class="nori--item">
+                <p>떠든사람</p>
+                <p>장민지</p>
+            </div>
+          </div>
+        </div>
+      </a>
+    {% endif %}
+    <a href="{% url 'chat:index' %}">
+      <div class="nori--viewport-2">
+        <div class="nori--wheel-2">
           <div class="nori--item">
-            <p>떠든사람</p>
-            <p>장민지</p>
+            <p>채팅</p>
           </div>
         </div>
       </div>

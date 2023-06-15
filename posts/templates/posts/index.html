@@ -4,12 +4,55 @@
 {% block head %}
   <link rel="stylesheet" href="{% static 'posts/css/class.css' %}">
   <link rel="stylesheet" href="{% static 'posts/css/index.css' %}">
-{% endblock head %}  
+{% endblock head %} 
+
+{% block style %}
+  .complate--list{
+    display : flex;
+    flex-direction: column;
+    justify-content : center;
+    align-items: center;
+    height : 100%;
+  }
+  .button--wrap {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  /* 버튼 디자인 */
+  .complete__etc--button {
+    font-size: 1rem;
+    border-radius: 20px;
+    background-color: #fff;
+    padding: 1rem 2rem;
+  }
+
+{% endblock style %}
 
 {% block aside %}
 <article class="main--title--wrap">
-  <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span> 공감 이음</h1>
-  <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+  
+    {% if user.taste == "F" %}
+      <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+        공감 이음
+      </h1>
+      <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+  {% elif user.taste == "T" %} 
+    <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+      현실 이음
+    </h1>
+    <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+  {% else %}
+    <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
+      <div class="complate--list">
+        <p>이 페이지는 밸런스 게임을 해야만 사용 가능합니다!</p> 
+        <p>밸런스 게임을 해주세요!</p>
+        <div class="button--wrap">
+          <a class="complete__etc--button" href="{% url 'accounts:balances' %}">벨런스 게임 하러 가기</a>
+        </div>
+      </div>
+    </h1>
+  {% endif %}
 </article>
 {% endblock aside %}
 
@@ -29,8 +72,8 @@
   <div id="section-posts">
     <div>
       <ul class="posts--list">
-        {% for post in category_class  %}
-        
+        {% for post in category_class %}
+          {% if post.user.taste == request.user.taste %}
           <li class="post--container">
               <div class="post--wrap">
                 <!-- 게시물 이미지 -->
@@ -58,25 +101,24 @@
                     <p class="post--time"><i></i>{{ post.created_time }}</p>
                     <p>조회 {{ post.view_count }}</p>
                     <div class="post--like">
-                      <form action="{% url 'posts:likes' post.pk %}" method="POST">
-                        {% csrf_token %}
                         {% if user in post.like_users.all  %}
-                        <button class="border-0 bg-transparent" type="submit">
+                        <div class="border-0 bg-transparent">
                           ❤️
-                        </button>
+                        </div>
                         {% else %}
-                          <button class="border-0 bg-transparent" type="submit">
+                          <div class="border-0 bg-transparent">
                             🤍
-                          </button>
+                          </div>
                         {% endif %}
-                      </form>
                       <span class="ms-1">{{post.like_users.count}}</span>
                     </div>
                   </div>
                 </div>
               </div>
           </li>
+          {% endif %}
         {% endfor %}
+        
       </ul>
     </div>
   </div>

@@ -410,7 +410,7 @@
 {% comment %} <script src="{% static 'posts/js/detail_map.js' %}"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'posts/js/detail_music.js' %}"></script>
-<script src="{% static 'posts/js/detail_ajax.js' %}"></script>
+{% comment %} <script src="{% static 'posts/js/detail_ajax.js' %}"></script> {% endcomment %}
 <script src="{% static 'posts/js/detail_more.js' %}"></script>
 <script src="{% static 'posts/js/detail_comment_create_ajax.js' %}"></script>
 <script src="{% static 'posts/js/detail_likes_ajax.js' %}"></script>
@@ -456,10 +456,10 @@
   });
 
 
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
+//window.onclick = function(event) {
+//    if (event.target == modal) {
+//        modal.style.display = "none";
+//    }
+//}
 </script>
 {% endblock content %}

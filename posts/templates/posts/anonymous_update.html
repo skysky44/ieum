@@ -16,7 +16,6 @@
   <div class="d-flex justify-content-center">
     <form action="{% url 'posts:anonymous_update' post.pk %}" method ='POST' enctype="multipart/form-data">
       {% csrf_token %}
-      {% comment %} {{form.as_p}} {% endcomment %}
       <div class="create--menu">
         <p class="create--lable">제목</p>
         <div class="create--content">
@@ -41,6 +40,27 @@
           {{ form.place_name }}
         </div>
       </div>
+
+      <!-- 지도 -->
+      <div class="create--menu">
+        <p class="create--lable">지도</p>
+        <div class="map_wrap">
+          <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+      
+          <div id="menu_wrap" class="bg_white">
+              <div class="option">
+                  <div>
+                      키워드 : <input type="text" value="멀티캠퍼스 본사" id="keyword" size="15"> 
+                      <button type="button" onclick="searchPlaces()">검색하기</button> 
+                  </div>
+              </div>
+              <hr>
+              <ul id="placesList"></ul>
+              <div id="pagination"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="create--menu">
         <p class="create--lable">태그</p>
         <div class="create--content">
@@ -54,32 +74,12 @@
           {{ form.content }}
         </div>
       </div>
-      {% comment %} <div class="update--music--box">
-        <div class="mt-3">
-          <button type="button" class="update--music--btn mb-3" data-bs-toggle="modal" data-bs-target="#musicModal">
-            프로필 음악 설정
-          </button>
-          {% if not music %}
-            <div class="mb-3">프로필 음악을 설정해 주세요.</div>
-          {% else %}
-            {% for track in music %}
-              <div id="track-{{ forloop.counter }}" class="d-flex justify-content-between align-items-center mb-3">
-                <img style="width:50px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
-                <span>{{ track.album }}</span>
-                <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
-                <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2">삭제</a>
-              </div>
-            {% endfor %}
-          {% endif %}
-          <audio class="main-audio" controls>
-            <source src="" type="audio/mp3">
-          </audio>
-        </div>
-      </div> {% endcomment %}
 
-      
       <!-- 음악 -->
       <div class="create--music--container">
+        <div class="create--menu__music">
+          <p class="create--lable">노래</p>
+        </div>
         <div class="create--result--wrap">
           <div id="search-results" class="create--music--result">
             {% include 'posts/search_results.html' %}
@@ -103,51 +103,6 @@
     </form>
   </div>
 
-  <div class="map_wrap">
-    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
-
-    <div id="menu_wrap" class="bg_white">
-        <div class="option">
-            <div>
-                <form onsubmit="searchPlaces(); return false;">
-                    키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15"> 
-                    <button type="submit">검색하기</button> 
-                </form>
-            </div>
-        </div>
-        <hr>
-        <ul id="placesList"></ul>
-        <div id="pagination"></div>
-    </div>
-</div>
-  {% comment %} <!-- 프로필 음악 모달 -->
-  <div class="modal fade" id="musicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">프로필 음악</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-x: hidden; overflow-y: auto;">
-          <form id="search-form" class="d-flex mb-3">
-            <input id="search-input" class="form-control me-3" type="text" name="q" placeholder="검색어를 입력하세요" style="width:300px;">
-            <button id="search-button" class="update--music--search--btn" type="submit">검색</button>
-          </form>
-          <div id="search-results" class="mb-3">
-          </div>
-          <audio id="audio-player" controls>
-            <source src="" type="audio/mp3">
-          </audio>
-
-        </div>
-        <div class="modal-footer">
-          <div id="error-message" style="color: red;"></div>
-          <div style="margin-right:120px;">하나 이상의 음원을 선택해야 합니다.</div>
-          <button type="button" class="update--music--close--btn" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div> {% endcomment %}
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'posts/js/update_music_ajax.js' %}"></script>

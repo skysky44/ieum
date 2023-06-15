@@ -38,16 +38,23 @@
 <article class="posts--container">
   <div class="posts--wrap">
     <section class="posts--article--container">
-      <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
+      {% if user.taste == "F" %}
+        <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
+      {% elif user.taste == "T" %} 
+        <h1 class="font--gangwon posts--title">이 길을 따라, 현실 이음</h1>
+      {% else %}
+        <h1 class="font--gangwon posts--title">밸런스 게임을 해야만 보이는 게시글 입니다.</h1>
+      {% endif %}
       <ul class="posts--list">
         {% for post in category_class %}
-          <li class="post--wrap">
+          {% if post.user.taste == N %}
+          <div class="post--wrap">
             <div>
               {% if post.image_urls %}
                 <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-              {% endif %}
+              {% endif%}
             </div>
-            <div class="post--text--list">
+            <div class="post--text--list"> 
               <ul class="post--tag--list">
                 {% for tag in post.tags.all %}
                   {% if forloop.counter <= 3 %}
@@ -65,53 +72,86 @@
                 <p class="post--time"><i>{{ post.created_time }}</i></p>
               </div>
             </div>
-            <!-- 카테고리 태그 -->
-
-            <!--
-            {% for post in category_class %}
-              {% for img_url in post.image_urls %}
-                <img class="posts_image" src="{{ img_url }}" alt="">
-              {% endfor %}
-            {% endfor %}
-             -->
-          </li>
+          </div>
+            
+          {% elif post.user.taste == request.user.taste  %}
+            <a href="{% url 'posts:detail' post.pk %}">
+              <div class="post--wrap">
+                <div>
+                  {% if post.image_urls %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                  {% endif %}
+                </div>
+                <div class="post--text--list"> 
+                  <ul class="post--tag--list">
+                    {% for tag in post.tags.all %}
+                      {% if forloop.counter <= 3 %}
+                        <li class="post--tag">
+                          ﹟{{ tag }}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                  <div class="post--title--wrap">
+                    <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
+                  </div>
+                  <div class="post--user--wrap">
+                    <p>{{ post.user }}</p>
+                    <p class="post--time"><i>{{ post.created_time }}</i></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          {% endif %}
         {% endfor %}
       </ul>
-      <div class="posts--etc--wrap">
-        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
-      </div>
+      {% if user.taste == "F" %}
+        <div class="posts--etc--wrap">
+          <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
+        </div>
+      {% elif user.taste == "T" %} 
+        <div class="posts--etc--wrap">
+          <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
+        </div>
+      {% else %}
+        <div class="posts--etc--wrap">
+          <a class="home__etc--button" href="{% url 'accounts:balances' %}">밸런스 게임을 하러가기! gogo </a>
+        </div>
+      {% endif %}
     </section>
     <section class="posts--article--container">
       <h1 class="font--gangwon posts--title">털어놔요, 고민 이음</h1>
       <ul class="posts--list">
         {% for post in category_anonymous %}
-          <li class="post--wrap">
-            <div>
-              {% if post.image_urls %}
-                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-              {% endif %}
-            </div>
-            <div class="post--text--list">
-              <ul class="post--tag--list">
-                {% for tag in post.tags.all %}
-                  {% if forloop.counter <= 3 %}
-                    <li class="post--tag">
-                      ﹟{{ tag }}
-                    </li>
+          <a href="{% url 'posts:anonymous_detail' post.pk %}">
+            <div class="post--wrap">
+                <div>
+                  {% if post.image_urls %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
                   {% endif %}
-                {% endfor %}
-              </ul>
-              <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
-              <div class="post--user--wrap">
-                <p>{{ post.user }}</p>
-                <p class="post--time"><i>{{ post.created_time }}</i></p>
+                </div>
+                <div class="post--text--list">
+                  <ul class="post--tag--list">
+                    {% for tag in post.tags.all %}
+                      {% if forloop.counter <= 3 %}
+                        <li class="post--tag">
+                          ﹟{{ tag }}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                  <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+                  <div class="post--user--wrap">
+                    <p>{{ post.user }}</p>
+                    <p class="post--time"><i>{{ post.created_time }}</i></p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </li>
+          </a>
         {% endfor %}
       </ul>
       <div class="posts--etc--wrap">
-        <a class="home__etc--button" href="{% url 'posts:index' %}">더보기 ＞ </a>
+        <a class="home__etc--button" href="{% url 'posts:anonymous' %}">더보기 ＞ </a>
       </div>
     </section>
   </div>

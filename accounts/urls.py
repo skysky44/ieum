@@ -21,4 +21,5 @@ urlpatterns = [
     # 이메일 인증
     path('activate/<str:uidb64>/<str:token>/', views.activate, name="activate"),
     path('complete_signup/', views.complete_signup, name="complete_signup"),
+    path('balances/',views.balances, name='balances'),
 ]

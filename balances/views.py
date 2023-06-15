@@ -38,10 +38,13 @@ def create(request):
 
 def detail(request, question_pk):
     question = Question.objects.get(pk=question_pk)
+    total = Question.objects.all().count()
+    print(total)
     last = Question.objects.last()   
     context ={
         'question' : question,
         'last' : last,
+        'total' : total,
     }
     return render(request, 'balances/detail.html', context)
 
@@ -74,7 +77,7 @@ def answer(request, question_pk, select_answer):
             word_list = {}
         
         # 워드 값이 있는 경우에만 딕셔너리 만들어주기
-        if question.word1 != None and question.word2 != None:
+        if question.word1 != "" and question.word2 != "":
 
             if select_answer == 1:
                 selected_word = question.word1
@@ -91,25 +94,28 @@ def answer(request, question_pk, select_answer):
             result.word = word_list
             result.save()
         # 점수 매기기
-        if question_pk <= 13:
-            # 질문 번호가 홀수인지 짝수인지 확인
-            if question_pk % 2 == 1:
-                # 홀수 번호의 질문에서 답변 1을 선택한 경우 10점 감점
-                if select_answer == 1:
-                    user_score -= 10
-            if question_pk % 2 == 0:
-                # 짝수 번호의 질문에서 답변 2을 선택한 경우 10점 감점
-                if select_answer == 2:
-                    user_score -= 10
+        if question_pk <= 16:
+            if question_pk == 7 or question_pk == 8:
+                pass
+            else:
+                # 질문 번호가 홀수인지 짝수인지 확인
+                if question_pk % 2 == 1:
+                    # 홀수 번호의 질문에서 답변 1을 선택한 경우 10점 감점 F가 1번
+                    if select_answer == 1:
+                        user_score -= 10
+                if question_pk % 2 == 0:
+                    # 짝수 번호의 질문에서 답변 2을 선택한 경우 10점 감점 F가 2번
+                    if select_answer == 2:
+                        user_score -= 10
             # Result 모델의 score 필드 업데이트
             user.score = user_score
             user.save()
         # question_pk가 13인 경우에 user_score 필드 업데이트
-        if question_pk == 13:
-            if user_score >= 70:
+        if question_pk == 16:
+            if user_score >= 50:
                 user.taste = 'T'
-            elif user_score >= 40:
-                user.taste = 'TF'
+            # elif user_score >= 40:
+            #     user.taste = 'TF'
             else:
                 user.taste = 'F'
             user.save()

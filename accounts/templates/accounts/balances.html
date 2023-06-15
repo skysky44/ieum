@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block style %}
+.complate--container {
+  margin: 11rem 0;
+}
+.complate--list{
+  display : flex;
+  flex-direction: column;
+  justify-content : center;
+  align-items: center;
+  height : 100%;
+  background-color : #E6F3E6;
+  padding: 5rem 0;
+}
+.complate--list > h3 {
+  margin-bottom: 1rem;
+}
+.button--wrap {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+/* 버튼 디자인 */
+.complete__etc--button {
+  font-size: 1rem;
+  border-radius: 20px;
+  background-color: #fff;
+  padding: 1rem 2rem;
+}
+{% endblock style %}
+{% block content %}
+<div class='complate--container'>
+  <div class="complate--list">
+    <h3>오늘 오신 것을 환영합니다, 이음!</h3>
+    <p>오늘 이음에서는 밸런스 게임의 재미를 결합한 독특한 경험을 제공합니다.</p>
+    {% comment %} <p>당사의 고급 알고리즘은 귀하의 관심사를 기반으로 같은 생각을 가진 개인과 연결할 수 있습니다.</p> {% endcomment %}
+    <p>오늘, 이음에서 우리 커뮤니티에 가입하고 발견과 연결의 특별한 여정을 시작하세요.</p>
+    {% comment %} <p>밸런스 게임을 시작하세요!</p> {% endcomment %}
+    <br>
+    <p style='font-size:13px;'>❗밸런스 게임을 완성해야 오늘, 이음을 이용하실 수 있습니다. </p>
+
+    <div class="button--wrap">
+      <a class="complete__etc--button" href="{% url 'balances:detail' 1 %}">벨런스 게임 시작</a>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+

@@ -58,18 +58,17 @@
                 <p class="post--time"><i>{{ post.created_time }}</i></p>
                 <div class="post--like">
                 <p>조회 {{ post.view_count }}</p>
-                  <form action="{% url 'posts:anonymous_likes' post.pk %}" method="POST">
-                    {% csrf_token %}
+                  <div class="post--like">
                     {% if user in post.like_users.all  %}
-                    <button class="border-0 bg-transparent" type="submit">
+                    <div class="border-0 bg-transparent">
                       ❤️
-                    </button>
+                    </div>
                     {% else %}
-                      <button class="border-0 bg-transparent" type="submit">
+                      <div class="border-0 bg-transparent">
                         🤍
-                      </button>
+                      </div>
                     {% endif %}
-                  </form>
+                  </div>
                   <span class="ms-1">{{post.like_users.count}}</span>
                 </div>
               </div>
@@ -94,8 +93,9 @@
   
 </article>
 
-<script type="text/javascript" src="/static/posts/js/index.js"></script>
+{% comment %} <script type="text/javascript" src="/static/posts/js/index.js"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'posts/js/detail_likes_ajax.js' %}"></script>
 <script>
   $(document).ready(function() {
     // 페이지 로드 시 URL 매개변수 가져오기
@@ -205,22 +205,3 @@
 </script>
 
 {% endblock content %}
-{% block script %}
-<!-- <script>
-  const children = document.querySelectorAll('.post--content--wrap > p > img');
-  let leftValue = 0;
-
-  
-  children.forEach((image, index) => {
-  let rotateValue;
-  if (index % 2 === 0) {
-    // 짝수 번째 이미지의 경우
-    rotateValue = -(Math.abs((index + 1) * 0.01));
-  } else {
-    // 홀수 번째 이미지의 경우
-    rotateValue = (index + 1) * 0.01;
-  }
-  image.style.transform = `rotate(${rotateValue}turn)`;
-  });
-</script> -->
-{% endblock script %}

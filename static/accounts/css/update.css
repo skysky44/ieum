@@ -1,16 +1,62 @@
-.update--content {
-    border-bottom: 1px solid #d0df8d;
-    width: 350px;
-    /* border-radius: 7px; */
+aside.base--item {
+  text-align: center;
+  background-color: #e7f3e2;
 }
-.update--btn {
-    border: none;
-    background: #DEECA1;
-    border-radius: 5px;
-    padding: 3px 10px;
-    width: 350px;
-    height: 35px;
+.main--title--wrap {
+  padding : 5rem 0;
 }
-.update--btn:hover {
-    background: #d0df8d;
+.main--title {
+  margin-bottom: 1rem;
+}
+.main--title--icon {
+  color: #b8dfab;
+}
+
+.update--form--list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.update--form1 {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.update--menu {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 1rem;
+}
+.update--lable {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  background-color: #e7f3e2;
+}
+.introductions--lable {
+  padding: 10px 0;
+
+}
+.update--introductions--content {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+.update--wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.update--input--button {
+  width: 400px;
+  border-radius: 5px;
+  border: 1px solid #b8dfab;
+  background-color: #b8dfab;
+  padding: 0.6rem 0;
+}
+.update--input--button:hover {
+  background-color: #b8dfab;
 }

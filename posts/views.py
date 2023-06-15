@@ -16,9 +16,8 @@ from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
-    category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
+    category_class = Post.objects.exclude(category='익명').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
-
     # image_urls를 리스트로 변환
     for post in category_class:
         post.image_urls = post.image_urls.split(',')
@@ -41,11 +40,10 @@ from django.db.models import Q
 # 검색 기능
 def main_search(request):
     query = request.GET.get('query')
-    print(query)
 
     if query:
         meeting_posts = Post.objects.filter(
-            Q(category__icontains='모임'),
+            ~Q(category__icontains='익명'),
             Q(title__icontains=query) | Q(content__icontains=query)
         )
 
@@ -72,7 +70,8 @@ def extract_image_urls(content):
   
 
 def index(request):
-    category_class = Post.objects.filter(category='모임').order_by('-id')
+    # category_class = Post.objects.filter(category='모임').order_by('-id')
+    category_class = Post.objects.exclude(category='익명').order_by('-id')
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
 
@@ -146,8 +145,12 @@ def anonymous(request):
 def create(request):
     global tracks
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('맛집', '맛집'),
+        ('음악', '음악'),
+        ('운동', '운동'),
+        ('게임', '게임'),
+        ('여행', '여행'),
+        ('학습', '학습'),
     ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
 
@@ -201,8 +204,8 @@ def anonymous_create(request):
     global tracks
     category_choices = [
         ('익명', '익명'),
-        ('모임', '모임'),
     ]
+
     selected_tracks = request.POST.getlist('selected_tracks[]')
 
 
@@ -255,7 +258,6 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
-    print(post.created_at)
     comment_form = CommentForm()
     comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
@@ -360,8 +362,12 @@ def anonymous_detail(request, post_pk):
 @login_required
 def update(request, post_pk):
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('맛집', '맛집'),
+        ('음악', '음악'),
+        ('운동', '운동'),
+        ('게임', '게임'),
+        ('여행', '여행'),
+        ('학습', '학습')
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
@@ -427,8 +433,7 @@ def update(request, post_pk):
 @login_required
 def anonymous_update(request, post_pk):
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('익명', '익명')
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
@@ -548,15 +553,22 @@ def anonymous_likes(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if post.like_users.filter(pk=request.user.pk).exists():
         post.like_users.remove(request.user)
+        is_liked = False
     else:
         post.like_users.add(request.user)
+        is_liked = True
 
-    # 이전 페이지로 리디렉션
-    referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
-    if referer:
-        return redirect(referer)
+    # # 이전 페이지로 리디렉션
+    # referer = request.META.get('HTTP_REFERER') # 이전 페이지의 url을 가져옴
+    # if referer:
+    #     return redirect(referer)
+
+    context = {
+        'is_liked': is_liked,
+        'like_count': post.like_users.count(),
+    }
     
-    return redirect('posts:anonymous')
+    return JsonResponse(context)
 
 
 @login_required
@@ -834,7 +846,48 @@ def fortune_cookie(request):
             "예상치 못한 시점에 원하는 자리에 도달해 있을거예요. 이미 이만큼 왔는걸요.",
             "오늘 행운의 색은 파랑색 입니다. 쿨한 모습이 행운을 가져다줍니다.",
             "감수성이 예민한 사람이군요. 힘들 땐 잠시 멈춰 스스로를 어루만져 주세요.",
-            "이해하기 힘든 사람에게 말을 걸어 보십시오. 생각지 못한 것들을 보게될거예요."
+            "이해하기 힘든 사람에게 말을 걸어 보십시오. 생각지 못한 것들을 보게될거예요.",
+            "상대방과의 대화를 위해서는 화려한 지식이 아니라 공감이 필요합니다.",
+            "당신의 몫은 당신이 정합니다. 현재 가진 걸 바꾸고 싶다면 먼저 행동해야 합니다.",
+            "오늘 행운의 색은 흰 색 입니다. 당신의 순수한 매력을 보여주세요.",
+            "애정운이 좋은 시기입니다. 그 사람에게 적극적으로 다가가보세요.",
+            "스스로를 낮추지 말고 본인의 장점을 찾아보세요. 당신은 생각보다 멋진 사람입니다.",
+            "친구,가족에게 작은 선물을 해보세요. 행복해질거예요.",
+            "다가올 내일보다 중요한 것은 지금 살고 있는 현재입니다. 미래를 위해 현재를 포기하지마세요.",
+            "이번 주 행운의 아이템은 볼펜입니다.",
+            "오늘은 어제보다 내일은 오늘보다 더 좋은 하루가 되겠습니다.",
+            "혼자 고민하지 말고 용기내어 주변 사람들과 상의해보세요.",
+            "행복의 가장 큰 위해요소는 남과 비교하는 것 입니다. 비교하지 마세요. 당신은 소중합니다.",
+            "당신에게 필요한 것은 적절한 시기를 기다릴 줄 아는 여유입니다.",
+            "오늘 행운의 색은 검은색 입니다. 시크한 아이템을 선택해보세요.",
+            "당분간 지켜보는 것이 좋습니다. 타이밍이 중요합니다.",
+            "발 밑만 보며 걷다보면예상치 못한 길로 갈 수 있습니다. 멀리 보고 진행하시길!",
+            "과거에 얽매여 힘들어하지 마세요. 중요한 것은 지금 현재입니다.",
+            "지루한 일상에는여행이나 새로운 경험이 도움이 됩니다.",
+            "오늘 행운의 색은 노란색 입니다. 밝고 발랄한 미소가 포인트예요.",
+            "힘들어도 이겨내고 앞으로 나가는 당신의 모습이 아름답습니다. 더 좋은 날이 올 거예요.",
+            "작은 말이라도, 칭찬해보세요. 칭찬은 고래도 춤추게 한다잖아요.",
+            "할까말까 고민되는 일이 있다면이것을 했을 때 후회할 것인가 생각해보세요.",
+            "주변의 소중한 사람들에게 사랑한다고 말해보세요.",
+            "그동안 모르고 있었던 재능이 발현되는 날입니다. 새로운 일도 두려워마세요.",
+            "다가오는 기회가 좋은 결과를 가져오겠습니다. 과거의 좋았던 일에 미련을 갖지 마세요.",
+            "오늘 행운의 색은 붉은색 입니다. 열정적인 모습을 보여주세요.",
+            "즐기는 자를 이길 수 있는 사람은 없다고 했습니다. 즐거운 방법을 찾아보세요.",
+            "결단력이 필요한 때 입니다. 주저하면 기회를 놓치게 됩니다.",
+            "직감이 놀랍게 상승하는 때입니다. 당신의 감을 믿고 도전해보세요.",
+            "타인에게 베푼 작은 호의가 큰 행운으로 돌아오겠습니다.",
+            "오늘은 기분 좋게 웃으며 하루를시작하시길 바랍니다.",
+            "변화를 원한다면 NO를 이야기해보세요. 너무 YES만 해오지는 않았나요?",
+            "실행력이 중요한 때입니다. 머릿속에 가지고 있는 생각을 실천하세요.",
+            "설레는 일이 다가오고 있습니다. 마음의 준비를 하고 기다려보세요.",
+            "사람을 움직이는 힘은 입이 아니라 귀에서 나옵니다. 잘 들어보세요.",
+            "곧 큰 결정을 하게 될 시기가 올 것 같습니다. 긍정적인 결과가 예상됩니다.",
+            "행운지수가 상승하였습니다! 예상치 못했던 수입이 들어올 수도 있습니다.",
+            "당신의 어릴 적 꿈은 무엇이었나요? 그 꿈을 잊지마세요. 당신의 삶을 순수하게 지켜줍니다.",
+            "기본에 충실해야 기둥이 세워집니다. 차근 차근 벽돌을 쌓아보세요.",
+            "오늘은 무엇을 하든지 잘 될 거예요. 미루지 말고 시작해보세요.",
+            "작은 차이가 명품을 만듭니다. 어떤 차이를 가지고 계신가요?",
+            "당신은 시간이 지날수록 빛이 나는 사람입니다.",
         ]
         random_fortune = random.choice(fortunes)
 
