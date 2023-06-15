@@ -117,8 +117,8 @@ def signup(request):
         form = CustomUserCreationForm(request.POST, files=request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = True 
-            # user.is_active = False 
+            # user.is_active = True 
+            user.is_active = False 
             user.save()
             current_site = get_current_site(request) 
             message = render_to_string('accounts/activation_email.html', {
