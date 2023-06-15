@@ -39,11 +39,14 @@ aside.base--item {
   background-color: #d6dcf6;
 }
 .signup--content--wrap {
-  display: flex;
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  grid-gap: 1rem;
 }
 .signup--content {
-  width: 240px;
-  margin-right: 1rem;
+  /* width: 240px; */
+  /* margin-right: 1rem; */
 }
 .sign--region--wrap {
 
