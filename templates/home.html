@@ -46,12 +46,12 @@
         {% elif user.taste == "T" %} 
           <h1 class="font--gangwon posts--title">이 길을 따라, 현실 이음</h1>
         {% else %}
-          <h1 class="font--gangwon posts--title">밸런스 게임을 해야만 보이는 게시글 입니다.</h1>
+          <h1 class="font--gangwon posts--title">밸런스 게임을 해야만 사용 가능한 게시판 입니다.</h1>
         {% endif %}
       {% endif %}
       <ul class="posts--list">
         {% for post in category_class %}
-          {% if request.user.taste == "N" or request.user.is_superuser %}
+          {% if request.user.taste == "N" or request.user.is_superuser or not user.is_authenticated %}
             <div class="post--wrap">
               <div>
                   {% if post.image_urls.0 %}
@@ -151,7 +151,7 @@
                   </ul>
                   <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
                   <div class="post--user--wrap">
-                    <p>{{ post.user }}</p>
+                    <p>이음이</p>
                     <p class="post--time"><i>{{ post.created_time }}</i></p>
                   </div>
                 </div>

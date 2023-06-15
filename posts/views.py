@@ -16,8 +16,22 @@ from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
-    category_class = Post.objects.exclude(category='익명').order_by('-id')[:6]
-    category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
+    if request.user.is_authenticated:     
+        if request.user.taste == 'T' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
+            category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:]
+        elif request.user.taste == 'F' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
+            category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:4]
+        elif request.user.taste == 'N':
+            category_class = Post.objects.exclude(category='익명').order_by('-id')[:4]
+    else:
+        category_class = Post.objects.exclude(category='익명').order_by('-id')[:4]
+        
+
+    category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:4]
+
+
     # image_urls를 리스트로 변환
     for post in category_class:
         post.image_urls = post.image_urls.split(',')
@@ -70,19 +84,15 @@ def extract_image_urls(content):
   
 
 def index(request):
-    param = request.GET.get('param')
-
-    if param == '1':
-        category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
-    elif param == '2':
-        category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
-
-    elif param == '3':
+    if request.user.is_authenticated:
+        if request.user.taste == 'T' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
+        elif request.user.taste == 'F' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
+        else:
+            category_class = Post.objects.exclude(category='익명').order_by('-id')
+    else:
         category_class = Post.objects.exclude(category='익명').order_by('-id')
-    # category_class = Post.objects.filter(category='모임').order_by('-id')
-    # t_list = []
-    # for taste_t_post in taste_t_posts:
-    #     t_list.append(taste_t_post.pk)
     
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
@@ -97,7 +107,7 @@ def index(request):
         # 가장 오래된 글 순으로 분류
         category_class = category_class.order_by('created_at')
     tags = Post.tags.all()
-    per_page = 1
+    per_page = 6
     paginator = Paginator(category_class, per_page)
     page_obj = paginator.get_page(page)
 
@@ -117,7 +127,7 @@ def index(request):
 
     return render(request, 'posts/index.html', context)
 
-
+@login_required
 def anonymous(request):
     category_class = Post.objects.filter(category='익명').order_by('-id')
     page = request.GET.get('page', '1')
@@ -271,6 +281,14 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    print(post.address)
+    print(type(post.address))
+    address = ""
+    if post.address:
+        address = post.address
+    else:
+        address = ""
+    
     comment_form = CommentForm()
     comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
@@ -314,7 +332,8 @@ def detail(request, post_pk):
         'comment_report_form' : comment_report_form,
         'post.image_urls' : post.image_urls,
         'previous_post': previous_post,
-        'next_post': next_post
+        'next_post': next_post,
+        'address':address,
     }
 
     return render(request, 'posts/detail.html', context)
@@ -323,6 +342,11 @@ def detail(request, post_pk):
 @login_required
 def anonymous_detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    address = ""
+    if post.address:
+        address = post.address
+    else:
+        address = ""
     comment_form = CommentForm()
     comment_likes = Comment.objects.filter(post=post).annotate(num_likes=Count('like_users')+1).filter(num_likes__gt=1).order_by('-num_likes')[:3]
     comments = post.comments.all().order_by('created_at')
@@ -350,6 +374,7 @@ def anonymous_detail(request, post_pk):
     # image_urls를 리스트로 변환
     post.image_urls = extract_image_urls(post.content)
     # post.image_urls = post.image_urls.split(', ')
+    
 
 
     context ={
@@ -366,7 +391,8 @@ def anonymous_detail(request, post_pk):
         'comment_report_form' : comment_report_form,
         'post.image_urls' : post.image_urls,
         'previous_post': previous_post,
-        'next_post': next_post
+        'next_post': next_post,
+        'address' : address,
     }
 
     return render(request, 'posts/anonymous_detail.html', context)

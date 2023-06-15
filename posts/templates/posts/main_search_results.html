@@ -33,7 +33,7 @@
       {% if anonymous_posts %}
           {% for post in anonymous_posts %}
             <article class="search--content">
-              <a href="{% url 'posts:detail' post.pk %}">
+              <a href="{% url 'posts:anonymous_detail' post.pk %}">
                 <h4>{{ post.title }}</h4>
                 <p>{{ post.content|slice:":188"|safe }}</p>
               </a>
@@ -45,12 +45,8 @@
           </article>
       {% endif %}
     </section>
-        {% comment %} {% if not meeting_posts and not anonymous_posts %}
-            <p>검색 결과 없습니다.</p>
-        {% endif %} {% endcomment %}
   </div>
 </article>
-
 {% endblock content %}
 
 
