@@ -3,12 +3,12 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Message
 from django.contrib.auth import get_user_model
-from googletrans import Translator
+# from googletrans import Translator
 
-def translate_korean_to_english(text):
-    translator = Translator()
-    result = translator.translate(text, src='ko', dest='en')
-    return result.text
+# def translate_korean_to_english(text):
+#     translator = Translator()
+#     result = translator.translate(text, src='ko', dest='en')
+#     return result.text
 
 # korean_text = "안녕하세요"
 # english_text = translate_korean_to_english(korean_text)

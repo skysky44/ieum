@@ -43,6 +43,7 @@ footer.base--item {
 }
 .header--search--wrap {
   padding-left: 1rem;
+  padding-bottom: 0.3rem;
 }
 .nav--hidden {
   display: none;
