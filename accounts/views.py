@@ -118,7 +118,6 @@ def signup(request):
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, files=request.FILES)
-        # print(form)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = True 
