@@ -26,10 +26,14 @@
         <div class="signup--menu">
           <p class="signup--lable">아이디</p>
           <div class="create--content">
-            {{ form.username }}
-            <button type="button" id="check-username" value = "aaa">중복 확인</button>
-            <div id="username-result"></div>
-            <div class="error-message" id="username-error"></div>
+            <div class="signup--content--wrap">
+              <span class="signup--content">
+                {{ form.username }}
+              </span>
+              <button type="button" id="check-username" class="sign--double__check--button" value = "aaa">중복 확인</button>
+            </div>
+            <div id="username-result" style="color: royalblue;"></div>
+            <div class="error-message" id="username-error" style="color: crimson;"></div>
           </div>
         </div>
         <div class="signup--menu">
@@ -47,10 +51,12 @@
         <div class="signup--menu">
           <p class="signup--lable">이메일</p>
           <div class="create--content">
-            {{ form.email }}
-            <button type="button" id="check-email" value="aaa">중복 확인</button>
-            <div id="email-result"></div>
-            <div class="error-message" id="email-error"></div>
+            <div class="signup--content--wrap">
+              <span class="signup--content">{{ form.email }}</span>
+              <button type="button" id="check-email" class="sign--double__check--button" value="aaa">중복 확인</button>
+            </div>
+            <div id="email-result" style="color: royalblue;"></div>
+            <div class="error-message" id="email-error" style="color: crimson;"></div>
           </div>
         </div>
         <div class="signup--menu">
@@ -63,7 +69,7 @@
           <p class="signup--lable">비밀번호</p>
           <div class="create--content">
             {{ form.password1 }}
-            <div class="error-message" id="password-error"></div>
+            <div class="error-message" id="password-error" style="color: crimson;"></div>
           </div>
         </div>
         <div class="signup--menu">
