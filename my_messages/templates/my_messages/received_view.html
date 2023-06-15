@@ -9,7 +9,7 @@
       <h3 class="view--title">받은 쪽지 확인하기</h3>
       <div class="view--header">
         <p class="mt-2">
-          보낸 사람 : <strong>{{ message.sender }}</strong> / 
+          보낸 사람 : <strong>{{ message.sender }}</strong> 
           받는 사람 : <strong>{{ message.receiver }}</strong>
         </p>
         <a href="{% url 'my_messages:delete_message' message.id %}" class="mt-2" onclick="return confirm('삭제하시겠습니까?')"><i class="bi bi-trash3" style="color: crimson; font-size:1.2rem;"></i></a>
@@ -27,14 +27,14 @@
           <a href="{% url 'my_messages:sent_messages' %}" class="view--aTag">보낸 쪽지함</a>
         </li>
       </ul>
-      <form method="post" class="" style="width: 400px;">
+      <form method="POST" action="{% url 'my_messages:compose_message' %}" class="" style="width: 400px;">
         {% csrf_token %}
         <div class="view--form--wrap">
-          <p>보낼 사람 : <strong>{{ message.sender }}</strong></p>
-          {% comment %} <div class='d-none'>{{ form.receiver }}</div> {% endcomment %}
+          <div class='d-none'>{{ form.receiver }}</div>
+          <p>보낼 사람 : <strong>{{ message.receiver }}</strong></p>
+          <p>받는 사람 : <strong>{{ message.sender  }}</strong></p>
         </div>
         <div class="mt-2">
-          <p>내용 : </p>
           <div class="view--reply--content--box">
             {{ form.content }}
           </div>
