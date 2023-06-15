@@ -13,7 +13,7 @@
 {% endblock aside %}
 
 {% block content %}
-  <article class="update--container">
+  <article class="update--container" style="max-height: 500px;">
     <form class="update--form" action="{% url 'accounts:update' %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="update--form--list">
