@@ -28,8 +28,6 @@ def balances(request):
 def login(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
-
-    
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
         username = request.POST.get('username')
@@ -43,12 +41,11 @@ def login(request):
             user1 = User.objects.get(username=username)
             user_pk = user1.pk
             balances_word = Result.objects.filter(pk=user_pk)
-            if balances_word.exists():
-                return redirect('posts:index')
-            else:
+            if user1.taste == "N":
                 return redirect('accounts:balances')
-
-            
+                
+            else:
+                return redirect('posts:index')
         else:
             for i in a:
                 if username in a:
