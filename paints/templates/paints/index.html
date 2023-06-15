@@ -32,6 +32,9 @@
                   <form id="paints-form-{{paint.pk}}" data-paint-id="{{ paint.pk }}">
                     {% csrf_token %}
                     {% if request.user == paint.user %}
+                      <i class="bi-suit-heart-fill" id="paints-heart-{{paint.pk}}" style="color: #f0872a;">
+                      <span id="paints-like-count-{{paint.pk}}">{{ paint.like_users.all|length }}</span>
+                      </i>
                     {% else %}
                       {% if request.user in paint.like_users.all %}
                         <button type="submit" class="">
@@ -50,10 +53,10 @@
                   </form>
                 {% endif %} 
                 {% if request.user == paint.user %}
-                {% else %}
                   <a class="paint--update" href="{% url 'paints:update' paint.pk %}">
                     <i class="bi-pencil-fill" style="color: #008d63;"></i>
                   </a>
+                {% else %}
                 {% endif %}
               </div>
               <p class="paint--user">{{ paint.user }}</p>
@@ -105,7 +108,6 @@
     </div>
   </div>
 </article>
-
 
 <script>
   let fruitImages = document.querySelectorAll('.fruit-image');

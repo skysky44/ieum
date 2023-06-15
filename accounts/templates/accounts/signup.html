@@ -18,7 +18,7 @@
 {% endblock aside %}
 
 {% block content %}
-<article class="signup--container">
+<article class="signup--container" style="max-height: 600px;">
   <form class="signup--form" action="{% url 'accounts:signup' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="signup--form--list">

@@ -72,6 +72,10 @@ def extract_image_urls(content):
 def index(request):
     # category_class = Post.objects.filter(category='모임').order_by('-id')
     category_class = Post.objects.exclude(category='익명').order_by('-id')
+    # taste_t_posts = Post.objects.exclude(category='anonymous').filter(user__taste='T').order_by('-id')
+    # taste_f_posts = Post.objects.exclude(category='anonymous').filter(user__taste='F').order_by('-id')
+    # for taste_t_post in taste_t_posts:
+        
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
 
@@ -99,6 +103,7 @@ def index(request):
         'category_class': page_obj,
         'section': section,
         'total_pages': total_pages,
+        'per_page' : per_page,
         'tags': tags,
         'post_image_urls': [post.image_urls for post in page_obj],
     }
@@ -150,7 +155,8 @@ def create(request):
         ('운동', '운동'),
         ('게임', '게임'),
         ('여행', '여행'),
-        ('학습', '학습'),
+        ('일상', '일상'),
+        ('기타', '기타'),
     ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
 
@@ -367,7 +373,8 @@ def update(request, post_pk):
         ('운동', '운동'),
         ('게임', '게임'),
         ('여행', '여행'),
-        ('학습', '학습')
+        ('일상', '일상'),
+        ('기타', '기타'),
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)

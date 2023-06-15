@@ -44,6 +44,19 @@ aside.base--item {
   border-radius: 5px;
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
+  max-height: 306px;
+  overflow: auto;
+}
+.update--introductions--content::-webkit-scrollbar {
+  width: 6px;
+}
+.update--introductions--content::-webkit-scrollbar-thumb {
+  height: 30%;
+  background: #d4f3c8;
+  border-radius: 10px;
+}
+.update--introductions--content::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, .1);
 }
 .update--wrap {
   display: flex;
@@ -53,10 +66,10 @@ aside.base--item {
 .update--input--button {
   width: 400px;
   border-radius: 5px;
-  border: 1px solid #b8dfab;
-  background-color: #b8dfab;
+  border: 1px solid #C2E8C2;
+  background-color: #C2E8C2;
   padding: 0.6rem 0;
 }
 .update--input--button:hover {
-  background-color: #b8dfab;
+  background-color: #d0f7d0;
 }

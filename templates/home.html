@@ -38,48 +38,55 @@
 <article class="posts--container">
   <div class="posts--wrap">
     <section class="posts--article--container">
-      {% if user.taste == "F" %}
-        <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
-      {% elif user.taste == "T" %} 
-        <h1 class="font--gangwon posts--title">이 길을 따라, 현실 이음</h1>
+      {% if request.user.is_superuser %}
+        <h1 class="font--gangwon posts--title">모든 이음</h1>
       {% else %}
-        <h1 class="font--gangwon posts--title">밸런스 게임을 해야만 보이는 게시글 입니다.</h1>
+        {% if user.taste == "F" %}
+          <h1 class="font--gangwon posts--title">이 길을 따라, 공감 이음</h1>
+        {% elif user.taste == "T" %} 
+          <h1 class="font--gangwon posts--title">이 길을 따라, 현실 이음</h1>
+        {% else %}
+          <h1 class="font--gangwon posts--title">밸런스 게임을 해야만 보이는 게시글 입니다.</h1>
+        {% endif %}
       {% endif %}
       <ul class="posts--list">
         {% for post in category_class %}
-          {% if post.user.taste == N %}
-          <div class="post--wrap">
-            <div>
-              {% if post.image_urls %}
-                <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-              {% endif%}
-            </div>
-            <div class="post--text--list"> 
-              <ul class="post--tag--list">
-                {% for tag in post.tags.all %}
-                  {% if forloop.counter <= 3 %}
-                    <li class="post--tag">
-                      ﹟{{ tag }}
-                    </li>
+          {% if request.user.taste == "N" or request.user.is_superuser %}
+            <div class="post--wrap">
+              <div>
+                  {% if post.image_urls.0 %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="1">
+                  {% else %}
+                    <img class="posts_image" src="{% static 'base/image/ieum_noimage_01.png' %}" alt="2">
                   {% endif %}
-                {% endfor %}
-              </ul>
-              <div class="post--title--wrap">
-                <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
               </div>
-              <div class="post--user--wrap">
-                <p>{{ post.user }}</p>
-                <p class="post--time"><i>{{ post.created_time }}</i></p>
+              <div class="post--text--list"> 
+                <ul class="post--tag--list">
+                  {% for tag in post.tags.all %}
+                    {% if forloop.counter <= 3 %}
+                      <li class="post--tag">
+                        ﹟{{ tag }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+                <div class="post--title--wrap">
+                  <h4 class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</h4>
+                </div>
+                <div class="post--user--wrap">
+                  <p>{{ post.user }}</p>
+                  <p class="post--time"><i>{{ post.created_time }}</i></p>
+                </div>
               </div>
-            </div>
-          </div>
-            
+            </div>           
           {% elif post.user.taste == request.user.taste  %}
             <a href="{% url 'posts:detail' post.pk %}">
               <div class="post--wrap">
                 <div>
-                  {% if post.image_urls %}
-                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                  {% if post.image_urls.0 %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="1">
+                  {% else %}
+                    <img class="posts_image" src="{% static 'base/image/ieum_noimage_01.png' %}" alt="2">
                   {% endif %}
                 </div>
                 <div class="post--text--list"> 
@@ -126,8 +133,10 @@
           <a href="{% url 'posts:anonymous_detail' post.pk %}">
             <div class="post--wrap">
                 <div>
-                  {% if post.image_urls %}
-                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                  {% if post.image_urls.0 %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="1">
+                  {% else %}
+                    <img class="posts_image" src="{% static 'base/image/ieum_noimage_01.png' %}" alt="2">
                   {% endif %}
                 </div>
                 <div class="post--text--list">
