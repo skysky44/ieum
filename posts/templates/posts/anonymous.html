@@ -37,9 +37,7 @@
               {% for image_url in post.image_urls %}
                 <img class="post--img" src="{{ image_url }}" alt="Image">
               {% empty %}
-                <div style="width: 150px; height: 150px; overflow: hidden;">
-                  <i class="bi bi-image-alt" style="font-size:150px"></i>
-                </div>
+                <img class="post--img" src="{% static 'base/image/ieum_noimage_01.png' %}" alt="no image">
                 {% comment %} <img class="post--img" src="no-image.png" alt="No Image"> {% endcomment %}
               {% endfor %}
             </div>

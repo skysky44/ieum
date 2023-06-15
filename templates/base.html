@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'base/css/reset.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
-    <link rel="icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_05.png' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'base/image/ieum_favicon_07.png' %}">
     {% block head %}{% endblock head %}
     <title>{% block title %}{% endblock title %}오늘, 이음</title>
     <style>
@@ -68,8 +68,14 @@
               {% if request.user.is_authenticated %}
               <li class="nav--list--text {% if request.resolver_match.view_name == 'accounts:profile' %}nav__active{% endif %}">
                 <!-- 프로필페이지 -->
-                <div>
-                  <a href="{% url 'accounts:profile' user %}">내페이지</a>
+                <div class="nav--profile">
+                  <a href="{% url 'accounts:profile' user %}">내 페이지</a>
+                  {% get_unread_messages_count user as unread_messages_count %}
+                  {% if unread_messages_count > 0 %}
+                    <div class="user--message">
+                      <a href="{% url 'my_messages:received_messages' %}" class="">{{ unread_messages_count }}</a>
+                    </div>
+                  {% endif %} 
                 </div>
               </li>
               {% else %}
@@ -82,15 +88,7 @@
               {% endif %}
             </ul>
           </nav>
-
-            {% if request.user.is_authenticated %}
-              {% get_unread_messages_count user as unread_messages_count %}
-              {% if unread_messages_count > 0 %}
-                <a href="{% url 'my_messages:received_messages' %}" class="me-4">
-                  <i class="bi bi-envelope text-danger" style="font-size: 1.8rem;"> {{ unread_messages_count }}</i>
-                </a>
-              {% endif %}
-            {% endif %}
+            
             <!-- 모바일 네비 토글키 -->
             <button id="navToggleButton" style="display:none;">
               <i class="bi bi-list" style="font-size:1.8rem;"></i>
@@ -158,6 +156,7 @@
         </div>
       </div>
     </header>
+
     <aside class="base--item">
       {% block aside %}
       {% endblock aside %}

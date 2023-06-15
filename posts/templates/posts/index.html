@@ -81,7 +81,7 @@
                   {% for image_url in post.image_urls %}
                     <img class="post--img" src="{{ image_url }}" alt="Image">
                   {% empty %}
-                    <img class="post--img" src="no-image.png" alt="No Image">
+                    <img class="post--img" src="{% static 'base/image/ieum_noimage_01.png' %}" alt="No Image">
                   {% endfor %}
                 </div>
                 <div class="post--content--wrap">
