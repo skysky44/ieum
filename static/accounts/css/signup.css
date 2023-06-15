@@ -39,11 +39,14 @@ aside.base--item {
   background-color: #d6dcf6;
 }
 .signup--content--wrap {
-  display: flex;
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  grid-gap: 1rem;
 }
 .signup--content {
-  width: 240px;
-  margin-right: 1rem;
+  /* width: 240px; */
+  /* margin-right: 1rem; */
 }
 .sign--region--wrap {
 
@@ -57,8 +60,20 @@ aside.base--item {
   border-radius: 5px;
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
+  max-height: 364px;
+  overflow: auto;
 }
-
+.signup--introductions--content::-webkit-scrollbar {
+  width: 6px;
+}
+.signup--introductions--content::-webkit-scrollbar-thumb {
+  height: 30%;
+  background: #cad4fc;
+  border-radius: 10px;
+}
+.signup--introductions--content::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, .1);
+}
 .signup--wrap {
   display: flex;
   justify-content: center;

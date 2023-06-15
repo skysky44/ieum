@@ -1,36 +1,13 @@
 
 #detail--main--box {
-
-}
-@media (max-width: 1024px) {
-  #detail--main--box {
-    display: block;
-  }
+  float: left;
 }
 #header {
 
 }
-@media (max-width: 1024px) {
-  #header {
-    display: block;
-  }
-  .detail__map {
-    width: 100%;
-  }
-}
 #music-track {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-}
-@media (max-width: 1024px) {
-}
-@media (max-width: 540px) {
-  #music-track {
-    display: block;
-  }
-  .detail--music--playbtn {
-    display: block;
-  }
 }
 .detail--container {
 }
@@ -67,6 +44,9 @@
   display: flex;
   align-items: flex-end;
 }
+.detail--user {
+  margin-left: 3px;
+}
 .detail--like--form {
   display: flex;
 }
@@ -81,6 +61,7 @@
 }
 
 .detail__map {
+  float: right;
   border-radius: 10px;
 }
 .aside--music--wrap {
@@ -91,7 +72,6 @@
 }
 .detail--music--box {
   box-sizing: border-box;
-  /* border: 1px solid; */
   border-radius: 5px;
   padding: 3px 6px;
   background-color: #fff;
@@ -170,7 +150,8 @@
 .comment--info--list {
   display: flex;
   justify-content: flex-start;
-  align-items: flex-end;
+  /* align-items: flex-end; */
+  align-items: center;
   gap: 0.5rem;
   color: #555;
   font-size: 13px;
@@ -179,24 +160,14 @@
 .comments__user--wrap {
   display: flex;
   align-items: flex-end;
+  margin-bottom: 5px;
 } 
-/* .comment--like--form {
-  display: flex;
-  justify-items: flex-start;
-}
-.comment--like--count {
-  display: flex;
-  justify-content: flex-end;
-}  */
+
 .comment--bell--wrap {
   display: flex;
   justify-items: flex-start;
 }
-.comment--date {
-}
-.comments__btn--list1 {
 
-}
 .comments__btn--list2 {
   display: flex;
   gap: 0.5rem;
@@ -302,5 +273,12 @@
 }
 
 input[type="submit"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }

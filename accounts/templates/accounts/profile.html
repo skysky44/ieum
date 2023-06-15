@@ -13,7 +13,7 @@
     <p><img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" {% endif %} alt="프로필사진"></p>
   </section>
   <section>
-    <h2 class="font--gangwon main--title"><i class="bi bi-emoji-heart-eyes" style="color:#a7eaa7;"></i> {{ person.username }} 님의 프로필페이지</h2>
+    <h2 class="font--gangwon main--title"> {{ person.username }} 님의 프로필페이지</h2>
     <div>
       {% if request.user.is_authenticated and request.user.username == username %}
         {% if person.taste == "T" %}
@@ -33,6 +33,11 @@
         {% endif %}
       {% endif %}
     </div>
+      {% if user.reported == True %}
+        <div class="profile--report--move--button--wrap">
+          <a class="profile--report--move--button" href="#profile--report--move">신고된 게시물 확인하러가기</a>
+        </div>
+      {% endif %}
     <div>{% comment %} 유저 간 거리 {% endcomment %}
       <article>
         {% if person == user  %}
@@ -203,9 +208,9 @@
       <!-- 취향 문장 -->
     <section class="profile--sentence---container">
       <h5 class="profile--sectence--title">{{ person.username }}님의 문장</h5>
-      <ul>
+      <ul class="profile--sectence--list">
         {% for introduction in introductions_list %}
-          <li id="sentence">{{ introduction }}</li>
+          <li id="sentence" class="profile--user--sectence">{{ introduction }}</li>
         {% endfor %}
       </ul>
     </section>
@@ -291,38 +296,40 @@
     </section>
 
 {% endif %}
-
+    <div id="profile--report--move"></div>
       <!-- 신고 당한 게시물 (신고 당한 게시물이 있는 경우만 표시)-->
     {% if my_post_reports.exists or request.user.is_superuser %}
-      <section class="profile--posts--wrap">
-        <h5 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h5>
-        <div class="profile--text--list--wrap">
-          {% for post_report in post_reports %}
-            <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 게시물이 보여짐-->
-            {% if request.user == person and person == post_report.post.user %}
-              <ul class="profile--text--list">
-                <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
-                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
-                <li class="profile--text"><span class="profile--text--title">작성일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
-                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
-              </ul>
-            <!-- 로그인한 유저가 관리자라면 전체 신고 당한 게시물이 보여짐-->
-            {% elif request.user.is_superuser %}
-              <ul class="profile--text--list">
-                <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고대상</span>{{ post_report.post.user }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
-                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
-                <li class="profile--text"><span class="profile--text--title">신고일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
-                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
-              </ul>
-            {% endif %}
-          {% endfor %}
-        </div>
-      </section>
+      <div class="profile--report--container">
+        <section class="profile--posts--wrap">
+          <h5 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h5>
+          <div class="profile--text--list--wrap">
+            {% for post_report in post_reports %}
+              <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 게시물이 보여짐-->
+              {% if request.user == person and person == post_report.post.user %}
+                <ul class="profile--text--list">
+                  <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
+                  <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
+                  <li class="profile--text"><span class="profile--text--title">작성일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
+                  <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+                </ul>
+              <!-- 로그인한 유저가 관리자라면 전체 신고 당한 게시물이 보여짐-->
+              {% elif request.user.is_superuser %}
+                <ul class="profile--text--list">
+                  <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고대상</span>{{ post_report.post.user }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
+                  <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
+                  <li class="profile--text"><span class="profile--text--title">신고일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
+                  <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+                </ul>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </section>
+      </div>
     {% endif %}
 
     <!-- 신고 당한 댓글 (신고 당한 댓글이 있는 경우만 표시)-->
