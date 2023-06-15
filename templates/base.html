@@ -189,7 +189,15 @@
         </div>
       </a>
     {% endif %}
-    
+    <a href="{% url 'chat:index' %}">
+      <div class="nori--viewport-2">
+        <div class="nori--wheel-2">
+          <div class="nori--item">
+            <p>채팅</p>
+          </div>
+        </div>
+      </div>
+    </a>
     <!-- main 2-->
     <main>
       {% block main2 %}{% endblock main2 %}

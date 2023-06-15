@@ -20,8 +20,22 @@ body {
 
 .nori--viewport {
   position: fixed;
-  bottom: 0;
+  bottom: 115px;
   right: 15px;
+}
+
+.nori--viewport-2 {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+}
+
+.nori--wheel-2 {
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  background-color: rgba(194, 232, 194, .5);
+  /* animation: 3s linear 0.2s infinite alternate bounce; */
 }
 
 .nori--wheel {
