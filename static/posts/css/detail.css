@@ -1,6 +1,5 @@
 
 #detail--main--box {
-  float: left;
 }
 #header {
 
@@ -61,7 +60,6 @@
 }
 
 .detail__map {
-  float: right;
   border-radius: 10px;
 }
 .aside--music--wrap {

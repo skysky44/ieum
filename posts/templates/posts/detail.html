@@ -117,22 +117,9 @@
           <div>조회 {{ post.view_count }}</div>
         </div>
       </article>
-      <div>
-        {% if post.address %}
-          <article id="detail--main--box">
-            <div class="detail--content">{{ post.content|safe }}</div>
-          </article>
-          <article class="detail--map">
-            <div class="detail__map--wrap">
-              <div id="map" style="width:400px; height: 400px;" class="detail__map"></div>
-            </div>
-          </article>
-        {% else %}
-          <article id="detail--main--box">
-            <div class="detail--content">{{ post.content|safe }}</div>
-          </article>
-        {% endif %}
-      </div>
+      <article id="detail--main--box">
+        <div class="detail--content">{{ post.content|safe }}</div>
+      </article>
       <article class="detail--image--wrap">
         {% for img_url in post.image_urls %}
           <img class="post--img" src="{{ img_url }}" alt="" onclick="openModal('{{ img_url }}')" id="img{{ forloop.index }}">
@@ -144,6 +131,7 @@
           <div id="caption"></div>
         </div>
       </article>
+
       {% if address %}
         <article class="detail--map">
           <div class="detail__map--wrap">
@@ -151,7 +139,6 @@
           </div>
         </article>
       {% endif %}
-
       <article class="">
         {% for tag in tags %}
           <span class="detail--tag">#{{ tag }}</span>

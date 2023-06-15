@@ -93,7 +93,7 @@
           <div>조회 {{ post.view_count }}</div>
         </div>
       </article>
-      <article id="detail--main--box">
+      <article id="detail--main--box" style="">
         <div class="detail--content">{{ post.content|safe }}</div>
       </article>
       <article class="detail--image--wrap">
@@ -110,9 +110,10 @@
       {% if address %}
         <article class="detail--map">
           <div class="detail__map--wrap">
-            <div id="map" style="width:100%; height:200px;" class="detail__map"></div>
+            <div id="map" style="width:400px; height: 400px;" class="detail__map"></div>
           </div>
         </article>
+      {% else %}
       {% endif %}
       <article class="">
         {% for tag in tags %}
