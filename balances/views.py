@@ -113,11 +113,9 @@ def answer(request, question_pk, select_answer):
             user.score = user_score
             user.save()
         # question_pk가 13인 경우에 user_score 필드 업데이트
-        if question_pk == 16:
-            if user_score >= 50:
+        if question_pk == 21:
+            if user_score >= 60:
                 user.taste = 'T'
-            # elif user_score >= 40:
-            #     user.taste = 'TF'
             else:
                 user.taste = 'F'
             user.save()
