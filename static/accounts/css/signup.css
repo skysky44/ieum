@@ -38,6 +38,13 @@ aside.base--item {
   border-radius: 5px;
   background-color: #d6dcf6;
 }
+.signup--content--wrap {
+  display: flex;
+}
+.signup--content {
+  width: 240px;
+  margin-right: 1rem;
+}
 .sign--region--wrap {
 
 }
@@ -56,6 +63,15 @@ aside.base--item {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.sign--double__check--button {
+  border-radius: 5px;
+  border: 1px solid #cad4fc;
+  background-color: #cad4fc;
+  padding: 0.2rem 0.4rem;
+}
+.sign--double__check--button:hover {
+  background-color: #bbc9ff;
 }
 .signup--input--button {
   width: 400px;
