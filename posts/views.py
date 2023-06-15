@@ -16,7 +16,7 @@ from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
-    category_class = Post.objects.filter(category='모임').order_by('-id')[:6]
+    category_class = Post.objects.exclude(category='익명').order_by('-id')[:6]
     category_anonymous = Post.objects.filter(category='익명').order_by('-id')[:6]
 
     # image_urls를 리스트로 변환
@@ -41,11 +41,10 @@ from django.db.models import Q
 # 검색 기능
 def main_search(request):
     query = request.GET.get('query')
-    print(query)
 
     if query:
         meeting_posts = Post.objects.filter(
-            Q(category__icontains='모임'),
+            ~Q(category__icontains='익명'),
             Q(title__icontains=query) | Q(content__icontains=query)
         )
 
@@ -72,7 +71,8 @@ def extract_image_urls(content):
   
 
 def index(request):
-    category_class = Post.objects.filter(category='모임').order_by('-id')
+    # category_class = Post.objects.filter(category='모임').order_by('-id')
+    category_class = Post.objects.exclude(category='익명').order_by('-id')
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
 
@@ -146,8 +146,12 @@ def anonymous(request):
 def create(request):
     global tracks
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('맛집', '맛집'),
+        ('음악', '음악'),
+        ('운동', '운동'),
+        ('게임', '게임'),
+        ('여행', '여행'),
+        ('학습', '학습'),
     ]
     selected_tracks = request.POST.getlist('selected_tracks[]')
 
@@ -201,8 +205,8 @@ def anonymous_create(request):
     global tracks
     category_choices = [
         ('익명', '익명'),
-        ('모임', '모임'),
     ]
+
     selected_tracks = request.POST.getlist('selected_tracks[]')
 
 
@@ -360,8 +364,12 @@ def anonymous_detail(request, post_pk):
 @login_required
 def update(request, post_pk):
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('맛집', '맛집'),
+        ('음악', '음악'),
+        ('운동', '운동'),
+        ('게임', '게임'),
+        ('여행', '여행'),
+        ('학습', '학습')
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
@@ -427,8 +435,7 @@ def update(request, post_pk):
 @login_required
 def anonymous_update(request, post_pk):
     category_choices = [
-        ('모임', '모임'),
-        ('익명', '익명'),
+        ('익명', '익명')
     ]
     post = Post.objects.get(pk=post_pk)
     music = PostTrack.objects.filter(post=post_pk)
