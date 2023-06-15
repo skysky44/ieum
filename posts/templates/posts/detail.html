@@ -82,9 +82,9 @@
             <a class="user--wrap" href="{% url 'accounts:profile' username=post.user %}">
               <img style="width:25px; height:25px; border-radius:50%;" src=
                 {% if post.user.image %} "{{ post.user.image.url }}" 
-                {% else %} "{% static 'accounts/image/user_image.png' %}" 
+                {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" 
                 {% endif %} alt="프로필 사진" id="profile-image"/>
-              <span class="">{{ post.user }}</span>
+              <span class="detail--user">{{ post.user }}</span>
             </a>
             <p class="">{{ post.created_at }}</p>
             {% if request.user == post.user %}
@@ -173,9 +173,9 @@
         <div class="comments__user--wrap">
           <img style="width:25px; height:25px; border-radius:50%;" src=
                 {% if request.user.image %} "{{ request.user.image.url }}" 
-                {% else %} "{% static 'accounts/image/user_image.png' %}" 
+                {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" 
                 {% endif %} alt="프로필 사진" id="profile-image"/>
-          <p>{{ user }}</p>
+          <p class="detail--user">{{ user }}</p>
         </div>
         <form id="comment-form" action="{% url 'posts:comment_create' post.pk %}" method='POST'>
           {% csrf_token %}
@@ -197,8 +197,8 @@
                 <div class="comment--info--wrap">
                   <div class="comment--info--list">
                     <div class="comments__user--wrap">
-                      <img style="width:25px; height:25px; border-radius:50%;" src={% if comment_like.user.image %}{{ comment_like.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                      <p class="">{{ comment_like.user }}</p>
+                      <img style="width:25px; height:25px; border-radius:50%;" src={% if comment_like.user.image %}{{ comment_like.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                      <p class="detail--user">{{ comment_like.user }}</p>
                       <i class="bi bi-bookmark-heart-fill" style="color:crimson;"></i>
                     </div>
                     <p class="comment--date">{{ comment_like.created_time }}</p>
@@ -247,8 +247,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p>{{ comment.user }}</p>
+                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">{{ comment.user }}</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -265,8 +265,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p class="">{{ comment.user }}</p>
+                          <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">{{ comment.user }}</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                       </div>
@@ -312,8 +312,8 @@
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
-                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p class="">{{ comment.user }}</p>
+                          <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                          <p class="detail--user">{{ comment.user }}</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -330,8 +330,8 @@
                   <div class="comment--info--wrap">
                     <div class="comment--info--list">
                       <div class="comments__user--wrap">
-                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/user_image.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                        <p class="">{{ comment.user }}</p>
+                        <img style="color: black; width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{{ comment.user.image.url }}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
+                        <p class="detail--user">{{ comment.user }}</p>
                       </div>
                       <p class="comment--date">{{ comment.created_time }}</p>
                       </div>

@@ -44,6 +44,9 @@
   display: flex;
   align-items: flex-end;
 }
+.detail--user {
+  margin-left: 3px;
+}
 .detail--like--form {
   display: flex;
 }
@@ -146,7 +149,8 @@
 .comment--info--list {
   display: flex;
   justify-content: flex-start;
-  align-items: flex-end;
+  /* align-items: flex-end; */
+  align-items: center;
   gap: 0.5rem;
   color: #555;
   font-size: 13px;
@@ -155,6 +159,7 @@
 .comments__user--wrap {
   display: flex;
   align-items: flex-end;
+  margin-bottom: 5px;
 } 
 
 .comment--bell--wrap {
