@@ -1,137 +1,228 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load posts.custom_tags %}
 
 {% block title %}{{ person.username }}님의 프로필 - {% endblock title %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
-  
 {% endblock head %}
-{% block style %}
-{% endblock style %}
 
-{% block content %}
-{% if request.user.is_authenticated == request.user.is_superuser %}
-  <div class="d-flex justify-content-between">
-    <h3 class="me-3"><strong>{{ person.username }}</strong></h3>
-    <a href="{% url 'accounts:logout' %}">
-      <i title="로그아웃" class="bi bi-box-arrow-right" style="font-size:1.8rem;"></i>
-    </a>
-  </div>
-  
-{% else %}
-  <div class="profile--wrap mt-5">
-    <div class="d-flex flex-column">
-      <!-- 프로필 사진 -->
-      <div class="d-flex justify-content-center">
-        <div class="profile--img--box">
-          <p><img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필사진"></p>
-        </div>
-      </div>
-      <h3 class="text-center mt-3"><strong>{{ person.username }}</strong></h3>
-
-      {% comment %} 유저 간 거리 {% endcomment %}
-      {% if person == user  %}
-      {% else %}
-        {% if person.privacy == 1 and user.privacy == 1 %}
-          <p class="text-center mt-3">당신과의 거리 : <strong>{{ distance|floatformat:1 }} km</strong></p>
+{% block aside %}
+<article class="main--title--wrap">
+  <section class="profile--img--box">
+    <p><img class="profile--img" src={% if person.image %} "{{ person.image.url }}" {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" {% endif %} alt="프로필사진"></p>
+  </section>
+  <section>
+    <h2 class="font--gangwon main--title"><i class="bi bi-emoji-heart-eyes" style="color:#a7eaa7;"></i> {{ person.username }} 님의 프로필페이지</h2>
+    <div>
+      {% if request.user.is_authenticated and request.user.username == username %}
+        {% if person.taste == "T" %}
+          <p>{{ person.username }}님은 현실이음과 연결되어 있습니다.</p>
+        {% elif person.taste == "F" %}
+          <p>{{ person.username }}님은 공감이음과 연결되어 있습니다.</p>
         {% else %}
-          <p class="text-center mt-3">거리 비공개</p>
+          <p><a href="{% url 'balances:detail' 1 %}" class="profile--balance--button">밸런스게임 하러가기!</a></p>
         {% endif %}
-      {% endif %}
-
-      <div class="d-flex justify-content-evenly mt-3">
-        <!-- 팔로잉 & 팔로우 & 피드 -->
-        <div class="d-flex flex-column">
-          <strong class="">팔로잉</strong>
-          <strong class="text-center"><a href="#" id="followings-count" data-bs-toggle="modal" data-bs-target="#followingModal" style="text-decoration:none; color:black;">
-            {{ person.followings.all|length }}
-          </a></strong>
-        </div>
-        <div class="d-flex flex-column">
-          <strong class="">팔로워</strong>
-          <strong class="text-center"><a href="#" id="followers-count" data-bs-toggle="modal" data-bs-target="#followerModal" style="text-decoration:none; color:black;">
-            {{ person.followers.all|length }}
-          </a></strong>
-        </div>
-        <div class="d-flex flex-column">
-          <strong>피드</strong>
-          <strong class="text-center"><a href="#" id="posts-count" data-bs-toggle="modal" data-bs-target="#postsModal" style="text-decoration:none; color:black;">
-            {{ post_count }}
-          </a></strong>
-        </div>
-      </div>
-
-      <!-- 팔로잉 & 팔로우 버튼 -->
-      <div class="mt-3">
-        {% if not user.is_authenticated %}
-          <div><input type="submit" value="Follow" disabled="disabled"></div>
-        {% elif request.user != person %}
-          <div>
-            <form id='follow-form' data-user-id="{{ person.pk }}" class="d-flex justify-content-center">
-              {% csrf_token %}
-              {% if request.user in person.followers.all %}
-                <input id="followinput" type="submit" value="Unfollow" class="profile--follow--btn">
-              {% else %}
-                <input id="followinput" type="submit" value="Follow" class="profile--follow--btn">
-              {% endif %}
-            </form>
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- 포춘쿠키 메세지 -->
-      {% if request.user == person %}
-      {% if fortunes.date == fortune_today %}
-        <p id="fortunes--sentence">"{{ fortunes.message }}"</p>
       {% else %}
-        <span style="text-align:center;">아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
-        <form action="{% url 'posts:fortune_cookie' %}" method="post" style="text-align:center;">
-          {% csrf_token %}
-          <button type="submit" style="border: none; background: none;">
-            <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
-          </button>
-        </form>
-      {% endif %}
+        {% if person.taste == "T" %}
+          <p>{{ person.username }}님은 현실이음과 연결되어 있습니다.</p>
+        {% elif person.taste == "F" %}
+          <p>{{ person.username }}님은 공감이음과 연결되어 있습니다.</p>
+        {% else %}
+          <p>밸런스 게임을 하지 않으셨습니다.</p>
+        {% endif %}
       {% endif %}
     </div>
-
-    <!-- 지우면 안돼요!! 반응형(grid) -->
-    <div></div>
-
-    <div id="profile--third--wrap">
-      <div class="profile--atag mb-3">
-        {% if request.user.is_authenticated and request.user.username == username %}
-          <!-- 쪽지 -->
-          <a href="{% url 'my_messages:received_messages' %}" class="me-4">
-            <i title="쪽지함" class="bi bi-envelope" style="font-size:1.8rem;"></i>
-          </a>
-
-          <!-- 프로필 설정 -->
-          <a href="{% url 'accounts:update' %}" class="me-4">
-            <i title="회원정보수정" class="bi bi-gear" style="font-size:1.8rem;"></i>
-          </a>
-
-          <!-- 로그아웃 -->
-          <div>
-            <a href="{% url 'accounts:logout' %}">
-              <i title="로그아웃" class="bi bi-box-arrow-right" style="font-size:1.8rem;"></i>
-            </a>
-          </div>
+    <div>{% comment %} 유저 간 거리 {% endcomment %}
+      <article>
+        {% if person == user  %}
+        {% else %}
+          {% if person.privacy == 1 and user.privacy == 1 %}
+            <p class="">당신과의 거리 : <strong>{{ distance|floatformat:1 }} km</strong></p>
+          {% else %}
+            <p class="">거리 비공개</p>
+          {% endif %}
         {% endif %}
+      </article>
+    </div>
+  </section>
+</article>
+<article class="profile--list--wrap">
+  <ul class="profile--list">
+    <li class="profile--menu">
+      <p class="profile--menu--title">팔로잉</p>
+      <div class="profile--menu--content">
+        <a href="#" id="followings-count" data-bs-toggle="modal" data-bs-target="#followingModal">{{ person.followings.all|length }}</a>
       </div>
+    </li>
+    <li class="profile--menu">
+      <p class="profile--menu--title">팔로워</p>
+      <div class="profile--menu--content">
+        <a href="#" id="followers-count" data-bs-toggle="modal" data-bs-target="#followerModal">{{ person.followers.all|length }}</a>
+      </div>
+    </li>
+    <li class="profile--menu">
+      <p class="profile--menu--title">피드</p>
+      <div class="profile--menu--content">
+        <a href="#" id="posts-count" data-bs-toggle="modal" data-bs-target="#postsModal">{{ post_count }}</a>
+      </div>
+    </li>
+    <li class="profile--menu">
+      {% if request.user.is_authenticated and request.user.username == username %}
+        <div class="profile--message--wrap">
+          <a href="{% url 'my_messages:received_messages' %}" class="">
+            메세지함
+          </a>
+          <div class="profile--user--message">
+            {% if request.user.is_authenticated %}
+              {% get_unread_messages_count user as unread_messages_count %}
+              {% if unread_messages_count > 0 %}
+                <a href="{% url 'my_messages:received_messages' %}" class="message--alarm">새 메세지가 <span style="color: red;">{{ unread_messages_count }}</span>건 있습니다.</a>
+              {% endif %}
+            {% endif %} 
+          </div>
+        </div>
+      {% elif request.user.is_authenticated and request.user.username != username %}
+        <a href="{% url 'my_messages:compose_message_to_user' person.username %}" class="">
+          메시지 보내기
+        </a>
+        <div class="profile--user--message">
+      {% endif %}
+    </li>
+    <li class="profile--menu">
+      {% if request.user.is_authenticated and request.user.username == username %}
+        <a href="{% url 'accounts:update' %}" class="">회원정보 수정</a>
+      {% else %}
+        <!-- 팔로잉 & 팔로우 버튼 -->
+        <div class="">
+          {% if not user.is_authenticated %}
+            <div><input type="submit" value="Follow" disabled="disabled"></div>
+          {% elif request.user != person %}
+            <div>
+              <form id='follow-form' data-user-id="{{ person.pk }}" class="">
+                {% csrf_token %}
+                {% if request.user in person.followers.all %}
+                  <input id="followinput" type="submit" value="팔로위 취소" class="profile--follow--btn">
+                {% else %}
+                  <input id="followinput" type="submit" value="팔로우" class="profile--follow--btn">
+                {% endif %}
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}</li>
+    <li class="profile--menu">
+      {% if request.user.is_authenticated and request.user.username == username %}
+        <div>
+          <a href="{% url 'accounts:logout' %}">로그아웃</a>
+        </div>
+      {% else %}
+      <a href="{% url 'accounts:logout' %}">로그아웃</a>
+      {% endif %}
+    </li>
+  </ul>
+</article>
+{% endblock aside %}
+
+{% block content %}
+<article>  
+{% if not user.is_superuser %}
+  <div class="profile--container">
+    {% comment %} 사진 유저간 거리 팔로우 프로필음악포 춘쿠키 {% endcomment %}
+
+    <!-- 포춘쿠키 메세지 -->
+    <section class="profile--fortune--container">
+      {% if request.user == person %}
+        <div class="fortune--container" title="하루한번 포춘쿠키!">
+          <div class="fortune--wrap">
+            <img src="{% static 'accounts/image/fortune.png' %}" style="width: 130px;" alt="Fortune Cookie Image">
+            {% if fortunes.date == fortune_today %}
+              <div class="fortune--content--open">
+                <p id="fortunes--sentence" class="fortune--message">{{ fortunes.message }}</p>
+              </div>
+            {% else %}
+              <div class="fortune--content">
+                <form action="{% url 'posts:fortune_cookie' %}" method="post" style="text-align:center;">
+                  {% csrf_token %}
+                  <button type="submit" class="fortune--button">포춘쿠키 열어보기</button>
+                </form>
+                <span style="text-align:center;"></span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="fortune--info-">하루에 한번, 포춘쿠키를 열어보세요!</div>
+      {% endif %}
+    </section>
+    
+    <!-- 프로필 음악 -->
+    <section class="profile--music--box">
+      {% if request.user == person %}
+        <div class="profile--music--setting--wrap">
+          <button type="button" class="profile--music--setting1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            프로필 음악 선택
+          </button>
+        </div>
+      {% else %}
+        <div class="">
+          <button type="button" class="profile--music--setting2" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
+            프로필 음악 선택
+          </button>
+        </div>
+      {% endif %}
+      {% if not music %}
+        <div class="text-center mb-3">프로필 음악을 선택해 주세요.</div>
+      {% else %}
+        {% for track in music %}
+          <div id="track-{{ forloop.counter }}" class="profile--music--track">
+            <div class="profile--music--img">
+              <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+            </div>
+            <div>
+              <span class="profile--music--album">{{ track.album }}</span>
+              <div class="profile--music--btn--wrap">
+                <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
+                {% if request.user == person %}
+                  <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2">삭제</a>
+                {% else %}
+                  <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2__1">삭제</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <div class="text-center">
+        <audio class="main-audio" style="width:100%; height:45px;" controls>
+          <source src="" type="audio/mp3">
+        </audio>
+      </div>
+    </section>
 
       <!-- 취향 문장 -->
-      <div class="text-end mb-3">
+    <section class="profile--sentence---container">
+      <h5 class="profile--sectence--title">{{ person.username }}님의 문장</h5>
+      <ul>
         {% for introduction in introductions_list %}
-          <p id="sentence" class="mb-1" style="word-break: keep-all;">{{ introduction }}</p>
+          <li id="sentence">{{ introduction }}</li>
         {% endfor %}
-      </div>
+      </ul>
+    </section>
 
+
+    <!-- 워드 표시 -->
+    <section class="profile--word--list--wrap">
+      <h5 class="profile--word--title">{{ person.username }}님의 단어</h5>
+      <ul class="profile--word--list">
+        {% for word in word_list %}
+          <li class="profile--word"># {{ word }}</li>
+        {% endfor %}
+      </ul>
       {% if request.user == person %}
         <!-- 밸런스 게임 워드 모달 버튼 -->
         <div class="profile--balance--word">
           <button type="button" class="profile--word--btn" data-bs-toggle="modal" data-bs-target="#wordModal">
-            {{user.username}}님의 단어
+            {{user.username}}님의 단어를 선택하세요!
           </button>
         </div>
 
@@ -156,299 +247,242 @@
           </div>
         </div>
       {% endif %}
-       
-      <!-- 워드 표시 -->
-      <ul class="profile--word--wrap">
-        {% for word in word_list %}
-          <li class="profile--word"># {{ word }}</li>
+    </section>
+    
+    <!-- 내가쓴 게시물 표시 -->
+    <section class="profile--posts--wrap">
+      <h5 class="profile--report--title"><i class="bi bi-file-earmark-text"></i> 작성한 게시물</h5>
+      <div class="profile--text--list--wrap">
+        {% for post in posts %}
+        <div class="profile--text--list">
+          <a class="profile--post--wrap" href="{% url 'posts:detail' post.pk %}">
+            <span class="">{{ post.pk }}</span>
+            <span class="">{{ post.title }}</span>
+            <span class="">{{ post.created_at }}</span>
+          </a>
+        </div>
+        {% empty %}
+        <div class="profile--text--list">
+            <p>게시물이 없습니다.</p>
+        </div>
         {% endfor %}
-      </ul>
-
-      <!-- 지현님 워드 표시하셨던 클래스 혹시 몰라서 안 지웠습니당 -->
-      {% comment %} <div class="profile--word--wrap">
-        {% for w in balance_result.word.values %}
-          <p class="profile--word"># {{w}}</p>
-        {% endfor %}
-        {% for word in word_list %}
-          <span>{{word}}</span>
-        {% endfor %}
-      </div> {% endcomment %}
-
-      <!-- 프로필 음악 -->
-      <div class="profile--music--box mt-3">
-        {% if request.user == person %}
-          <div class="d-flex justify-content-center mt-3">
-            <button type="button" class="profile--music--setting1 mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-              프로필 음악 설정
-            </button>
+      </div>
+    </section>
+  
+  <!-- 좋아요한 게시물 표시 -->
+    <section class="profile--posts--wrap">
+      <h5 class="profile--report--title"><i class="bi bi-heart" style="color: crimson;"></i> 좋아요한 게시물</h5>
+      <div class="profile--text--list--wrap">
+        {% for liked_post in liked_posts %}
+        <div class="profile--text--list">
+          <a class="profile--post--wrap" href="{% url 'posts:detail' liked_post.pk %}">
+            <span>{{ liked_post.pk }}</span>
+            <span>{{ liked_post.title }}</span>
+            <span>{{ liked_post.created_at }}</span>
+          </a>
+        </div>
+        {% empty %}
+          <div class="profile--text--list">
+              <p>좋아요한 게시물이 없습니다.</p>
           </div>
-        {% else %}
-          <div class="d-flex justify-content-center mt-3">
-            <button type="button" class="profile--music--setting2 mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
-              프로필 음악 설정
-            </button>
-          </div>
-        {% endif %}
-        {% if not music %}
-          <div class="text-center mb-3">프로필 음악을 설정해 주세요.</div>
-        {% else %}
-          {% for track in music %}
-            <div id="track-{{ forloop.counter }}" class="profile--music--track">
-              <div class="profile--music--img">
-                <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
-              </div>
-              <span class="profile--music--album">{{ track.album }}</span>
-              <div class="profile--music--btn--wrap">
-                <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
-                {% if request.user == person %}
-                  <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2 ms-2">삭제</a>
-                {% else %}
-                  <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2__1 ms-2">삭제</a>
-                {% endif %}
-              </div>
-            </div>
+        {% endfor %}
+      </div>
+    </section>
+
+{% endif %}
+
+      <!-- 신고 당한 게시물 (신고 당한 게시물이 있는 경우만 표시)-->
+    {% if my_post_reports.exists or request.user.is_superuser %}
+      <section class="profile--posts--wrap">
+        <h5 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h5>
+        <div class="profile--text--list--wrap">
+          {% for post_report in post_reports %}
+            <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 게시물이 보여짐-->
+            {% if request.user == person and person == post_report.post.user %}
+              <ul class="profile--text--list">
+                <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
+                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">작성일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
+                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+              </ul>
+            <!-- 로그인한 유저가 관리자라면 전체 신고 당한 게시물이 보여짐-->
+            {% elif request.user.is_superuser %}
+              <ul class="profile--text--list">
+                <li class="profile--text"><span class="profile--text--title">신고자</span>{{ post_report.user }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고대상</span>{{ post_report.post.user }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고게시물 제목</span>{{ post_report.post.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ post_report.content }}</li>
+                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ post_report.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고일</span>{{ post_report.created_at|date:"Y. m. d" }}</li>
+                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+              </ul>
+            {% endif %}
           {% endfor %}
-        {% endif %}
-        <div class="text-center">
-          <audio class="main-audio mt-3" style="width:100%; height:45px;" controls>
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- 신고 당한 댓글 (신고 당한 댓글이 있는 경우만 표시)-->
+    {% if my_comment_reports.exists or request.user.is_superuser %}
+      <section class="profile--posts--wrap">
+        <h4 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 댓글들</h4>
+    
+        <div class="profile--text--list--wrap">
+          {% for comment_report in comment_reports %}
+            <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 댓글이 보여짐-->
+            {% if request.user == person and person == comment_report.comment.user %}
+              <ul class="profile--text--list">
+                <li class="profile--text"><span class="profile--text--title">신고자</span>{{comment_report.user}}</li>
+                <li class="profile--text"><span class="profile--text--title">신고댓글을 적은 게시물제목</span>{{ comment_report.comment.post.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ comment_report.content }}</li>
+                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ comment_report.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고일</span>{{ comment_report.created_at|date:"Y. m. d" }}</li>
+                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' comment_report.comment.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+              </ul>
+            <!-- 로그인한 유저가 관리자라면 전체 신고 당한 댓글이 보여짐-->
+            {% elif request.user.is_superuser %}
+              <ul class="profile--text--list">
+                <li class="profile--text"><span class="profile--text--title">신고자</span>{{comment_report.user}}</li>
+                <li class="profile--text"><span class="profile--text--title">신고대상</span>{{ comment_report.comment.user }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고댓글을 적은 게시물제목</span>{{ comment_report.comment.post.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고내용</span>{{ comment_report.content }}</li>
+                <li class="profile--text"><span class="profile--text--title">선택된 사유</span>{{ comment_report.title }}</li>
+                <li class="profile--text"><span class="profile--text--title">신고일</span>{{ comment_report.created_at|date:"Y. m. d" }}</li>
+                <li class="profile--report--check--wrap"><a href="{% url 'posts:detail' comment_report.comment.post_id %}" class="profile--report--check--btn">확인하기 ></a></li>
+              </ul>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+
+  </div>
+
+
+  <!-- 팔로워 모달 -->
+  <div class="modal fade" id="followerModal" tabindex="-1" aria-labelledby="followerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 350px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 fw-bold" id="followerModalLabel" style="">팔로워</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
+          <ul id="followers-list" class="mt-2 modal_list d-flex">
+            {% for follower in person.followers.all %}
+              <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item profile--modal--follow--list">
+                <div class="profile--follow--img--box">
+                  {% if follower.image %}
+                    <img src="{{ follower.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
+                  {% else %}
+                    <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
+                  {% endif %}
+                </div>
+                <li><span>{{ follower }}</span></li>
+              </a>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 팔로잉 모달 -->
+  <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 350px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 fw-bold" id="followingModalLabel" style="">팔로잉</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
+          <ul class="modal_list d-flex mt-2" style="display: flex;">
+            {% for following in person.followings.all %}
+              <a href="{% url 'accounts:profile' following %}" class="modal_list_item profile--modal--follow--list">
+                <div class="profile--follow--img--box">
+                  {% if following.image %}
+                    <img src="{{ following.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
+                  {% else %}
+                    <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
+                  {% endif %}
+                </div>
+                <li><span>{{ following }}</span></li>
+              </a>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 피드 모달 -->
+  <div class="modal fade" id="postsModal" tabindex="-1" aria-labelledby="postsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 350px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 fw-bold" id="postsModalLabel" style="">피드</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
+          <ul class="modal_list ms-3" style="list-style-type: decimal;">
+            <div>
+              {% if request.user == person %}
+                {% for post in user.post_set.all %}
+                  <a href="{% url 'posts:detail' post.pk %}">
+                    <li>
+                      {{ post.title }}
+                    </li>
+                  </a>
+                {% endfor %}
+              {% else %}
+                {% for post in person.post_set.all %}
+                  <a href="{% url 'posts:detail' post.pk %}">
+                    <li>
+                      {{ post.title }}
+                    </li>
+                  </a>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 프로필 음악 모달 -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">프로필 음악</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body profile--music--result">
+          <form id="search-form" class="d-flex mb-3">
+            <input id="search-input" class="form-control me-3" type="text" name="q" placeholder="검색어를 입력하세요" style="width:300px;">
+            <button id="search-button" class="profile--music--search--btn" type="submit">검색</button>
+          </form>
+          <div id="search-results" class="mb-3">
+          </div>
+          <audio class ='d-none' id="audio-player" controls>
             <source src="" type="audio/mp3">
           </audio>
         </div>
+        <div class="modal-footer">
+          <div id="error-message" style="color: red;"></div>
+          <div style="margin-right:120px;">하나 이상의 음원을 선택해야 합니다.</div>
+          <button type="button" class="profile--music--close--btn" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
-{% endif %}
 
-<!-- 팔로워 모달 -->
-<div class="modal fade" id="followerModal" tabindex="-1" aria-labelledby="followerModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="width: 350px;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5 fw-bold" id="followerModalLabel" style="">팔로워</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
-        <ul id="followers-list" class="mt-2 modal_list d-flex">
-          {% for follower in person.followers.all %}
-            <a href="{% url 'accounts:profile' follower %}" class="modal_list_item follower-item profile--modal--follow--list">
-              <div class="profile--follow--img--box">
-                {% if follower.image %}
-                  <img src="{{ follower.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
-                {% else %}
-                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
-                {% endif %}
-              </div>
-              <li><span>{{ follower }}</span></li>
-            </a>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+</article>
 
-<!-- 팔로잉 모달 -->
-<div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="width: 350px;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5 fw-bold" id="followingModalLabel" style="">팔로잉</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
-        <ul class="modal_list d-flex mt-2" style="display: flex;">
-          {% for following in person.followings.all %}
-            <a href="{% url 'accounts:profile' following %}" class="modal_list_item profile--modal--follow--list">
-              <div class="profile--follow--img--box">
-                {% if following.image %}
-                  <img src="{{ following.image.url }}" class="profile--follow--img profile--follow--img--modal" alt="프로필 사진">
-                {% else %}
-                  <img src="{% static 'accounts/image/user_image.png' %}" class="profile--follow--img profile--follow--img--modal" alt="기본 프로필 사진">
-                {% endif %}
-              </div>
-              <li><span>{{ following }}</span></li>
-            </a>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 피드 모달 -->
-<div class="modal fade" id="postsModal" tabindex="-1" aria-labelledby="postsModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="width: 350px;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5 fw-bold" id="postsModalLabel" style="">피드</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body profile--modal--body--wrap" style="background-color: whitesmoke;">
-        <ul class="modal_list ms-3" style="list-style-type: decimal;">
-          <div>
-            {% if request.user == person %}
-              {% for post in user.post_set.all %}
-                <a href="{% url 'posts:detail' post.pk %}">
-                  <li>
-                    {{ post.title }}
-                  </li>
-                </a>
-              {% endfor %}
-            {% else %}
-              {% for post in person.post_set.all %}
-                <a href="{% url 'posts:detail' post.pk %}">
-                  <li>
-                    {{ post.title }}
-                  </li>
-                </a>
-              {% endfor %}
-            {% endif %}
-          </div>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 프로필 음악 모달 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">프로필 음악</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body profile--music--result">
-        <form id="search-form" class="d-flex mb-3">
-          <input id="search-input" class="form-control me-3" type="text" name="q" placeholder="검색어를 입력하세요" style="width:300px;">
-          <button id="search-button" class="profile--music--search--btn" type="submit">검색</button>
-        </form>
-        <div id="search-results" class="mb-3">
-        </div>
-        <audio class ='d-none' id="audio-player" controls>
-          <source src="" type="audio/mp3">
-        </audio>
-      </div>
-      <div class="modal-footer">
-        <div id="error-message" style="color: red;"></div>
-        <div style="margin-right:120px;">하나 이상의 음원을 선택해야 합니다.</div>
-        <button type="button" class="profile--music--close--btn" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-{% comment %} <!-- 포춘쿠키 메세지 -->
-{% if request.user == person %}
-  {% if fortunes.date == fortune_today %}
-    <p>{{ fortunes.message }}</p>
-  {% else %}
-    <span>아직 오늘의 포춘쿠키를 안 열어보셨습니다! 열어보시겠습니까?</span>
-    <form action="{% url 'posts:fortune_cookie' %}" method="post">
-      {% csrf_token %}
-      <button type="submit" style="border: none; background: none;">
-        <img src="{% static 'accounts/image/fortune.png' %}" style="width: 100px;" alt="Fortune Cookie Image">
-      </button>
-    </form>
-  {% endif %}
-{% endif %} {% endcomment %}
-
-
-
-<!-- 신고 당한 게시물과 댓글 표시 -->
-{% comment %} {% if request.user.is_superuser %} {% endcomment %}
-<br><hr><br>
-
-  <!-- 신고 당한 게시물-->
-  <h4 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 게시물들</h4>
-  <br>
-  <div class="row">
-    {% for post_report in post_reports %}
-      <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 게시물이 보여짐-->
-      {% if request.user and person == post_report.post.user %}
-        <div class="col-12 col-sm-6 col-lg-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text mb-2"><strong>신고자</strong>: {{ post_report.user }}</p>
-              <p class="card-text mb-2"><strong>신고대상</strong>: {{ post_report.post.user }}</p>
-              <p class="card-text mb-2" style="word-break: keep-all;"><strong>신고내용</strong>: {{ post_report.content }}</p>
-              <p class="card-text mb-2"><strong>사유</strong>: {{ post_report.title }}</p>
-              <p class="card-text mb-2"><strong>작성일</strong>: {{ post_report.created_at|date:"Y. m. d" }}</p>
-              <div class="text-end" style="border-top: 1px solid;">
-                <div class="mb-3"></div>
-                <a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      <!-- 로그인한 유저가 관리자라면 전체 신고 당한 게시물이 보여짐-->
-      {% elif request.user.is_superuser %}
-        <div class="col-12 col-sm-6 col-lg-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text mb-2"><strong>신고자</strong>: {{ post_report.user }}</p>
-              <p class="card-text mb-2"><strong>신고대상</strong>: {{ post_report.post.user }}</p>
-              <p class="card-text mb-2" style="word-break: keep-all;"><strong>신고내용</strong>: {{ post_report.content }}</p>
-              <p class="card-text mb-2"><strong>사유</strong>: {{ post_report.title }}</p>
-              <p class="card-text mb-2"><strong>작성일</strong>: {{ post_report.created_at|date:"Y. m. d" }}</p>
-              <div class="text-end" style="border-top: 1px solid;">
-                <div class="mb-3"></div>
-                <a href="{% url 'posts:detail' post_report.post_id %}" class="profile--report--check--btn">확인하기</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-
-  <br>
-  <hr>
-  <br>
-
-  <!-- 신고 당한 댓글-->
-  <h4 class="profile--report--title"><i class="bi bi-bell" style="color: crimson;"></i> 신고 당한 댓글들</h4>
-  <br>
-  <div class="row">
-    {% for comment_report in comment_reports %}
-      <!-- 로그인한 유저와 다른 유저가 신고 대상과 동일하다면 신고 당한 댓글이 보여짐-->
-      {% if request.user and person == comment_report.comment.user %}
-        <div class="col-12 col-sm-6 col-lg-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text mb-2"><strong>신고자</strong> : {{comment_report.user}}</p>
-              <p class="card-text mb-2"><strong>신고대상</strong> : {{ comment_report.comment.user }}</p>
-              <p class="card-text mb-2"><strong>신고내용</strong> : {{ comment_report.content }}</p>
-              <p class="card-text mb-2"><strong>사유</strong> : {{ comment_report.title }}</p>
-              <p class="card-text mb-2"><strong>작성일</strong> : {{ comment_report.created_at|date:"Y. m. d" }}</p>
-              <div class="text-end" style="border-top: 1px solid;">
-                <div class="mb-3"></div>
-                <a href="{% url 'posts:detail' comment_report.comment.post_id %}" class="profile--report--check--btn">확인하기</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      <!-- 로그인한 유저가 관리자라면 전체 신고 당한 댓글이 보여짐-->
-      {% elif request.user.is_superuser %}
-        <div class="col-12 col-sm-6 col-lg-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text mb-2"><strong>신고자</strong> : {{comment_report.user}}</p>
-              <p class="card-text mb-2"><strong>신고대상</strong> : {{ comment_report.comment.user }}</p>
-              <p class="card-text mb-2"><strong>신고내용</strong> : {{ comment_report.content }}</p>
-              <p class="card-text mb-2"><strong>사유</strong> : {{ comment_report.title }}</p>
-              <p class="card-text mb-2"><strong>작성일</strong> : {{ comment_report.created_at|date:"Y. m. d" }}</p>
-              <div class="text-end" style="border-top: 1px solid;">
-                <div class="mb-3"></div>
-                <a href="{% url 'posts:detail' comment_report.comment.post_id %}" class="profile--report--check--btn">확인하기</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
-  </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'accounts/js/profile_music_ajax.js' %}"></script>
 <script src="{% static 'accounts/js/profile_music_modal.js' %}"></script>
@@ -471,9 +505,9 @@
         const followInput = document.querySelector('#followinput');
         console.log(response)
         if (isFollowed === true) {
-          followInput.value = 'Unfollow';
+          followInput.value = '팔로우 취소';
         } else {
-          followInput.value = 'Follow';
+          followInput.value = '팔로우';
         }
   
         const followerCountTag = document.querySelector('#followers-count');

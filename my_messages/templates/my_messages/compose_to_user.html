@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'my_messages/css/compose.css' %}">
+{% endblock head %}
+{% block content %}
+  <div class="d-flex justify-content-center">
+    <div class="d-flex flex-column">
+      <h3 class="compose--title">쪽지 보내기</h3>
+      <ul>
+        <li class="compose--aTag--wrap">
+          <a href="{% url 'my_messages:received_messages' %}" class="compose--aTag">받은 쪽지함</a>
+        </li>
+      </ul>
+      <form method="post" class="" style="width: 500px;">
+        {% csrf_token %}
+        <div class="compose--form--wrap">
+          <p class="compose--form--label1">보내는 사람 : </p>
+          {{ request.user }}
+        </div>
+        <div class="compose--form--wrap">
+          <p class="compose--form--label1">받는 사람 : </p>
+          {{ person }}
+        </div>
+        <div class="compose--form--wrap">
+          <p class="compose--form--label2">내용 : </p>
+          {{ form.content }}
+        </div>
+        <div class="compose--btn--wrap">
+          <button type="submit" class="compose--btn">보내기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

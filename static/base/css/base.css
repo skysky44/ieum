@@ -81,6 +81,23 @@ footer.base--item {
 .nav--list--text:hover {
   color: #777;
 }
+.nav--profile {
+  position: relative;
+}
+.user--message {
+  position: absolute;
+  top: 0;
+  right: -0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  color: #fff;
+  border-radius: 50%;
+  background-color: rgb(255, 115, 206);
+}
 .nav__active {
   color: #489F48;
   font-weight: 600;

@@ -286,9 +286,12 @@ def profile(request, username):
     post_count = Post.objects.filter(user=person).count()
     music = Track.objects.filter(user_id=user_id)
     post_reports = PostReport.objects.order_by('post_id', 'title')
+    my_post_reports = PostReport.objects.filter(post__user_id=user_id)
     comment_reports = CommentReport.objects.order_by('comment_id', 'title') 
+    my_comment_reports = CommentReport.objects.filter(comment__user_id=user_id)
     word_form = ResultForm(user=request.user)
-    
+    posts = Post.objects.filter(user=person)
+    liked_posts = Post.objects.filter(like_users=person)
     try:
         fortunes = Fortune.objects.get(user_id=user_id)
         # fortunes = Fortune.objects.filter(user_id=user_id)
@@ -356,6 +359,10 @@ def profile(request, username):
         'word_list' : word_list,
         'fortune_today' : date.today(),
         'word_form' : word_form,
+        'my_post_reports' : my_post_reports,
+        'my_comment_reports' : my_comment_reports,
+        'posts': posts,
+        'liked_posts': liked_posts,
 
     }
     return render(request, 'accounts/profile.html', context)
