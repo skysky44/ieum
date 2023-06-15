@@ -42,13 +42,13 @@
       <ul class="posts--list">
         {% for post in category_class %}
           <a href="{% url 'posts:detail' post.pk %}">
-            <li class="post--wrap">
+            <div class="post--wrap">
               <div>
                 {% if post.image_urls %}
                   <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
                 {% endif %}
               </div>
-              <div class="post--text--list">
+              <div class="post--text--list"> 
                 <ul class="post--tag--list">
                   {% for tag in post.tags.all %}
                     {% if forloop.counter <= 3 %}
@@ -75,7 +75,7 @@
                 {% endfor %}
               {% endfor %}
                -->
-            </li>
+            </div>
           </a>
         {% endfor %}
       </ul>
@@ -88,29 +88,29 @@
       <ul class="posts--list">
         {% for post in category_anonymous %}
           <a href="{% url 'posts:detail' post.pk %}">
-            <li class="post--wrap">
-              <div>
-                {% if post.image_urls %}
-                  <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
-                {% endif %}
-              </div>
-              <div class="post--text--list">
-                <ul class="post--tag--list">
-                  {% for tag in post.tags.all %}
-                    {% if forloop.counter <= 3 %}
-                      <li class="post--tag">
-                        ﹟{{ tag }}
-                      </li>
-                    {% endif %}
-                  {% endfor %}
-                </ul>
-                <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
-                <div class="post--user--wrap">
-                  <p>{{ post.user.image.url }} {{ post.user }}</p>
-                  <p class="post--time"><i>{{ post.created_time }}</i></p>
+            <div class="post--wrap">
+                <div>
+                  {% if post.image_urls %}
+                    <img class="posts_image" src="{{ post.image_urls.0 }}" alt="">
+                  {% endif %}
+                </div>
+                <div class="post--text--list">
+                  <ul class="post--tag--list">
+                    {% for tag in post.tags.all %}
+                      {% if forloop.counter <= 3 %}
+                        <li class="post--tag">
+                          ﹟{{ tag }}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                  <p class="post--title">{{ post.title|truncatechars:20|linebreaksbr }}</p>
+                  <div class="post--user--wrap">
+                    <p>{{ post.user }}</p>
+                    <p class="post--time"><i>{{ post.created_time }}</i></p>
+                  </div>
                 </div>
               </div>
-            </li>
           </a>
         {% endfor %}
       </ul>
