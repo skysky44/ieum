@@ -123,6 +123,7 @@ def index(request):
         'per_page' : per_page,
         'tags': tags,
         'post_image_urls': [post.image_urls for post in page_obj],
+        # 'co'
     }
 
     return render(request, 'posts/index.html', context)
@@ -281,8 +282,6 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
-    print(post.address)
-    print(type(post.address))
     address = ""
     if post.address:
         address = post.address
@@ -296,7 +295,11 @@ def detail(request, post_pk):
     comment_forms = []
     post_report_form = PostReportForm()
     comment_report_form = CommentReportForm()
-    category_class = Post.objects.filter(category='모임').order_by('-id')
+    if request.user.is_authenticated:
+        if request.user.taste == 'T' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
+        elif request.user.taste == 'F' :
+            category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
     previous_post = category_class.filter(id__lt=post_pk).order_by('-id').first()
     next_post = category_class.filter(id__gt=post_pk).order_by('id').first()
     for comment in comments:

@@ -117,3 +117,38 @@ aside.base--item {
 }
 
 
+/* 돌하르방 test */
+
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.paint--harbang {
+  animation: shake 2s;
+  animation-iteration-count: infinite;
+}
+
+/* 페이지네이션 test */
+
+@keyframes previous_bounce {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(0, 1px) rotate(-2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.previous--stone {
+  animation: previous_bounce 1s;
+  animation-iteration-count: infinite;
+}
+@keyframes next_bounce {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(0, -1px) rotate(2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.next--stone {
+  animation: next_bounce 1s;
+  animation-iteration-count: infinite;
+}
