@@ -12,7 +12,7 @@
 {% endblock style %}
 
 {% block aside %}
-<article class="main--title--wrap">
+<article class="main--title--wrap"> 
   {% if request.user.is_superuser %}
     <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
       관리자 계정
@@ -64,11 +64,13 @@
 
 
 {% block content %}
+  <a href="{% url 'posts:index' %}">모든 게시글 보기</a>
   <article class="detail--container">   
     <section class="detail--wrap">
       <article id="header" class="detail--header">
         <div class="detail--header--titile--wrap">
-          <h1 class="detail--title">{{ post.title }}</h1>
+          <h1 class="detail--title">[{{ post.category }}] {{ post.title }}</h1>
+          
           <!-- 게시물 신고 모달 버튼 -->
           {% if request.user == post.user %}
           {% else %}
@@ -414,23 +416,20 @@
     </section>
   </article>
   
-
-
-      <div class='d-flex justify-content-between mt-5'>
-        <div>
-            {% if previous_post %}
-                <!-- Display previous button linking to the previous post -->
-                <a href="{% url 'posts:detail' post_pk=previous_post.pk %}">이전 게시글</a>
-            {% endif %}
-        </div>
-        <div>
-            {% if next_post %}
-                <!-- Display next button linking to the next post -->
-                <a href="{% url 'posts:detail' post_pk=next_post.pk %}">다음 게시글</a>
-            {% endif %}
-        </div>
-      </div>
-  </section>
+  <div class='d-flex justify-content-between mt-5'>
+    <div>
+        {% if previous_post %}
+            <!-- Display previous button linking to the previous post -->
+            <a href="{% url 'posts:detail' post_pk=previous_post.pk %}">이전 게시글</a> 
+        {% endif %}
+    </div>
+    <div>
+        {% if next_post %}
+            <!-- Display next button linking to the next post -->
+            <a href="{% url 'posts:detail' post_pk=next_post.pk %}">다음 게시글</a>
+        {% endif %}
+    </div>
+  </div>
 
 <input type="hidden" id="kakao_map_address" value="{{address}}">
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>

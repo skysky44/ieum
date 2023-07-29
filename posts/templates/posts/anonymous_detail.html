@@ -40,6 +40,7 @@
 
 
 {% block content %}
+  <a href="{% url 'posts:anonymous' %}">모든 게시글 보기</a>
   <article class="detail--container">   
     <section class="detail--wrap">
       <article id="header" class="detail--header">
@@ -173,7 +174,7 @@
                     <div class="comments__user--wrap">
                       <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/ieum_noprofile_02.png' %} alt="프로필 사진" id="profile-image"/>
                       {% if comment_like.user.username == post.user.username %}
-                        <p class="detail--user">이음이(작성자)</p>
+                        <p class="detail--user">이음이{% if post.user == comment.user %}(작성자){% endif %}</p>
                       {% else %}
                         <p class="detail--user">이음이</p>
                       {% endif %}
@@ -226,7 +227,7 @@
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
                           <img style="width:25px; height:25px; border-radius:50%;" src={% if comment.user.image %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% else %}{% static 'accounts/image/ieum_noprofile_02.png' %}{% endif %} alt="프로필 사진" id="profile-image"/>
-                          <p class="detail--user">이음이(작성자)</p>
+                          <p class="detail--user">이음이 {% if post.user == comment.user %}(작성자){% endif %}</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -286,12 +287,12 @@
             {% for comment in comments %}
               <div class="comment old-comment">
                 <div class="comments__content--wrap" style="background-color: transparent;">
-                  {% if comment.user == request.user %}
+                  {% if post.user == request.user %}
                     <div class="comment--info--wrap">
                       <div class="comment--info--list">
                         <div class="comments__user--wrap">
                           <img style="width:25px; height:25px; border-radius:50%;" src={% static 'accounts/image/ieum_noprofile_02.png' %} alt="프로필 사진" id="profile-image"/>
-                          <p class="detail--user">이음이(작성자)</p>
+                          <p class="detail--user">이음이{% if post.user == comment.user %}(작성자){% endif %}</p>
                         </div>
                         <p class="comment--date">{{ comment.created_time }}</p>
                         <button type="submit" data-bs-toggle="modal" data-bs-target="#edit-{{comment.pk}}">수정</button>
@@ -407,7 +408,6 @@
             {% endif %}
         </div>
       </div>
-  </section>
 
 <input type="hidden" id="kakao_map_address" value="{{address}}">
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>

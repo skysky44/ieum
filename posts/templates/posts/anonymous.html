@@ -56,8 +56,8 @@
                   <p class="">이음이</p>
                 </div>
                 <p class="post--time"><i>{{ post.created_time }}</i></p>
-                <div class="post--like">
                 <p>조회 {{ post.view_count }}</p>
+                <div class="post--like">
                   <div class="post--like">
                     {% if user in post.like_users.all  %}
                     <div class="border-0 bg-transparent">
@@ -71,6 +71,7 @@
                   </div>
                   <span class="ms-1">{{post.like_users.count}}</span>
                 </div>
+                <span class="ms-1">댓글 수 {{post.comments.count}}</span>
               </div>
             </div>
           </div>

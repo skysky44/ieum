@@ -23,8 +23,11 @@
   <body>
     <!-- navbar -->
     <header class="base--item">
-      <div class="header--container">
-        <div class="header--wrap">
+      <div class="header--container navbar navbar-expand-lg bg-body-tertiary">
+        <div class="header--wrap container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
           {% if user.reported == True %}
             <div class="base--report--wrap">
               <a href="{% url 'accounts:profile' user %}"><p>당신의 게시물이 신고 되었습니다! 확인 해 주세요! </p></a>
@@ -37,53 +40,53 @@
           </div>
           <div class="header--item2">
           <!-- 공감 or 현실 -->
-            <nav>
-              <ul class="nav--list">
-                <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:index' or request.resolver_match.view_name == 'accounts:balances' or request.resolver_match.view_name == 'accounts:login' %}nav__active{% endif %}">
+            <nav class="collapse navbar-collapse" id="navbarTogglerDemo03">
+              <ul class="nav--list navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item nav--list--text {% if request.resolver_match.view_name == 'posts:index' or request.resolver_match.view_name == 'accounts:balances' or request.resolver_match.view_name == 'accounts:login' %}nav__active{% endif %}">
                   {% if request.user.is_superuser %}
-                    <a href="{% url 'posts:index' %}">
+                    <a class="nav-link active" aria-current="page" href="{% url 'posts:index' %}">
                       모든 이음
                     </a>
                   {% else %}
                     {% if request.user.is_authenticated %}
                       {% if user.taste == "F" %}
-                        <a href="{% url 'posts:index' %}">
+                        <a class="nav-link active" aria-current="page" href="{% url 'posts:index' %}">
                           공감 이음
                         </a>
                       {% elif user.taste == "T" %} 
-                        <a href="{% url 'posts:index' %}">
+                        <a class="nav-link active" aria-current="page" href="{% url 'posts:index' %}">
                           현실 이음
                         </a>
                       {% else %}
-                        <a href="{% url 'accounts:balances' %}">
+                        <a class="nav-link active" aria-current="page" href="{% url 'accounts:balances' %}">
                           밸런스 게임을 해주세요!
                         </a>
                       {% endif %}
                     {% else %}
-                      <a href="{% url 'accounts:login' %}">
+                      <a class="nav-link active" aria-current="page" href="{% url 'accounts:login' %}">
                         로그인을 해주세요!
                       </a>
                     {% endif %}
                   {% endif %}
                 </li>
-                <li class="nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
-                  <a href="{% url 'paints:index' %}">
+                <li class="nav-item nav--list--text {% if request.resolver_match.view_name == 'paints:index' %}nav__active{% endif %}">
+                  <a class="nav-link active" aria-current="page" href="{% url 'paints:index' %}">
                     그림 이음
                   </a>
                 </li>
-                <li class="nav--list--text {% if request.resolver_match.view_name == 'posts:anonymous' %}nav__active{% endif %}">
-                  <a href="{% url 'posts:anonymous' %}">
+                <li class="nav-item nav--list--text {% if request.resolver_match.view_name == 'posts:anonymous' %}nav__active{% endif %}">
+                  <a class="nav-link active" aria-current="page" href="{% url 'posts:anonymous' %}">
                     고민 이음
                   </a>
                 </li>
-                <li class="nav--list--text {% if request.resolver_match.view_name == 'chat:index' %}nav__active{% endif %}">
-                    <a href="{% url 'chat:index' %}">소통 이음</a>
+                <li class="nav-item nav--list--text {% if request.resolver_match.view_name == 'chat:index' %}nav__active{% endif %}">
+                    <a class="nav-link active" aria-current="page" href="{% url 'chat:index' %}">소통 이음</a>
                 </li>
                 {% if request.user.is_authenticated %}
                 <li class="nav--list--text {% if request.resolver_match.view_name == 'accounts:profile' %}nav__active{% endif %}">
                   <!-- 프로필페이지 -->
-                  <div class="nav--profile">
-                    <a href="{% url 'accounts:profile' user %}">내 페이지</a>
+                  <div class="nav--profile nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile' user %}">내 페이지</a>
                     {% get_unread_messages_count user as unread_messages_count %}
                     {% if unread_messages_count > 0 %}
                       <div class="user--message">

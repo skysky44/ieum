@@ -46,7 +46,7 @@
 
 {% block content %}
 <article style="max-width:955px; margin: auto;">
-  <form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
+  <form id="create-post-form" action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.media }}
     <div class="create--menu">
@@ -129,7 +129,7 @@
 
     <div class="create--btn--wrap" style="width: 955px;">
       <a href="{% url 'posts:index' %}" class="create--btn1">취소</a>
-      <button class="create--btn2" type="submit">등록</button>
+      <button class="create--btn2" id="register-btn" type="submit">등록</button>
     </div>
   </form>
 </article>
@@ -146,6 +146,24 @@
 {% block script %}
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3acf611a56d6b43dcc75b2331aac5490&libraries=services"></script>
 <script>
+   // Disable the "Enter" key behavior within form fields
+   $('#create-post-form button').on('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
+  });
+
+  // Handle form submission when the submit button is clicked
+  $('#register-btn').on('click', function (event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
+    // Submit the form using JavaScript
+    // This allows you to control when the form is actually submitted
+    // You can add further validation checks here if needed before submission
+    $('#create-post-form').submit();
+  });
+
   // 마커를 담을 배열입니다
   var markers = [];
   
@@ -411,5 +429,8 @@ function selectAddress(place) {
   var selectedItem = document.getElementById('item_' + place.id);
   selectedItem.classList.add('selected');
 }
+  
+
+ 
   </script>
 {% endblock script %}
