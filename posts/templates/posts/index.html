@@ -148,7 +148,7 @@
                     <div><h3><a href="{% url 'posts:detail' post.pk %}">[{{ post.category }}] {{ post.title }}</a></h3></div>
                     <div class="post--etc--wrap">
                       <a class="user--wrap" href="{% url 'accounts:profile' username=post.user %}">
-                        <img class="user--image" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/user_image.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
+                        <img class="user--image" src={% if post.user.image %} "{{ post.user.image.url }}" {% else %} "{% static 'accounts/image/ieum_noprofile_02.png' %}" {% endif %} alt="프로필 사진" id="profile-image"/>
                         <p class="">{{ post.user }}</p>
                       </a>
                       <p class="post--time"><i></i>{{ post.created_time }}</p>
