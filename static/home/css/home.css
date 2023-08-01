@@ -44,6 +44,21 @@
   transform-style: preserve-3d;
   animation: rint 30s infinite linear;
 }
+
+@media screen and (max-width: 1400px) {
+  .home__paints--list {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .home__paints--container {
+    height: 600px;
+  }
+  #viewport {
+    height: 400px;
+  }
+}
+
+
 .paint__image--wrap {
   position: absolute;
   width: 190px;
@@ -75,13 +90,15 @@
     
   }
 }
+
+
+
 aside.base--item {
   background-color: #E6F3E6;
 }
 .posts--article--container {
   margin: 2rem 0;
 }
-
 
 .posts--title {
   text-align: center;
@@ -100,6 +117,13 @@ aside.base--item {
   background-color: #eee;
   padding: 1rem;
 }
+
+@media screen and (max-width: 1400px) {
+  .posts--list {
+    grid-template-columns: 1fr;
+  }
+}
+
 .posts_image {
   width: 100px;
   height: 100px;
