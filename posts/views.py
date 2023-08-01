@@ -284,6 +284,10 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    print(post.category)
+    if post.category == '익명':
+        return anonymous_detail(request, post_pk)
+
     address = ""
     if post.address:
         address = post.address
