@@ -103,25 +103,19 @@
         <div class="create--result--wrap">
           <div id="search-results" class="create--music--result">
             {% include 'posts/search_results.html' %}
-            {% if not music %}
-            {% else %}
-              <div class="detail--music--box">
-                {% for track in music %}
-                  <div id="music-track">
-                    <img style="width:50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
-                    <span style="max-width:100%; word-wrap: break-word;">{{ track.album }}</span>
-                    <a href="#" class="play-music-profile detail--music--playbtn" data-src="{{ track.preview_url }}" >재생</a>
-                  </div>
-                {% endfor %}
-                <audio class="music-audio " controls>
-                  <source src="" type="audio/mp3">
-                </audio>
-              </div>
+            {% if music %}
+              {% for track in music %}
+                <div id="music-track">
+                  <img style="width:50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+                  <span style="max-width:100%; word-wrap: break-word;">{{ track.album }}</span>
+                  <a href="#" class="play-music-profile detail--music--playbtn" data-src="{{ track.preview_url }}" >재생</a>
+                </div>
+              {% endfor %}
             {% endif %}
           </div>
         </div>
         <div class="create--adio--search--wrap">
-          <audio class="main-audio" controls>
+          <audio class="music-audio" controls>
             <source src="" type="audio/mp3">
           </audio>
           <div class="create--music--search--wrap">

@@ -76,7 +76,7 @@ def main_search(request):
     }
     return render(request, 'posts/main_search_results.html', context)
 
-  
+
 from bs4 import BeautifulSoup
 def extract_image_urls(content):
     soup = BeautifulSoup(content, 'html.parser')

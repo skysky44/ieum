@@ -26,7 +26,7 @@ $(document).ready(function() {
   
   // 음악 재생 함수
   function playAudio(src, volume) {
-    var audio = $(".main-audio")[0]; // 첫 번째 오디오 요소 가져오기
+    var audio = $(".music-audio")[0]; // 첫 번째 오디오 요소 가져오기
     audio.src = src;
     audio.volume = volume; // 볼륨 조절
     audio.play();
