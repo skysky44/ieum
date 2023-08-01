@@ -96,12 +96,12 @@
                   </div>
                 </li>
                 {% else %}
-                <li class="nav--list--text">
+                {% comment %} <li class="nav--list--text">
                   <!-- 로그인 -->
                   <div>
                     <a href="{% url 'accounts:login' %}">로그인</a>
                   </div>
-                </li>
+                </li> {% endcomment %}
                 {% endif %}
               </ul>
             </nav>
