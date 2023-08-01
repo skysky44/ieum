@@ -16,8 +16,10 @@ from django.http import JsonResponse
 
 def home(request):
     paints = Paint.objects.all().order_by('-id')[:6]
-    if request.user.is_authenticated:     
-        if request.user.taste == 'T' :
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            category_class = Post.objects.exclude(category='익명').order_by('-id')[:4]
+        elif request.user.taste == 'T' :
             category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
             category_class = category_class.annotate(num_likes=Count('like_users')).order_by('-num_likes')[:4]
         elif request.user.taste == 'F' :
@@ -81,18 +83,18 @@ def extract_image_urls(content):
     image_tags = soup.find_all('img')
     image_urls = [tag['src'] for tag in image_tags]
     return image_urls
-
-
+  
+@login_required
 def index(request):
+
     if request.user.is_authenticated:
-        if request.user.taste == 'T' :
+        if request.user.is_superuser:
+            category_class = Post.objects.exclude(category='익명').order_by('-id')
+        elif request.user.taste == 'T' :
             category_class = Post.objects.exclude(category='익명').filter(user__taste='T').order_by('-id')
         elif request.user.taste == 'F' :
             category_class = Post.objects.exclude(category='익명').filter(user__taste='F').order_by('-id')
-        else:
-            category_class = Post.objects.exclude(category='익명').order_by('-id')
-    else:
-        category_class = Post.objects.exclude(category='익명').order_by('-id')
+
     
     page = request.GET.get('page', '1')
     section = request.GET.get('section', None)
@@ -282,6 +284,10 @@ def anonymous_create(request):
 @login_required
 def detail(request, post_pk):
     post = Post.objects.get(pk=post_pk)
+    print(post.category)
+    if post.category == '익명':
+        return anonymous_detail(request, post_pk)
+
     address = ""
     if post.address:
         address = post.address
