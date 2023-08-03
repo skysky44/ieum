@@ -20,13 +20,11 @@ from django.contrib.auth import get_user_model
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        print('self.room_name', self.room_name)
         name = [ord(char) for char in self.room_name]
         b = ''
         for a in name:
             b += str(a)
         
-        print('name', b)
         self.room_group_name = f'chat{b}'
 
         # Join room group
@@ -43,7 +41,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
+    
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
@@ -53,6 +51,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         message_obj = await self.save_message(user, message)
 
+        user_obj = await self.get_user(user_id)
+        user_profile_image = user_obj.image.url if user_obj.image else None
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -60,7 +60,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message_obj.content,
                 'user': message_obj.user.username,
-            }
+                # 'image': message_obj.user.image.url if message_obj.user.image else None,
+                'user_profile_image' : user_profile_image,
+            } 
         )
 
     @database_sync_to_async
@@ -83,10 +85,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
         user = event['user']
-
+        user_profile_image = event['user_profile_image']
+        # image = event['image']
         # Send message to WebSocket
+        # 메시지를 WebSocket으로 전송합니다. 사용자 이름과 프로필 사진을 포함하여 보냅니다.
         await self.send(text_data=json.dumps({
             'type': 'chat.message',
             'message': message,
             'user': user,
+            'user_profile_image': user_profile_image,
         }))
+
+    
