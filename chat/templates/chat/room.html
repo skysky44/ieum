@@ -72,19 +72,33 @@
     chatSocket.onmessage = function(event) {
       console.log(event.data)
       const message = JSON.parse(event.data);
+      console.log('message.user_name', message.user_name)
       console.log(message);
       if (message.type === 'chat.message') {
         const chatLog = document.getElementById('chat-log');
-        //const messageElement = document.createElement('div');
-        //messageElement.classList.add('message');
-        //const content = document.createElement('p');
-        //content.textContent = `${message.user}:${message.message}`;
-        //console.log(message.message)
-        //messageElement.appendChild(content);
-        //chatLog.appendChild(messageElement)
+
 
         const messageElement = document.createElement('div');
         messageElement.classList.add('message');
+
+        
+        if (message.user !== '{{ request.user.username }}') {
+          // 보낸 사람의 프로필 사진을 보여줄 이미지 요소 생성
+          const profileImageElement = document.createElement('img');
+          profileImageElement.src = message.user_profile_image; // 보낸 사람의 프로필 사진 URL
+          profileImageElement.alt = '프로필';
+          profileImageElement.style.width = '25px';
+          profileImageElement.style.height = '25px';
+          profileImageElement.style.borderRadius = '50%';
+          messageElement.appendChild(profileImageElement);
+
+          // 보낸 사람의 이름을 보여줄 요소 생성
+          const senderNameElement = document.createElement('strong');
+          senderNameElement.textContent = message.user; // 보낸 사람의 이름
+          messageElement.appendChild(senderNameElement);
+      }
+
+
         const currentUser = '{{ request.user.username }}';
         console.log('Current User:', currentUser);
         //const timestampElement1 = document.querySelector('.room--content--time1');
@@ -167,7 +181,7 @@
       console.log(message);
       // 전송할 메시지 객체를 생성하여 WebSocket을 통해 전송합니다.
       const chatMessage = {
-          'message': message
+          'message': message,
       };
       chatSocket.send(JSON.stringify(chatMessage));
       messageInput.value = '';
