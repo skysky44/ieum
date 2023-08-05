@@ -88,7 +88,7 @@
                 {% endif %} alt="프로필 사진" id="profile-image"/>
               <span class="detail--user">{{ post.user }}</span>
             </a>
-            <p class="">{{ post.created_at }}</p>
+            <p class="detail--date">{{ post.created_time }}</p>
             {% if request.user == post.user %}
               <a href="{% url 'posts:update' post.pk %}" class="">수정</a>
               <form action="{% url 'posts:delete' post.pk %}">
@@ -115,8 +115,8 @@
               </form>
               <span id="like-count"> {{post.like_users.count}}</span>
             </div>
+            <div>조회 {{ post.view_count }}</div>
           </div>
-          <div>조회 {{ post.view_count }}</div>
         </div>
       </article>
       <article id="detail--main--box">
