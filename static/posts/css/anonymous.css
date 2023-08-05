@@ -63,3 +63,25 @@ aside.base--item {
   border: 1px solid #fccaca;
   background-color: #FFEEEE;
 }
+
+@media screen and (max-width: 800px) {
+  .post--wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .post--img--wrap {
+    width: 300px;
+    height: 300px;
+  }
+  .post--container {
+    display: flex;
+    justify-content: center;
+  }
+  .post--img {
+    width: 300px;
+    height: 300px;
+  }
+  .post--content--wrap {
+    gap: 1rem;
+  }
+}

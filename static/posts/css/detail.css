@@ -280,3 +280,8 @@ input[type="submit"] {
   margin: 0;
   cursor: pointer;
 }
+@media screen and (max-width: 800px) {
+  .detail--header--info--list {
+    
+  }
+}

@@ -1,10 +1,13 @@
 
 aside.base--item {
+  display: flex;
+  justify-content: center;
   text-align: center;
   background-color: #FFF6EA;
 }
 .main--title--wrap {
   padding : 5rem 0;
+  width: 68%;
 }
 .main--title {
   margin-bottom: 1rem;
