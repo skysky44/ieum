@@ -14,52 +14,54 @@
 {% endblock aside %}
 
 {% block content %}
-  <h2 class="mb-3">채팅방 만들기</h2>
-  <div class="d-flex">
-    <input type="text" id="room-name-input" class="form-control" style="width:400px;" placeholder="채팅방 제목을 입력해주세요">
-    <button onclick="createChatRoom()" class="chat--create--btn">생성</button>
-  </div>
-  
-  {% comment %} <div>
-    {% for room in rooms %}
-      <div>
-        <a href="{% url 'chat:room' room %}">{{ room }}</a>
-        <a href="{% url 'chat:room_delete' room %}" onclick="removeCheck()">
-          <i class="bi bi-x" style="color:crimson;"></i>
-        </a>
-      </div>
-    {% endfor %}
-  </div> {% endcomment %}
-
-  <table class="table table-hover mt-5">
-    <thead style="text-align: center;">
-      <tr>
-        <th scope="col">방장</th>
-        <th scope="col">채팅방 제목</th>
-        <th scope="col">채팅방 입장</th>
-        <th scope="col">채팅방 삭제</th>
-      </tr>
-    </thead>
-    <tbody id="chat-table">
-      {% for room_owner in room_owners %}
-        <tr>
-          <td class="index--table--box">{{ room_owner.user__username }}</td>
-          <td class="index--content">{{ room_owner.room }}</td>
-          <td class="index--table--box">
-            <a href="{% url 'chat:room' room_owner.room %}" class="chat--enter--aTag">입장하기</a>
-          </td>
-          <td class="index--table--box">
-            <a href="{% url 'chat:room_delete' room_owner.room %}" onclick="removeCheck()">
-              <i class="bi bi-trash3" style="color:crimson;"></i>
-            </a>
-          </td>
-        </tr>
+  <div style="min-width: 400px;">
+    <h2 class="mb-3 chat--title">채팅방 만들기</h2>
+    <div class="d-flex chat--input">
+      <input type="text" id="room-name-input" class="form-control" style="width:400px;" placeholder="채팅방 제목을 입력해주세요">
+      <button onclick="createChatRoom()" class="chat--create--btn">생성</button>
+    </div>
+    
+    {% comment %} <div>
+      {% for room in rooms %}
+        <div>
+          <a href="{% url 'chat:room' room %}">{{ room }}</a>
+          <a href="{% url 'chat:room_delete' room %}" onclick="removeCheck()">
+            <i class="bi bi-x" style="color:crimson;"></i>
+          </a>
+        </div>
       {% endfor %}
-    </tbody>
-  </table>
-
-  <div class="mt-2" style="text-align: center;">
-    <button id="load-more-button"><i>더보기</i></button>
+    </div> {% endcomment %}
+  
+    <table class="table table-hover mt-5 chat--table">
+      <thead style="text-align: center;">
+        <tr>
+          <th scope="col">방장</th>
+          <th scope="col">채팅방 제목</th>
+          <th scope="col">채팅방 입장</th>
+          <th scope="col">채팅방 삭제</th>
+        </tr>
+      </thead>
+      <tbody id="chat-table">
+        {% for room_owner in room_owners %}
+          <tr>
+            <td title="{{ room_owner.user__username}}" class="index--table--box">{{ room_owner.user__username }}</td>
+            <td title="{{ room_owner.room }}" class="index--content">{{ room_owner.room }}</td>
+            <td class="index--table--box">
+              <a href="{% url 'chat:room' room_owner.room %}" class="chat--enter--aTag">입장하기</a>
+            </td>
+            <td class="index--table--box">
+              <a href="{% url 'chat:room_delete' room_owner.room %}" onclick="removeCheck()">
+                <i class="bi bi-trash3" style="color:crimson;"></i>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+    <div class="mt-2" style="text-align: center;">
+      <button id="load-more-button"><i>더보기</i></button>
+    </div>
   </div>
 {% endblock content %}
 
