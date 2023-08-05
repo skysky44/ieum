@@ -17,7 +17,7 @@
     <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
       관리자 계정
     </h1>
-    <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 분명 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
+    <p>소통과 만남을 통해 새로운 인연을 맺어보세요. 그곳에는 특별한 행운과 기적이 기다리고 있을 거예요.</p>
   {% else %}
     {% if user.taste == "F" %}
       <h1 class="font--gangwon main--title"><span class="main--title--icon"><i class="bi bi-balloon-heart-fill"></i></span>
@@ -88,7 +88,7 @@
                 {% endif %} alt="프로필 사진" id="profile-image"/>
               <span class="detail--user">{{ post.user }}</span>
             </a>
-            <p class="">{{ post.created_at }}</p>
+            <p class="detail--date">{{ post.created_time }}</p>
             {% if request.user == post.user %}
               <a href="{% url 'posts:update' post.pk %}" class="">수정</a>
               <form action="{% url 'posts:delete' post.pk %}">
@@ -115,8 +115,8 @@
               </form>
               <span id="like-count"> {{post.like_users.count}}</span>
             </div>
+            <div>조회 {{ post.view_count }}</div>
           </div>
-          <div>조회 {{ post.view_count }}</div>
         </div>
       </article>
       <article id="detail--main--box">
