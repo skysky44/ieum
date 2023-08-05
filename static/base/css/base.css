@@ -41,6 +41,30 @@ footer.base--item {
   grid-template-columns: 190px 1fr 230px;
   align-items:last baseline;
 }
+/* .nav--toggle {
+  display: none;
+  text-align: end;
+} */
+/* .header--wrap {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 24px;
+} */
+.nav--wrap {
+  height: 100%;
+}
+.nav--list {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+/* .nav--toggle {
+  display: block;
+} */
 .header--search--wrap {
   padding-left: 1rem;
   padding-bottom: 0.3rem;
@@ -62,7 +86,8 @@ footer.base--item {
 }
 .nav--container {
 }
-.nav--wrap {
+/* 네비토글 */
+/* .nav--wrap {
   position: absolute;
   top: 100%;
   left: 0;
@@ -81,8 +106,8 @@ footer.base--item {
   justify-content: flex-end;
   gap: 1rem;
   border-radius: 0 100px 0 100px;
-  /* background-color: rgba(239,239,239, .7); */
-}
+  /* background-color: rgba(239,239,239, .7);
+} */
 .nav--list--text {
   font-size: 1.2rem;
 }
@@ -119,5 +144,64 @@ footer.base--item {
   text-align: center;
 }
 
+@media screen and (max-width:1350px){
+  .header--container {
+    height: 120px;
+  }
+  .header--wrap {
+    grid-template-columns: 190px 1fr;
+    grid-template-rows: 1fr 1fr;
+    
+  }
+  .header--item1, .header--item2 {
+      grid-row: 1;
+  }
+  .header--item3 {
+      grid-column: 1 / span 2;
+      grid-row: 2;
+  }
+  aside {
+    position: relative;
+    top: 50px;
+  }
+}
 
-
+@media screen and (max-width:950px){
+  .header--wrap {
+    grid-template-columns: 1fr; 
+    }
+  .header--logo {
+    text-align: center;
+  } 
+  .header--item2 {
+    display: none;
+  }
+  .nav--hidden {
+    display: block;
+  }
+  .mobile__nav--container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+  }
+  .mobile__nav--wrap {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-areas: ". nav nav nav nav .";
+  }   
+  .mobile__nav--list--wrap {
+    grid-area: nav;
+  }
+  .mobile__nav--list {
+    display: flex;
+    justify-content: space-between;
+  }
+  .mobile__nav--list--text {
+    display: flex;
+  }
+  .footer--container {
+    padding-bottom: 130px;
+  }
+}
