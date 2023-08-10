@@ -303,44 +303,14 @@ aside.base--item {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-.fortune--button {
-  width: 130px;
-  font-size: 13px;
-  border: 1px solid #ffd79f;
-  background-color: #fff6eaa1;
-  padding: 0.5rem 0.7rem;
-}
-.fortune--button:hover {
-  background-color: #fff6ea74;
-}
-
-.profile--text--list.hidden {
-  display: none;
-}
-.profile--post--nothting {
-  display: none;
-}
-/* 반응형 */
-@media (max-width: 950px) {
-  /* 포춘쿠키 */
-  .profile--fortune--container {
-    margin-top: 3rem;
-    flex-direction: column;
-    text-align: center;
   }
-  /* 작성한 게시물 */
-  .profile--post--nothting {
-    display: block;
+  .fortune--button {
+    width: 130px;
+    font-size: 13px;
+    border: 1px solid #ffd79f;
+    background-color: #fff6eaa1;
+    padding: 0.5rem 0.7rem;
   }
-  .profile--post--wrap {
-    display: grid;
-    grid-template-columns: 50px 1fr;
+  .fortune--button:hover {
+    background-color: #fff6ea74;
   }
-  .profile--post--time {
-    /* display: none; */
-    margin-top: 10px;
-    color:#aaa;
-    font-size: 0.8rem;
-  }
-}

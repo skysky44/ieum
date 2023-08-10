@@ -156,7 +156,6 @@ body {
   padding: 6px 12px;
   background: #fafafa;
   border-radius: 5px;
-  margin-top: 1rem;
 }
 .profile--modal--body--wrap {
   border-bottom-left-radius: 10px;
@@ -167,8 +166,3 @@ body {
 }
 
 
-@media (max-width: 950px) {
-  .main--audio {
-    display: none;
-  }
-}

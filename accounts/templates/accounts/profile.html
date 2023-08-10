@@ -156,7 +156,7 @@
             {% endif %}
           </div>
         </div>
-        <div class="fortune--info-">하루에 한 번, 포춘쿠키를 열어보세요!</div>
+        <div class="fortune--info-">하루에 한번, 포춘쿠키를 열어보세요!</div>
       {% endif %}
     </section>
     
@@ -260,15 +260,13 @@
       <h5 class="profile--report--title"><i class="bi bi-file-earmark-text"></i> 작성한 게시물</h5>
       <div class="profile--text--list--wrap">
         {% for post in posts %}
-          <div class="profile--text--list">
-            <a class="profile--post--wrap" href="{% url 'posts:detail' post.pk %}">
-              <span class="">{{ post.pk }}</span>
-              <span class="">{{ post.title }}</span>
-              <!-- 반응형 -->
-              <div class="profile--post--nothting"></div>
-              <span class="profile--post--time">{{ post.created_at }}</span>
-            </a>
-          </div>
+        <div class="profile--text--list">
+          <a class="profile--post--wrap" href="{% url 'posts:detail' post.pk %}">
+            <span class="">{{ post.pk }}</span>
+            <span class="">{{ post.title }}</span>
+            <span class="">{{ post.created_at }}</span>
+          </a>
+        </div>
         {% empty %}
         <div class="profile--text--list">
             <p>게시물이 없습니다.</p>
@@ -277,7 +275,7 @@
       </div>
     </section>
   
-    <!-- 좋아요한 게시물 표시 -->
+  <!-- 좋아요한 게시물 표시 -->
     <section class="profile--posts--wrap">
       <h5 class="profile--report--title"><i class="bi bi-heart" style="color: crimson;"></i> 좋아요한 게시물</h5>
       <div class="profile--text--list--wrap">
@@ -286,9 +284,7 @@
           <a class="profile--post--wrap" href="{% url 'posts:detail' liked_post.pk %}">
             <span>{{ liked_post.pk }}</span>
             <span>{{ liked_post.title }}</span>
-            <!-- 반응형 -->
-            <div class="profile--post--nothting"></div>
-            <span class="profile--post--time">{{ liked_post.created_at }}</span>
+            <span>{{ liked_post.created_at }}</span>
           </a>
         </div>
         {% empty %}
