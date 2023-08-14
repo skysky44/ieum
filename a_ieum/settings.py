@@ -25,9 +25,9 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-CLIENT_ID = os.getenv('client_id')
-CLIENT_SECRET = os.getenv('client_secret')
-KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
+# CLIENT_ID = os.getenv('client_id')
+# CLIENT_SECRET = os.getenv('client_secret')
+# KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
 # SECRET_KEY = os.getenv('SECRET_KEY')
 SECRET_KEY = 'django-insecure-m-0!*yv=-wb#wq)80ix=3mk&xagc8ufs!l(^1!oqhxve@pa82y'
 # SECURITY WARNING: don't run with debug turned on in production!
