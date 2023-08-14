@@ -2,8 +2,20 @@ aside.base--item {
   text-align: center;
   background-color: #fdeaff;
 }
+.chat--table {
+  width: 100%;
+  table-layout: fixed;
+}
 .main--title--wrap {
   padding : 5rem 0;
+  /* 화면 너비 조정 */
+  max-width: 100%;
+  overflow-x: auto;
+  min-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #fdeaff;
 }
 .main--title {
   margin-bottom: 1rem;
@@ -17,7 +29,7 @@ aside.base--item {
 }
 .index--content {
   /* text-align: center; */
-  width: 300px; 
+  width: 30%;
   overflow: hidden; 
   text-overflow: ellipsis; 
   white-space: nowrap; 
@@ -34,4 +46,25 @@ aside.base--item {
 }
 .chat--enter--aTag:hover {
   border-bottom: 2px solid #ed69ff;
+}
+
+@media (max-width:1350px) {
+  .chat--title {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width:950px) {
+  .chat--title {
+    text-align: center;
+  }
+  .chat--input {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .index--content {
+      width: 15%;
+  }
 }
