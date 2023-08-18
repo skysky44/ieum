@@ -105,6 +105,7 @@ body {
   word-wrap: break-word;
 }
 .profile--music--btn--wrap {
+  margin: 5px 0 10px 0;
 }
 .profile--music--btn1, .profile--music--btn2 {
   box-sizing: border-box;
