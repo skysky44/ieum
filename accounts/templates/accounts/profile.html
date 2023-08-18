@@ -165,25 +165,27 @@
       {% if request.user == person %}
         <div class="profile--music--setting--wrap">
           <button type="button" class="profile--music--setting1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            프로필 음악 선택
+            <i class="bi bi-disc"></i>
+            <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
       {% else %}
         <div class="">
           <button type="button" class="profile--music--setting2" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
-            프로필 음악 선택
+            <i class="bi bi-disc"></i>
+            <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
       {% endif %}
       {% if not music %}
-        <div class="text-center mb-3">프로필 음악을 선택해 주세요.</div>
+        <div class="text-center mb-3 profile--music--text">프로필 음악을 선택해 주세요.</div>
       {% else %}
         {% for track in music %}
           <div id="track-{{ forloop.counter }}" class="profile--music--track">
             <div class="profile--music--img">
               <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
             </div>
-            <div>
+            <div class="profile--music--state">
               <span class="profile--music--album">{{ track.album }}</span>
               <div class="profile--music--btn--wrap">
                 <a href="#" class="play-track-profile profile--music--btn1" data-src="{{ track.preview_url }}">재생</a>
@@ -193,19 +195,33 @@
                   <a href="{% url 'accounts:delete_track' track.pk %}" class="profile--music--btn2__1">삭제</a>
                 {% endif %}
               </div>
+              <div id="audio-player-container" class="audio-player-container1">
+                <audio class="main-audio" style="width:100%; height:45px;" controls>
+                  <source src="" type="audio/mp3">
+                </audio>
+              </div>
             </div>
           </div>
-
         {% endfor %}
       {% endif %}
-      <div class="text-center">
+
+      {% comment %} <div id="audio-player-container" class="audio-player-container2">
         <audio class="main-audio" style="width:100%; height:45px;" controls>
           <source src="" type="audio/mp3">
         </audio>
-      </div>
+      </div> {% endcomment %}
+
+      {% if music %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const audioPlayerContainer = document.getElementById("audio-player-container");
+            audioPlayerContainer.style.display = "block";
+          });
+        </script>
+      {% endif %}
     </section>
 
-      <!-- 취향 문장 -->
+    <!-- 취향 문장 -->
     <section class="profile--sentence---container">
       <h5 class="profile--sectence--title">{{ person.username }}님의 문장</h5>
       <ul class="profile--sectence--list">
@@ -258,7 +274,7 @@
     <!-- 내가쓴 게시물 표시 -->
     <section class="profile--posts--wrap">
       <h5 class="profile--report--title"><i class="bi bi-file-earmark-text"></i> 작성한 게시물</h5>
-      <div class="profile--text--list--wrap">
+      <div class="profile--text--list--wrap" id="my-posts">
         {% for post in posts %}
           <div class="profile--text--list">
             <a class="profile--post--wrap" href="{% url 'posts:detail' post.pk %}">
@@ -275,12 +291,13 @@
         </div>
         {% endfor %}
       </div>
+      <button id="load-more-my-posts" class="load-more-button">더보기</button>
     </section>
   
     <!-- 좋아요한 게시물 표시 -->
     <section class="profile--posts--wrap">
       <h5 class="profile--report--title"><i class="bi bi-heart" style="color: crimson;"></i> 좋아요한 게시물</h5>
-      <div class="profile--text--list--wrap">
+      <div class="profile--text--list--wrap" id="liked-posts">
         {% for liked_post in liked_posts %}
         <div class="profile--text--list">
           <a class="profile--post--wrap" href="{% url 'posts:detail' liked_post.pk %}">
@@ -297,6 +314,7 @@
           </div>
         {% endfor %}
       </div>
+      <button id="load-more-liked-posts" class="load-more-button">더보기</button>
     </section>
 
 {% endif %}
@@ -566,6 +584,103 @@
 {% block script %}
   <script>
     document.querySelector(".profile--music--btn2__1").removeAttribute('href');
+  </script>
+
+  <script>
+    function updateButtonText() {
+      const button = document.querySelector('.profile--music--setting1');
+      const textElement = button.querySelector('.text-to-change');
+      const iconElement = button.querySelector('i');
+      console.log(iconElement)
+
+      if (window.innerWidth <= 950) {
+        textElement.style.display = 'none';
+        iconElement.style.display = 'inline';
+      } else {
+        textElement.style.display = 'inline';
+        iconElement.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('resize', updateButtonText);
+    window.addEventListener('DOMContentLoaded', updateButtonText);
+  </script>
+
+
+  <script>
+    // 프로필 음악 반응형
+    const profileBox = document.querySelector('.profile--music--img');
+    const profileBox2 = document.querySelector('.profile--music--state');
+
+    profileBox.addEventListener('click', () => {
+      const computedStyle = getComputedStyle(profileBox2);
+      if (computedStyle.display === 'none') {
+        profileBox2.style.display = 'block';
+      } else {
+        profileBox2.style.display = 'none';
+      }
+    });
+  </script>
+
+  <script>
+    // 게시물 더보기 버튼
+    document.addEventListener("DOMContentLoaded", function() {
+      const loadMoreMyPostsButton = document.getElementById("load-more-my-posts");
+      const loadMoreLikedPostsButton = document.getElementById("load-more-liked-posts");
+      const postList = document.getElementById("my-posts");
+      const likePostList = document.getElementById("liked-posts");
+      const initialRowCount = 5;
+      console.log(postList.children)
+      console.log(likePostList.children)
+
+      let rowCount = postList.children.length;
+      let likeRowCount = likePostList.children.length;
+
+      let hiddenRows = Array.from(postList.children).slice(initialRowCount);
+      console.log(hiddenRows)
+      let likeHiddenRows = Array.from(likePostList.children).slice(initialRowCount);
+      console.log(likeHiddenRows)
+
+      hiddenRows.forEach(function(row) {
+        row.style.display = "none";
+      });
+
+      likeHiddenRows.forEach(function(row) {
+        row.style.display = "none";
+      });
+
+      // 내가 쓴 게시물
+      loadMoreMyPostsButton.addEventListener("click", function() {
+        hiddenRows.slice(0, initialRowCount).forEach(function(row) {
+          row.style.display = "block";
+        });
+
+        hiddenRows = hiddenRows.slice(initialRowCount);
+        rowCount = postList.children.length;
+
+        if (hiddenRows.length === 0) {
+          loadMoreMyPostsButton.style.display = "none";
+        }
+      });
+
+      // 좋아요한 게시물
+      loadMoreLikedPostsButton.addEventListener("click", function() {
+        likeHiddenRows.slice(0, initialRowCount).forEach(function(row) {
+          row.style.display = "block";
+        });
+
+        likeHiddenRows = likeHiddenRows.slice(initialRowCount);
+        likeRowCount = likePostList.children.length;
+
+        if (likeHiddenRows.length === 0) {
+          loadMoreLikedPostsButton.style.display = "none";
+        }
+      });
+
+      if (likeRowCount > initialRowCount) {
+        loadMoreLikedPostsButton.style.display = "block";
+      }
+    });
   </script>
   
 {% endblock script %}

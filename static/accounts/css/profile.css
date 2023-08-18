@@ -30,6 +30,7 @@ aside.base--item {
   grid-area: profile;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  word-break: keep-all;
 }
 .profile--menu {
   display: flex;
@@ -321,6 +322,12 @@ aside.base--item {
 .profile--post--nothting {
   display: none;
 }
+
+/* 프로필 음악 */
+/* .audio-player-container1 {
+  display: none;
+} */
+
 /* 반응형 */
 @media (max-width: 950px) {
   /* 포춘쿠키 */
@@ -342,5 +349,56 @@ aside.base--item {
     margin-top: 10px;
     color:#aaa;
     font-size: 0.8rem;
+  }
+  .profile--music--box {
+    width: 80px;
+    height: 110px;
+  }
+  .profile--music--text {
+    display: none;
+  }
+  .audio-player-container1 {
+    display: none;
+  }
+  .audio-player-container2 {
+    display: none;
+  }
+  .profile--music--setting1 {
+    width: 70px;
+    height: 30px;
+  }
+  .profile--music--setting2 {
+    width: 70px;
+    height: 30px;
+  }
+  .profile--music--btn--wrap {
+    margin: 5px 0 10px 0;
+  }
+  .profile--music--player {
+    display: block;
+  }
+  .profile--music--track {
+    display: flex;
+    margin-right: 8px;
+    align-items: flex-end;
+    flex-direction: column;
+  }
+  .profile--music--state {
+    box-sizing: border-box;
+    width: 250px;
+    height: auto;
+    display: none;
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #f2f2f2d1, transparent);
+  }
+}
+
+@media (min-width: 951px) {
+  .audio-player-container1 {
+    right: 54px;
+    position: relative;
+    width: 280px;
   }
 }
