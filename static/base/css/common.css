@@ -21,6 +21,7 @@ body {
   position: fixed;
   bottom: 0;
   right: 15px;
+  z-index: 20;
 }
 
 .nori--wheel {
@@ -73,8 +74,8 @@ body {
   max-width: 500px;
   /* margin: auto; */
 }
-.profile--music--setting--wrap {
-}
+/* .profile--music--setting--wrap {
+} */
 .profile--music--setting1 {
   width: 100%;
   box-sizing: border-box;
@@ -164,6 +165,10 @@ body {
 }
 .profile--modal--follow--list {
   margin-right: 10px;
+}
+.profile--music--album--img {
+  width: 50px; 
+  border-radius: 5px;
 }
 
 
