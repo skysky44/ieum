@@ -48,12 +48,6 @@ aside.base--item {
   border-bottom: 2px solid #ed69ff;
 }
 
-@media (max-width:1350px) {
-  .chat--title {
-    margin-top: 2rem;
-  }
-}
-
 @media (max-width:950px) {
   .chat--title {
     text-align: center;

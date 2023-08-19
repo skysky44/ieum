@@ -17,17 +17,17 @@
     <div>
       {% if request.user.is_authenticated and request.user.username == username %}
         {% if person.taste == "T" %}
-          <p>{{ person.username }}님은 현실이음과 연결되어 있습니다.</p>
+          <p>{{ person.username }}님은 "현실 이음"과 연결되어 있습니다.</p>
         {% elif person.taste == "F" %}
-          <p>{{ person.username }}님은 공감이음과 연결되어 있습니다.</p>
+          <p>{{ person.username }}님은 "공감 이음"과 연결되어 있습니다.</p>
         {% else %}
           <p><a href="{% url 'balances:detail' 1 %}" class="profile--balance--button">밸런스게임 하러가기!</a></p>
         {% endif %}
       {% else %}
         {% if person.taste == "T" %}
-          <p>{{ person.username }}님은 현실이음과 연결되어 있습니다.</p>
+          <p>{{ person.username }}님은 "현실 이음"과 연결되어 있습니다.</p>
         {% elif person.taste == "F" %}
-          <p>{{ person.username }}님은 공감이음과 연결되어 있습니다.</p>
+          <p>{{ person.username }}님은 "공감 이음"과 연결되어 있습니다.</p>
         {% else %}
           <p>밸런스 게임을 하지 않으셨습니다.</p>
         {% endif %}
@@ -165,14 +165,14 @@
       {% if request.user == person %}
         <div class="profile--music--setting--wrap">
           <button type="button" class="profile--music--setting1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <i class="bi bi-disc"></i>
+            <i class="bi bi-play-circle" style="font-size: 1.2rem; color:rgb(115 115 115);"></i>
             <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
       {% else %}
         <div class="">
           <button type="button" class="profile--music--setting2" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
-            <i class="bi bi-disc"></i>
+            <i class="bi bi-play-circle" style="font-size: 1.2rem;"></i>
             <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
@@ -183,7 +183,7 @@
         {% for track in music %}
           <div id="track-{{ forloop.counter }}" class="profile--music--track">
             <div class="profile--music--img">
-              <img style="width: 50px; border-radius: 5px;" src="{{ track.image.url }}" alt="{{ track.album.name }}">
+              <img class="profile--music--album--img" src="{{ track.image.url }}" alt="{{ track.album.name }}">
             </div>
             <div class="profile--music--state">
               <span class="profile--music--album">{{ track.album }}</span>
@@ -205,12 +205,7 @@
         {% endfor %}
       {% endif %}
 
-      {% comment %} <div id="audio-player-container" class="audio-player-container2">
-        <audio class="main-audio" style="width:100%; height:45px;" controls>
-          <source src="" type="audio/mp3">
-        </audio>
-      </div> {% endcomment %}
-
+      <!-- 음악 앨범 사진 클릭 시, 오디오 플레이어 보이게 적용 -->
       {% if music %}
         <script>
           document.addEventListener("DOMContentLoaded", function () {
@@ -281,7 +276,7 @@
               <span class="">{{ post.pk }}</span>
               <span class="">{{ post.title }}</span>
               <!-- 반응형 -->
-              <div class="profile--post--nothting"></div>
+              <div class="profile--post--nothing"></div>
               <span class="profile--post--time">{{ post.created_at }}</span>
             </a>
           </div>
@@ -304,7 +299,7 @@
             <span>{{ liked_post.pk }}</span>
             <span>{{ liked_post.title }}</span>
             <!-- 반응형 -->
-            <div class="profile--post--nothting"></div>
+            <div class="profile--post--nothing"></div>
             <span class="profile--post--time">{{ liked_post.created_at }}</span>
           </a>
         </div>
