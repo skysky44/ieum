@@ -60,20 +60,15 @@
     wsStart + window.location.host +
       '/ws/chat/' + roomName + '/'
     );
-    console.log(chatSocket)
 
     // WebSocket 연결이 열린 경우 실행되는 이벤트 핸들러입니다.
     chatSocket.onopen = function(event) {
-      console.log('WebSocket connection is open.');
       // Send a test message
     };
 
     // WebSocket 메시지 수신 시 실행되는 이벤트 핸들러입니다.
     chatSocket.onmessage = function(event) {
-      console.log(event.data)
       const message = JSON.parse(event.data);
-      console.log('message.user_name', message.user_name)
-      console.log(message);
       if (message.type === 'chat.message') {
         const chatLog = document.getElementById('chat-log');
 
@@ -85,7 +80,13 @@
         if (message.user !== '{{ request.user.username }}') {
           // 보낸 사람의 프로필 사진을 보여줄 이미지 요소 생성
           const profileImageElement = document.createElement('img');
-          profileImageElement.src = message.user_profile_image; // 보낸 사람의 프로필 사진 URL
+          // profileImageElement.src = message.user_profile_image; // 보낸 사람의 프로필 사진 URL
+
+          if (message.user_profile_image) { profileImageElement.src = message.user_profile_image; // 보낸 사람의 프로필 사진 URL
+          } else {
+              profileImageElement.src = '{% static 'accounts/image/user_image.png' %}'; // 기본 이미지 URL
+          }
+    
           profileImageElement.alt = '프로필';
           profileImageElement.style.width = '25px';
           profileImageElement.style.height = '25px';
@@ -100,7 +101,6 @@
 
 
         const currentUser = '{{ request.user.username }}';
-        console.log('Current User:', currentUser);
         //const timestampElement1 = document.querySelector('.room--content--time1');
         //const timestampElement2 = document.querySelector('.room--content--time2');
         if (message.user === currentUser) {

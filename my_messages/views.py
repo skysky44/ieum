@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+# 메시지 보내기
 @login_required
 def compose_message(request):
     if request.method == 'POST':
@@ -36,7 +37,7 @@ def compose_message_to_user(request, username):
     return render(request, 'my_messages/compose_to_user.html', {'form': form, 'person': person})
 
 
-
+# 메시지 받기
 @login_required
 def received_messages(request):
     received_messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
