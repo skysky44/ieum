@@ -40,11 +40,15 @@ aside.base--item {
   background-color: #e5ffe5;
   padding: 2px 0;
 }
+.profile--menu2 {
+  display: none;
+}
 .profile--menu:hover {
   background-color: rgba(231, 255, 164, 0.847);
 }
 .profile--menu--title {
   margin-right: 5px;
+  cursor: default;
 }
 .profile--menu--content {
   color: green;
@@ -58,11 +62,9 @@ aside.base--item {
   top: 33px;
   width: 100%;
   font-size: 12px;
-
 }
 
 /* profile main */
-
 .profile--fortune--container {
   display: flex;
   justify-content: center;
@@ -72,9 +74,6 @@ aside.base--item {
 .fortune--info- {
   text-decoration: rgb(0, 210, 0) underline;
 }
-/* .profile--sentence--music--container {
-
-} */
 .profile--img--box {
     width: 200px;
     height: 200px;
@@ -95,18 +94,8 @@ aside.base--item {
 .profile--info--wrap {
   display: flex;
 }
-
-
-
-#fortunes--sentence {
-    text-align: center;
-}
-@media (max-width: 1030px) {
-
-}
 .profile--follow--btn {
     box-sizing: border-box;
-    /* border: 1px solid; */
     border: none;
     background: transparent !important;
     padding: 0 !important;
@@ -125,6 +114,7 @@ aside.base--item {
     object-fit: cover;
     text-align: center;
 }
+
 /* 나의 단어*/
 .profile--sentence---container, .profile--word--list--wrap, .profile--posts--wrap {
   display: flex;
@@ -148,9 +138,6 @@ aside.base--item {
   background-color: #e5ffe5;
   padding: 2px 10px;
 }
-/* .profile--word--title {
-  
-} */
 .profile--word--list {
   display: flex;
   flex-wrap: wrap;
@@ -163,6 +150,7 @@ aside.base--item {
     border-radius: 5px;
     padding: 2px 5px;
 }
+
 /* 단어 선택 */
 .profile--balance--word {
     display: flex;
@@ -181,7 +169,22 @@ aside.base--item {
     border: 1px solid #ccc;
     background: rgba(231, 255, 164, 0.847);
 }
-
+.profile--word--list--result {
+  max-height: calc(100vh - 200px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.profile--word--list--result::-webkit-scrollbar {
+  width: 6px;
+}
+.profile--word--list--result::-webkit-scrollbar-thumb {
+  height: 30%;
+  background: #a3cca3;
+  border-radius: 10px;
+}
+.profile--word--list--result::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, .1);
+}
 .profile--word--submit--wrap {
     margin-top: 1rem;
     text-align: center;
@@ -199,6 +202,7 @@ aside.base--item {
 .profile--word--submit--btn:hover {
     background: rgba(231, 255, 164, 0.847);
 }
+
 /* 신고 */
 .profile--report--move--button--wrap {
   display: flex;
@@ -242,8 +246,6 @@ aside.base--item {
   display: grid;
   grid-template-columns: 200px 1fr;
 }
-/* .profile--text--title {
-} */
 .profile--report--check--wrap {
     display: flex;
     justify-content: center;
@@ -259,18 +261,13 @@ aside.base--item {
     text-decoration: crimson underline;
 }
 
-
-
-
 /* forturn cookie */
-
 .fortune--container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 250px;
   height: 250px;
-  /* background-color: #eee; */
   border: 3px double #ddd;
   border-radius: 50%;
 }
@@ -283,13 +280,15 @@ aside.base--item {
   height: 180px;
   border: 1px solid #ddd;
   border-radius: 50%;
-
 }
 .fortune--content--open {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+#fortunes--sentence {
+  text-align: center;
 }
 .fortune--message {
   width: 230px;
@@ -324,12 +323,85 @@ aside.base--item {
 
 /* 반응형 */
 @media (max-width: 950px) {
+  /* 메뉴바 */
+  .profile--list--wrap {
+    border-bottom: 1px solid #eee;
+  }
+  .profile--list {
+    grid-area: profile;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    word-break: keep-all;
+  }
+  .profile--menu {
+    display: none;
+  }
+  .profile--menu2 {
+    display: flex;
+    justify-content: center;
+    padding: 2px 0;
+  }
+  .profile--menu2:hover {
+    border-top: 1px solid #67d367;
+    background-color: #fefff0;
+  }
+  .profile--menu--title2 {
+    margin-right: 5px;
+    cursor: default;
+  }
+  .profile--menu--content2 {
+    color: green;
+  }
+  .profile--message--wrap2 {
+    position: relative;
+    width: 100%;
+  }
+  .profile--user--message2 {
+    position: absolute;
+    top: 33px;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  /* 메뉴바 드롭다운 버튼 */
+  .profile--meun--dropdown {
+    display: inline-block;
+    position: relative;
+  }
+  .profile--meun--dropdown--option{
+    position: absolute;
+    width: 130px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.192);
+    display: none;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    background-color: #ffffff;
+  }
+  .profile--meun--dropdown--option a, .profile--follow--button {
+    display: block;
+    padding: 7px;
+    text-align: center;
+  }
+  .profile--meun--dropdown--option a:hover, .profile--follow--button:hover{
+    background-color: #eee;
+  }
+  .profile--meun--dropdown:hover .profile--meun--dropdown--option {
+    display: block;
+  }
+  .profile--user--message {
+    position: relative;
+    top: 0;
+    width: 100%;
+    font-size: 1rem;
+  }
+
   /* 포춘쿠키 */
   .profile--fortune--container {
-    margin-top: 3rem;
     flex-direction: column;
     text-align: center;
   }
+
   /* 작성한 게시물 */
   .profile--post--nothing {
     display: block;
@@ -339,11 +411,12 @@ aside.base--item {
     grid-template-columns: 50px 1fr;
   }
   .profile--post--time {
-    /* display: none; */
     margin-top: 10px;
     color:#aaa;
     font-size: 0.8rem;
   }
+
+  /* 프로필 음악 */
   .profile--music--box {
     width: 80px;
     height: 110px;

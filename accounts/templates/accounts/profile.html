@@ -125,6 +125,86 @@
           <a href="{% url 'accounts:logout' %}">로그아웃</a>
       {% endif %}
     </li>
+
+    <!-- 반응형 -->
+    <li class="profile--menu2">
+      <p class="profile--menu--title2">팔로잉</p>
+      <div class="profile--menu--content2">
+        <a href="#" id="followings-count" data-bs-toggle="modal" data-bs-target="#followingModal">{{ person.followings.all|length }}</a>
+      </div>
+    </li>
+    <li class="profile--menu2">
+      <p class="profile--menu--title2">팔로워</p>
+      <div class="profile--menu--content2">
+        <a href="#" id="followers-count" data-bs-toggle="modal" data-bs-target="#followerModal">{{ person.followers.all|length }}</a>
+      </div>
+    </li>
+    <li class="profile--menu2">
+      <p class="profile--menu--title2">피드</p>
+      <div class="profile--menu--content2">
+        <a href="#" id="posts-count" data-bs-toggle="modal" data-bs-target="#postsModal">{{ post_count }}</a>
+      </div>
+    </li>
+    <li class="profile--menu2">
+      <div class="profile--meun--dropdown">
+        <button class="profile--menu--title2">더보기</button>
+        <div class="profile--meun--dropdown--option">
+          <!-- 메세지함 -->
+          {% if request.user.is_authenticated and request.user.username == username %}
+          <div class="profile--message--wrap2">
+            <a href="{% url 'my_messages:received_messages' %}" class="">
+              메세지함
+            </a>
+            <div class="profile--user--message2">
+              {% if request.user.is_authenticated %}
+                {% get_unread_messages_count user as unread_messages_count %}
+                {% if unread_messages_count > 0 %}
+                  <a href="{% url 'my_messages:received_messages' %}" class="message--alarm">새 메세지가 <span style="color: red;">{{ unread_messages_count }}</span>건 있습니다.</a>
+                {% endif %}
+              {% endif %} 
+            </div>
+          </div>
+          {% elif request.user.is_authenticated and request.user.username != username %}
+            <a href="{% url 'my_messages:compose_message_to_user' person.username %}" class="">
+              메시지 보내기
+            </a>
+            <div class="profile--user--message">
+          {% endif %}
+          
+          <!-- 회원정보 수정 -->
+          {% if request.user.is_authenticated and request.user.username == username %}
+            <a href="{% url 'accounts:update' %}" class="">회원정보 수정</a>
+          {% else %}
+            <!-- 팔로잉 & 팔로우 버튼 -->
+            <div class="profile--follow--button">
+              {% if not user.is_authenticated %}
+                <div><input type="submit" value="Follow" disabled="disabled"></div>
+              {% elif request.user != person %}
+                <div>
+                  <form id='follow-form' data-user-id="{{ person.pk }}" class="">
+                    {% csrf_token %}
+                    {% if request.user in person.followers.all %}
+                      <input id="followinput" type="submit" value="팔로위 취소" class="profile--follow--btn">
+                    {% else %}
+                      <input id="followinput" type="submit" value="팔로우" class="profile--follow--btn">
+                    {% endif %}
+                  </form>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+          
+          <!-- 로그아웃 -->
+          {% if request.user.is_authenticated and request.user.username == username %}
+            <div>
+              <a href="{% url 'accounts:logout' %}">로그아웃</a>
+            </div>
+          {% else %}
+            <a href="{% url 'accounts:logout' %}">로그아웃</a>
+          {% endif %}
+        </div>
+      </div>
+    </li>
   </ul>
 </article>
 {% endblock aside %}
@@ -165,14 +245,14 @@
       {% if request.user == person %}
         <div class="profile--music--setting--wrap">
           <button type="button" class="profile--music--setting1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <i class="bi bi-play-circle" style="font-size: 1.2rem; color:rgb(115 115 115);"></i>
+            <i class="bi bi-play-circle" style="font-size: 1.3rem; color:rgb(115 115 115);"></i>
             <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
       {% else %}
         <div class="">
-          <button type="button" class="profile--music--setting2" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
-            <i class="bi bi-play-circle" style="font-size: 1.2rem;"></i>
+          <button type="button" class="profile--music--setting1" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
+            <i class="bi bi-play-circle" style="font-size: 1.3rem; color:rgb(115 115 115);"></i>
             <span class="text-to-change">프로필 음악 선택</span>
           </button>
         </div>
@@ -251,7 +331,7 @@
                 <h1 class="modal-title fs-5" id="wordModalLabel">단어로 '나'를 표현해 보세요!</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body profile--word--list--result">
                 <form action="{% url 'accounts:word_create' %}" method="POST" >
                   {% csrf_token %}
                   {{word_form.as_p}}
@@ -445,7 +525,7 @@
 
   <!-- 피드 모달 -->
   <div class="modal fade" id="postsModal" tabindex="-1" aria-labelledby="postsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width: 350px;">
+    <div class="modal-dialog" style="width: 400px;">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 fw-bold" id="postsModalLabel" style="">피드</h1>

@@ -73,3 +73,21 @@ aside.base--item {
 .update--input--button:hover {
   background-color: #d0f7d0;
 }
+
+/* 반응형 */
+@media (max-width:950px) {
+  .update--form--list {
+    display: block;
+  }
+  .update--form2 {
+    margin-top: 1rem;
+  }
+  .update--input--button {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  footer.base--item {
+    grid-area: footer;
+    margin-top: 300px;
+  }
+}
