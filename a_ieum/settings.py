@@ -109,7 +109,8 @@ DATABASES = {
     }
 }
 
-# db 연결
+
+# # db 연결
 # import pymysql
 # pymysql.install_as_MySQLdb()
 
