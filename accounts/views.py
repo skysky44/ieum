@@ -17,14 +17,27 @@ from django.core.files.base import ContentFile
 import urllib.request
 import tempfile
 from django.core.exceptions import ObjectDoesNotExist
-from balances.models import Result
+# from balances.models import Result
 from datetime import date
 from .models import User
+# 이메일 인증 관련
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from .tokens import account_activation_token
+from django.contrib import auth
+
+# 거리 계산 api
+import math
+import requests
 
 # Create your views here.
 def balances(request):
     return render(request, 'accounts/balances.html')
 
+# 로그인 / 이메일 인증이 완료 or 완료X
 def login(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
@@ -33,28 +46,28 @@ def login(request):
         username = request.POST.get('username')
         user = get_user_model()
         users = user.objects.all()
-        a = []
+        email_certification = [] 
         for i in users:
-            a.append(i.username)
+            email_certification.append(i.username)
         if form.is_valid():
             auth_login(request, form.get_user())
             user1 = User.objects.get(username=username)
             user_pk = user1.pk
-            balances_word = Result.objects.filter(pk=user_pk)
+            # balances_word = Result.objects.filter(pk=user_pk)
             if user1.taste == "N":
                 return redirect('accounts:balances')
                 
             else:
                 return redirect('posts:index')
         else:
-            for i in a:
-                if username in a:
+            for i in email_certification:
+                if username in email_certification:
                     context = {
                         'error' : '⛔ 이메일 인증하세요.',
                         'form': form,
                         }
                     return render(request, 'accounts/login.html', context)
-                elif username not in a:
+                elif username not in email_certification:
                     context = {
                         'error' : '⛔ 회원정보가 존재하지 않습니다.',
                         'form' : form,
@@ -68,14 +81,14 @@ def login(request):
     return render(request, 'accounts/login.html', context)
 
 
-
+# 로그아웃
 @login_required
 def logout(request):
     if request.user.is_authenticated:
         auth_logout(request)
     return redirect('posts:index')
 
-
+# 회원정보 수정
 @login_required
 def update(request):
     if request.method == 'POST':
@@ -92,23 +105,17 @@ def update(request):
 
     return render(request, 'accounts/update.html', context)
 
+# 회원정보 삭제
 @login_required
 def delete(request):
     request.user.delete()
     return redirect('posts:index')
 
-# 이메일 인증 관련
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
-from django.core.mail import EmailMessage
-from django.utils.encoding import force_bytes, force_text
-from .tokens import account_activation_token
-from django.contrib import auth
-
+# 회원가입 성공
 def complete_signup(request):
     return render(request, 'accounts/complete_signup.html')
 
+# 회원가입 / 인증 이메일 전송
 def signup(request):
     if request.user.is_authenticated:
         return redirect('posts:index')
@@ -117,7 +124,6 @@ def signup(request):
         form = CustomUserCreationForm(request.POST, files=request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            # user.is_active = True 
             user.is_active = False 
             user.save()
             current_site = get_current_site(request) 
@@ -184,7 +190,7 @@ def activate(request, uidb64, token):
 
         return render(request, 'accounts/email_error.html', context)
 
-
+# 비밀번호 변경
 @login_required
 def change_password(request):
     if request.method == 'POST':
@@ -201,9 +207,6 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', context)
 
 # 거리 계산 api
-import math
-import requests
-
 def haversine_distance(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
 
@@ -218,7 +221,7 @@ def haversine_distance(lon1, lat1, lon2, lat2):
     distance = int(distance * 10) / 10  # 소수점 첫 번째 자리까지 버림
     return distance
 
-
+# 거리 계산 api
 def calculate_distance(address1, address2):
     url = 'https://dapi.kakao.com/v2/local/search/address.json'
     headers = {
@@ -282,6 +285,7 @@ def calculate_distance(address1, address2):
 
     return distance
 
+# 프로필
 def profile(request, username):
     User = get_user_model()
     person = get_object_or_404(User, username=username)
@@ -297,7 +301,6 @@ def profile(request, username):
     liked_posts = Post.objects.filter(like_users=person)
     try:
         fortunes = Fortune.objects.get(user_id=user_id)
-        # fortunes = Fortune.objects.filter(user_id=user_id)
     except ObjectDoesNotExist:
         fortunes = None
 
@@ -371,10 +374,9 @@ def profile(request, username):
     return render(request, 'accounts/profile.html', context)
 
 
-
+# 팔로우
 @login_required
 def follow(request, user_pk):
-    # person = get_object_or_404(User, pk=user_pk)
     User = get_user_model()
     person  = User.objects.get(pk=user_pk)
     if person != request.user:
@@ -394,14 +396,13 @@ def follow(request, user_pk):
             'is_followed': is_followed,
             'followings_count': person.followings.count(),
             'followers_count': person.followers.count(),
-            # 'followings_list': followings_list,
             'followers_list': followers_list,
         }
 
         return JsonResponse(context)
     return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
 
-
+# 스포티파이 api 검색 결과 출력
 tracks = {}
 def search_spotify(request):
     global tracks
@@ -419,7 +420,7 @@ def search_spotify(request):
     return render(request, 'accounts/search_results.html')
 
 
-
+# 검색한 데이터를 받아서 저장
 def save_track(request):
     global tracks
     if request.method == 'POST':
@@ -460,6 +461,7 @@ def save_track(request):
     else:
         return HttpResponseBadRequest("Invalid request method.")
 
+# 음악 데이터 삭제
 def delete_track(request, track_pk):
     music = Track.objects.get(pk=track_pk)
     if request.user == music.user:
@@ -470,7 +472,7 @@ def delete_track(request, track_pk):
         music.delete()
     return redirect('accounts:profile',username=request.user.username)
 
-
+# 음원 검색
 def search(query):
     CLIENT_ID = settings.CLIENT_ID
     CLIENT_SECRET = settings.CLIENT_SECRET
@@ -506,7 +508,8 @@ def search(query):
     return tracks
 
 
-User = get_user_model()
+# User = get_user_model()
+# 프로필 음악 설정
 def set_profile_music(request, track_id):
     user = request.user
     user_instance = get_object_or_404(User, username=user.username)

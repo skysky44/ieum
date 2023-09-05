@@ -2,14 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-import random
-import string
-# Create your models here.
-# def generate_anonymous_username():
-#     base_name = 'user'
-#     suffix = str(random.randint(100000, 999999))  # 6자리 숫자 생성
-#     username = f'{base_name}{suffix}'
-#     return username
+
 
 class User(AbstractUser):
     SEOUL = '서울특별시'
@@ -44,7 +37,6 @@ class User(AbstractUser):
 
 
 class Track(models.Model):
-    # id = models.CharField(max_length=100, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
@@ -55,18 +47,3 @@ class Track(models.Model):
 
     def __str__(self):
         return self.title
-    # is_selected = models.OneToOneField(
-    #     'self',
-    #     on_delete=models.SET_NULL,
-    #     null=True,
-    #     blank=True,
-    #     related_name='selected_by'
-    # )  # 선택 여부를 나타내는 필드
-
-    # def save(self, *args, **kwargs):
-    #     if self.is_selected and self.is_selected.user != self.user:
-    #         self.is_selected = None
-    #     super().save(*args, **kwargs)
-
-    # def __str__(self):
-    #     return self.title

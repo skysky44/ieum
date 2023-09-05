@@ -287,7 +287,6 @@ class ResultForm(forms.ModelForm):
         for result in result_queryset:
             for selected_words in result.word.values():
                 for word in selected_words:
-                    # Create a tuple with the key-value pair for the choice label and value
                     choice = (word, word)
                     choices.append(choice)
         self.fields['words'].choices = choices

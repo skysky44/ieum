@@ -3,20 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Message
 from django.contrib.auth import get_user_model
-# from googletrans import Translator
 
-# def translate_korean_to_english(text):
-#     translator = Translator()
-#     result = translator.translate(text, src='ko', dest='en')
-#     return result.text
-
-# korean_text = "안녕하세요"
-# english_text = translate_korean_to_english(korean_text)
-# print(english_text)
-
-
-
-
+# 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -60,7 +48,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message_obj.content,
                 'user': message_obj.user.username,
-                # 'image': message_obj.user.image.url if message_obj.user.image else None,
                 'user_profile_image' : user_profile_image,
             } 
         )
