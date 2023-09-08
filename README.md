@@ -19,12 +19,17 @@
 - 백엔드 : 김용진, 안정환, 장민지 
 ## ✨주요 기능
 1. 밸런스 게임을 통하여 서로의 취향을 분석 후, 유저를 분류  
-    <img src="https://github.com/skysky44/ieum/assets/110805149/60cb87c6-90b6-48d1-8e71-c4ca43c8730e" width="400" height="300"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/60cb87c6-90b6-48d1-8e71-c4ca43c8730e" width="400" height="300"/>    
+  </div>
+  
 <br>
 
 2. 회원가입
   - 이메일 인증  
-    <img src="https://github.com/skysky44/ieum/assets/110805149/b21cabe2-5c7f-4284-b256-ba4dd4a99f12" max-width="800"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/b21cabe2-5c7f-4284-b256-ba4dd4a99f12" max-width="800"/>    
+  </div>
 <br>
 
 3. 취향이 나뉘어진 유저 간 제한 된 게시판에서 취향 공유 등 다양한 게시글 작성  
@@ -33,30 +38,42 @@
   - 지도 api를 이용하여 유저간 거리 맛집 추천 등 지도 이용
   - 익명 게시판을 통해 모든 유저의 고민 공유 및 댓글 기능으로 공감 / 해결
   - 게시글, 댓글 신고 기능 구현  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/267330c7-bde5-43f5-814c-af210f14bb60" max-width="800"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/267330c7-bde5-43f5-814c-af210f14bb60" max-width="800"/>    
+  </div>
 <br>
 
 4. 채팅 기능을 통해 유저끼리 실시간 소통 가능  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/a7b854ce-8d4d-496e-9dbd-016d946d5758" width="400" height="300"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/a7b854ce-8d4d-496e-9dbd-016d946d5758" width="400" height="300"/>    
+  </div>
 <br>
 5. 쪽지 기능을 통해 유저끼리 소통  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/58b153d6-2080-4c6b-9161-a5c8aeda1b57" max-width="800"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/58b153d6-2080-4c6b-9161-a5c8aeda1b57" max-width="800"/>    
+  </div>
 <br>
 
 6. 프로필 페이지에서 상대와 나의 정보 확인
   - 회원가입 시 받은 정보를 토대로 상대와 나의 거리 정보 확인
   - 프로필 뮤직, 사진 설정 가능
   - 회원가입 시 받은 문장이나 밸런스 게임을 통한 단어로 프로필에 '나'를 표현  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/6c01c853-f19d-441a-9c6a-792347a933b0" width="400" height="300"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/6c01c853-f19d-441a-9c6a-792347a933b0" width="400" height="300"/>    
+  </div>
 <br>
 
 7. 자바스크립트로 그림판 구현
-  - 그림판을 저장하여 수정 가능하며, 이용자 간 그림을 공유하고 자신의 그림을 프로필 이미지로 사용  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/a1280016-e30e-4d62-9611-19f76c00e54c" width="400" height="300"/>  
+  - 그림판을 저장하여 수정 가능하며, 이용자 간 그림을 공유하고 자신의 그림을 프로필 이미지로 사용
+  <div style="text-align:center"> 
+  <img src="https://github.com/skysky44/ieum/assets/110805149/a1280016-e30e-4d62-9611-19f76c00e54c" width="400" height="300"/>    
+  </div>
 <br>
 
 8. 모바일 반응형 구현  
-  <img src="https://github.com/skysky44/ieum/assets/110805149/7dc42614-6f53-4645-8c70-16c17fbbb759" width="400" height="300"/>  
+  <div style="text-align:center">
+    <img src="https://github.com/skysky44/ieum/assets/110805149/7dc42614-6f53-4645-8c70-16c17fbbb759" width="400" height="300"/>    
+    </div>
 <br>
 
 9. 클라우드타입, AWS 통한 배포
