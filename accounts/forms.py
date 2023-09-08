@@ -273,24 +273,33 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         help_text='',
     )
 
+# words 라는 필드에 밸런스 게임을 통해서 얻은 단어 값(DB에 각 질문을 통해 얻은 단어들)으로 만들기 때문에 사용자 메서드 정의
 class ResultForm(forms.ModelForm):
+    # 'words' 필드 정의 여러 선택지를 가질 수 있도록 MultipleChoiceField 사용
     words = forms.MultipleChoiceField(
         label=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple, # 체크박스로 선택할 수 있도록 위젯 설정
     )
-
+    # 생성자 메서드 재정의
     def __init__(self, *args, **kwargs):
+        # 'user' 매개변수를 꺼내고, 나머지 매개변수를 부모 클래스의 생성자로 전달
         user = kwargs.pop('user')
         super(ResultForm, self).__init__(*args, **kwargs)
+
+        # 현재 사용자에 해당하는 Result 객체들을 가져옴
         result_queryset = Result.objects.filter(user=user)
+        # 선택지를 저장할 리스트 초기화
         choices = []
+
+        # 각 Result 객체의 'word' 필드에서 선택한 단어들을 가져와서 choices 리스트에 추가
         for result in result_queryset:
             for selected_words in result.word.values():
                 for word in selected_words:
                     choice = (word, word)
                     choices.append(choice)
+        # 'words' 필드의 선택지(choices)를 설정
         self.fields['words'].choices = choices
 
     class Meta:
-        model = get_user_model()
-        fields = ('words',)
+        model = get_user_model() # 현재 사용자 모델을 가져옴
+        fields = ('words',) # 폼에 포함할 필드를 지정
